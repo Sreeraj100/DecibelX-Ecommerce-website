@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="zxx">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="LaxeLane OTP Verification" />
+    <meta name="keywords" content="OTP, verification, login" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>DecibelX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="css/font-awesome.min.css" type="text/css" />
+    <link rel="stylesheet" href="css/elegant-icons.css" type="text/css" />
+    <link rel="stylesheet" href="css/magnific-popup.css" type="text/css" />
+    <link rel="stylesheet" href="css/nice-select.css" type="text/css" />
+    <link rel="stylesheet" href="css/owl.carousel.min.css" type="text/css" />
+    <link rel="stylesheet" href="css/slicknav.min.css" type="text/css" />
+    <link rel="stylesheet" href="css/style.css" type="text/css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+        body,
+        html {
+            height: 100%;
+            margin: 0;
+            font-family: "Nunito Sans", sans-serif;
+            background-color: #f8f9fa;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            padding: 20px;
+        }
+
+        .login_wrap {
+            width: 100%;
+            max-width: 420px;
+            padding: 30px;
+            border-radius: 12px;
+            background: #fff;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .login_wrap:hover {
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+        }
+
+        .heading_s1 h3 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #6c757d;
+            margin-bottom: 30px;
+            font-size: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .form-control {
+            height: 50px;
+            padding: 10px 15px;
+            font-size: 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: #80bdff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        .otp-input-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .form-control.otp-input {
+            text-align: center;
+            font-size: 24px;
+            letter-spacing: 6px;
+            font-weight: 600;
+        }
+
+        .timer-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .otp-timer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #f0f0f0, #ffffff);
+            box-shadow: 5px 5px 10px #d9d9d9, -5px -5px 10px #ffffff;
+            margin: 0 auto;
+        }
+
+        #timerValue {
+            font-size: 28px;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        #timerValue.expired {
+            font-size: 14px;
+            color: #dc3545;
+        }
+
+        .btn {
+            height: 50px;
+            font-weight: 600;
+            font-size: 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+            width: 100%;
+            margin-top: 10px;
+            box-shadow: 0 4px 6px rgba(0, 123, 255, 0.11);
+        }
+
+        .btn-primary:hover {
+            background-color: #0069d9;
+            box-shadow: 0 6px 8px rgba(0, 123, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            width: 100%;
+            background-color: #6c757d;
+            border: none;
+            margin-top: 15px;
+            box-shadow: 0 4px 6px rgba(108, 117, 125, 0.11);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background-color: #5a6268;
+            box-shadow: 0 6px 8px rgba(108, 117, 125, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary:disabled {
+            background-color: #adb5bd;
+            cursor: not-allowed;
+            opacity: 0.65;
+        }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+        .alert-danger {
+            margin-top: 15px;
+            text-align: center;
+            border-radius: 8px;
+        }
+
+        .text-center {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .resend-text {
+            display: block;
+            margin-top: 8px;
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .btn-container {
+            margin-top: 20px;
+        }
+
+        /* Animation for timer */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .otp-timer.pulsing {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="login_wrap">
+            <div class="padding_eight_all bg-white">
+                <div class="heading_s1">
+                    <h3>Verify Your Email</h3>
+                </div>
+                <p class="subtitle">We've sent a 6-digit verification code to your email. Enter the code below to continue.</p>
+                
+                <form id="otpForm" action="/verify-otp" method="post" onsubmit="return validateOTPForm()">
+                    <div class="form-group">
+                        <label for="otp">Enter Verification Code:</label>
+                        <div class="otp-input-container">
+                            <input type="text" id="otp" name="otp" class="form-control otp-input" required maxlength="6"
+                                pattern="\d*" autocomplete="off" />
+                        </div>
+                    </div>
+                    
+                    <div class="timer-container">
+                        <div id="otpTimer" class="otp-timer pulsing">
+                            <span id="timerValue">60</span>
+                        </div>
+                    </div>
+                    
+                    <div class="btn-container">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-check-circle"></i> Verify Code
+                        </button>
+                        
+                        <button id="resendOtpBtn" type="button" class="btn btn-secondary" onclick="resendOTP()" disabled>
+                            <i class="fas fa-sync-alt"></i> Resend Code
+                        </button>
+                        <span class="resend-text text-center" id="resendText">You can request a new code in <span id="resendTimeText">60</span> seconds</span>
+                    </div>
+                    
+                    <% if (locals.message && message.length> 0) { %>
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-circle"></i> <%= message %>
+                        </div>
+                    <% } %>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.getElementById("otp").focus();
+
+        let timer;
+        let timerInterval;
+        
+        // Check for timer in sessionStorage to handle page refresh
+        window.onload = function() {
+            // Get the timestamp when OTP was sent (stored in sessionStorage)
+            const otpSentTime = sessionStorage.getItem('otpSentTime');
+            
+            if (otpSentTime) {
+                const currentTime = new Date().getTime();
+                const elapsedTime = Math.floor((currentTime - otpSentTime) / 1000);
+                
+                // If less than 60 seconds have passed, continue the timer
+                if (elapsedTime < 60) {
+                    timer = 60 - elapsedTime;
+                    startTimer();
+                } else {
+                    // Timer has expired
+                    timer = 0;
+                    document.getElementById("timerValue").classList.add("expired");
+                    document.getElementById("timerValue").textContent = "Expired";
+                    document.getElementById("resendTimeText").textContent = "0";
+                    document.getElementById("resendText").innerHTML = "Code expired. <b>Request a new one</b>";
+                    document.getElementById("resendOtpBtn").disabled = false;
+                    document.getElementById("otpTimer").classList.remove("pulsing");
+                }
+            } else {
+                // First time loading - set the timestamp and start timer
+                sessionStorage.setItem('otpSentTime', new Date().getTime());
+                timer = 60;
+                startTimer();
+            }
+        };
+
+        // Format OTP input to add spaces
+        document.getElementById('otp').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
+        function startTimer() {
+    // Clear any existing timer
+    clearInterval(timerInterval);
+    
+    // Update the timer display
+    document.getElementById("timerValue").textContent = timer;
+    document.getElementById("resendTimeText").textContent = timer;
+    
+    // Start the countdown
+    timerInterval = setInterval(() => {
+        timer--;
+        
+        if (timer >= 0) {
+            document.getElementById("timerValue").textContent = timer;
+            document.getElementById("resendTimeText").textContent = timer;
+        }
+        
+        if (timer <= 0) {
+            clearInterval(timerInterval);
+            document.getElementById("timerValue").classList.add("expired");
+            document.getElementById("timerValue").textContent = "Expired";
+            document.getElementById("resendText").innerHTML = "Code expired. <b>Request a new one</b>";
+            document.getElementById("resendOtpBtn").disabled = false;
+            document.getElementById("otpTimer").classList.remove("pulsing");
+        }
+    }, 1000);
+}
+
+        function validateOTPForm() {
+            const otpInput = document.getElementById('otp').value;
+            
+            if (otpInput.length !== 6) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Incomplete Code',
+                    text: 'Please enter the complete 6-digit verification code'
+                });
+                return false;
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '/verify-otp',
+                data: { otp: otpInput },
+                beforeSend: function() {
+                    // Show loading state
+                    document.querySelector('button[type="submit"]').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+                    document.querySelector('button[type="submit"]').disabled = true;
+                },
+                success: function (response) {
+                    if (response.success) {
+                        // Clear OTP session storage on successful verification
+                        sessionStorage.removeItem('otpSentTime');
+                        
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Verified Successfully',
+                            text: 'Your email has been verified!',
+                            showConfirmButton: false,
+                            timer: 1500,
+                        }).then(() => {
+                            window.location.href = response.redirectUrl;
+                        });
+                    } else {
+                        document.querySelector('button[type="submit"]').innerHTML = '<i class="fas fa-check-circle"></i> Verify Code';
+                        document.querySelector('button[type="submit"]').disabled = false;
+                        
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Invalid Code',
+                            text: response.message || 'The verification code is incorrect, please try again'
+                        });
+                    }
+                },
+                error: function (xhr) {
+                    document.querySelector('button[type="submit"]').innerHTML = '<i class="fas fa-check-circle"></i> Verify Code';
+                    document.querySelector('button[type="submit"]').disabled = false;
+                    
+                    let errorMessage = 'An error occurred. Please try again.';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+                    
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Verification Failed',
+                        text: errorMessage
+                    });
+                }
+            });
+            return false;
+        }
+
+        function resendOTP() {
+    // Disable resend button during request
+    const resendBtn = document.getElementById("resendOtpBtn");
+    resendBtn.disabled = true;
+    resendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+    // Store original button state for potential restore on error
+    const originalBtnHtml = '<i class="fas fa-sync-alt"></i> Resend Code';
+
+    $.ajax({
+        type: 'POST',
+        url: '/resend-otp',
+        dataType: 'json',
+        timeout: 15000, // 15 seconds timeout
+        success: function(response) {
+            if (response && response.success) {
+                // Successfully resent OTP
+                
+                // Reset timer UI elements
+                timer = 60;
+                
+                // Clear existing timer interval and create a new one
+                clearInterval(timerInterval);
+                
+                // Update UI immediately
+                document.getElementById("timerValue").classList.remove("expired");
+                document.getElementById("timerValue").textContent = timer;
+                document.getElementById("resendTimeText").textContent = timer;
+                document.getElementById("resendText").textContent = "You can request a new code in " + timer + " seconds";
+                document.getElementById("otp").value = "";
+                document.getElementById("otp").focus();
+                document.getElementById("otpTimer").classList.add("pulsing");
+                
+                // Reset button state
+                resendBtn.innerHTML = originalBtnHtml;
+                resendBtn.disabled = true;
+                
+                // Save new timestamp
+                sessionStorage.setItem('otpSentTime', new Date().getTime());
+                
+                // Start the timer again
+                startTimer();
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Code Resent',
+                    text: 'A new verification code has been sent to your email',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            } else {
+                // Failed to resend OTP
+                resendBtn.disabled = false;
+                resendBtn.innerHTML = originalBtnHtml;
+                
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: response?.message || 'Failed to resend verification code'
+                });
+            }
+        },
+        error: function(xhr, status, error) {
+            // Handle AJAX error
+            console.error("AJAX error:", status, error);
+            
+            // Reset button state
+            resendBtn.disabled = false;
+            resendBtn.innerHTML = originalBtnHtml;
+            
+            let errorMessage = 'An error occurred while resending verification code. Please try again.';
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                errorMessage = xhr.responseJSON.message;
+            }
+            
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: errorMessage
+            });
+        }
+    });
+}
+
+// Ensure startTimer is implemented correctly
+function startTimer() {
+    // First clear any existing interval
+    if (timerInterval) {
+        clearInterval(timerInterval);
+    }
+    
+    // Update the display immediately
+    document.getElementById("timerValue").textContent = timer;
+    document.getElementById("resendTimeText").textContent = timer;
+    
+    // Create a new interval
+    timerInterval = setInterval(function() {
+        // Decrement timer
+        timer--;
+        
+        // Update UI
+        if (timer >= 0) {
+            document.getElementById("timerValue").textContent = timer;
+            document.getElementById("resendTimeText").textContent = timer;
+        }
+        
+        // Check if timer has expired
+        if (timer <= 0) {
+            // Stop the timer
+            clearInterval(timerInterval);
+            
+            // Update UI for expired timer
+            document.getElementById("timerValue").classList.add("expired");
+            document.getElementById("timerValue").textContent = "Expired";
+            document.getElementById("resendText").innerHTML = "Code expired. <b>Request a new one</b>";
+            document.getElementById("resendOtpBtn").disabled = false;
+            document.getElementById("otpTimer").classList.remove("pulsing");
+        }
+    }, 1000);
+}
+
+    </script>
+</body>
+
+</html>

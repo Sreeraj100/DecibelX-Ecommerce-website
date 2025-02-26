@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="zxx">
 <head>
    <meta charset="UTF-8">
@@ -118,5 +118,302 @@
            </div>
            <div class="canvas__open"><i class="fa fa-bars"></i></div>
        </div>
-   </header>
-
+   </header> -->
+   <!DOCTYPE html>
+   <html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="description" content="DecibelX Template">
+      <meta name="keywords" content="DecibelX, audio, headphones, speakers">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="ie=edge">
+      <title>DecibelX</title>
+      <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+      <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css">
+      <link rel="stylesheet" href="css/font-awesome.min.css" type="text/css">
+      <link rel="stylesheet" href="css/elegant-icons.css" type="text/css">
+      <link rel="stylesheet" href="css/magnific-popup.css" type="text/css">
+      <link rel="stylesheet" href="css/nice-select.css" type="text/css">
+      <link rel="stylesheet" href="css/owl.carousel.min.css" type="text/css">
+      <link rel="stylesheet" href="css/slicknav.min.css" type="text/css">
+      <link rel="stylesheet" href="css/style.css" type="text/css">
+      <link rel="stylesheet" href="./user-assets/css/maind134.css">
+      <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+      
+      <style>
+         /* New Header Styles */
+         .header {
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 15px 0;
+            position: relative;
+            z-index: 500;
+         }
+         
+         .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top:30px;
+         }
+         
+         /* Logo with spacing to the right */
+         .logo {
+            display: flex;
+            align-items: center;
+            margin-right: 50px; /* Increased space between logo and nav menu */
+         }
+         
+         .logo img {
+            height: 55px;
+         }
+        
+         /* Navigation positioned in the middle */
+         nav {
+            flex-grow: 1; /* This allows the nav to take available space */
+         }
+         
+         .nav-menu {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+         }
+         
+         .nav-menu li {
+            margin: 0 15px;
+         }
+         
+         .nav-menu a {
+            color: #333;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 19px;
+            transition: color 0.3s;
+         }
+         
+         .nav-menu a:hover {
+            color: #00c3ff;
+            font-size: 20px;
+         }
+         
+         /* Search bar hidden to simplify layout */
+         .search-bar {
+            display: none;
+         }
+         
+         /* Icons with gap from navigation */
+         .nav-icons {
+            display: flex;
+            align-items: center;
+            margin-left: 50px; /* Add space between nav menu and icons */
+            gap: 24px;
+         }
+         
+         .nav-icons a {
+            margin-left: 20px;
+            color: #333;
+            position: relative;
+         }
+         
+         .nav-icons a i {
+            font-size: 22px;
+         }
+         
+         .nav-icons .badge {
+            position: absolute;
+            top: -10px;
+            right: -8px;
+            background-color: #ff4757;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+         }
+         
+         .dropdown {
+            position: relative;
+            display: inline-block;
+         }
+         
+         .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.1);
+            z-index: 1000;
+            right: 0;
+            border-radius: 8px;
+            overflow: hidden;
+         }
+         
+         .dropdown-content a {
+            color: #333;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+            transition: background-color 0.3s;
+         }
+         
+         .dropdown-content a:hover {
+            background-color: #f8f8f8;
+         }
+         
+         .dropdown:hover .dropdown-content {
+            display: block;
+         }
+         
+         .user-icon {
+            cursor: pointer;
+            font-size: 22px;
+         }
+         
+         /* Mobile menu styles */
+         .mobile-menu-toggle {
+            display: none;
+            cursor: pointer;
+            font-size: 24px;
+         }
+         
+         .mobile-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: white;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            z-index: 1000;
+         }
+         
+         .mobile-menu.active {
+            display: block;
+         }
+         
+         .mobile-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+         }
+         
+         .mobile-menu ul li {
+            margin-bottom: 15px;
+         }
+         
+         .mobile-menu ul li a {
+            color: #333;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+         }
+         
+         .mobile-search {
+            margin: 15px 0;
+         }
+         
+         @media (max-width: 991px) {
+            .nav-menu {
+               display: none;
+            }
+            
+            .mobile-menu-toggle {
+               display: block;
+               margin-left: auto;
+            }
+            
+            .header-container {
+               padding: 0 10px;
+            }
+            
+            .logo {
+               margin-right: 0; /* Remove right margin on mobile */
+            }
+            
+            .nav-icons {
+               margin-left: 20px; /* Reduced space on mobile */
+            }
+         }
+         
+         .container{
+            width: 100%;
+         }
+      </style>
+   </head>
+   <body>
+      <header class="header">
+         <div class="container">
+            <div class="header-container">
+               <!-- Logo -->
+               <div class="logo">
+                  <a href="#"><img src="img/logo.png" alt="DecibelX"></a>
+               </div>
+               
+               <!-- Navigation Menu -->
+               <nav>
+                  <ul class="nav-menu">
+                     <li><a href="/contact">Contact</a></li>
+                     <li><a href="/about">About</a></li>
+                     <li><a href="/products">Products</a></li>
+                     <li><a href="/login">Log in</a></li>
+                     <li><a href="/signup">Sign up</a></li>
+                  </ul>
+               </nav>
+               
+               <!-- Icons -->
+               <div class="nav-icons">
+                  <!-- Wishlist Icon -->
+                  <a href="/wishlist">
+                     <i class="fas fa-heart" style="color: red;"></i>
+                     <!-- <span class="badge">1</span> -->
+                  </a>
+                  
+                  <!-- Cart Icon -->
+                  <a href="/cart">
+                     <i class="fas fa-shopping-cart"></i>
+                     <!-- <span class="badge">0</span> -->
+                  </a>
+                  
+                  <!-- User Profile/Login -->
+                  <% if(locals.user) { %>
+                     <div class="dropdown">
+                        <a href="#" class="user-icon">
+                           <i class="fas fa-user-circle"></i>
+                        </a>
+                        <div class="dropdown-content">
+                           <a href="/userProfile">Profile</a>
+                           <a href="/logout">Logout</a>
+                        </div>
+                     </div>
+                  <% } else { %>
+                     <a href="/login">
+                        <i class="fas fa-user"></i>
+                     </a>
+                  <% } %>
+               </div>
+               
+               <!-- Mobile Menu Toggle -->
+               <div class="mobile-menu-toggle">
+                  <i class="fa fa-bars"></i>
+               </div>
+            </div>
+         </div>
+         
+         <!-- Mobile Menu -->
+         <div class="mobile-menu">
+            <ul>
+               <li><a href="/contact">Contact</a></li>
+               <li><a href="/about">About</a></li>
+               <li><a href="/products">Products</a></li>
+               <li><a href="/login">Log in</a></li>
+               <li><a href="/signup">Sign up</a></li>
+            </ul>
+         </div>
+      </header>

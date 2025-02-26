@@ -112,5 +112,17 @@
     <script src="./user-assets/js/plugins/jquery.elevatezoom.js"></script>
     <script src="./user-assets/js/maind134.js?v=3.4"></script>
     <script src="./user-assets/js/shopd134.js?v=3.4"></script>
+     <!-- Javascript for toggle functionality -->
+     <script>
+        // Mobile menu toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+           const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+           const mobileMenu = document.querySelector('.mobile-menu');
+           
+           mobileMenuToggle.addEventListener('click', function() {
+              mobileMenu.classList.toggle('active');
+           });
+        });
+     </script>
     </body>
     </html>
