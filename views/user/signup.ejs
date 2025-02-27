@@ -141,7 +141,7 @@
         }
 
         button:hover {
-            background-color: #2980b9;
+            background-color: #00FFFB;
         }
 
         button.ghost:hover {
@@ -172,6 +172,9 @@
             padding: 12px 15px;
             margin: 4px 0 0 0;
             width: 100%;
+        }
+        input:focus{
+         outline: 2px solid #00FFFB;
         }
 
         .form-group {
@@ -229,106 +232,158 @@
             padding: 0;
             margin: 0;
         }
+
+        .mobile-logo {
+            display: none;
+            /* Hidden by default */
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .mobile-logo img {
+            width: 250px;
+            /* Adjust the size as needed */
+            height: auto;
+        }
+
         /* Media Queries for Responsiveness */
-@media (max-width: 768px) {
-    .container {
-        width: 90%; /* Reduce container width for smaller screens */
-        min-height: auto; /* Allow container to adjust height */
-        flex-direction: column; /* Stack elements vertically */
-    }
+        @media (max-width: 768px) {
+            .container {
+                width: 90%;
+                /* Reduce container width for smaller screens */
+                min-height: auto;
+                /* Allow container to adjust height */
+                flex-direction: column;
+                /* Stack elements vertically */
+            }
 
-    .form-container,
-    .overlay-container {
-        width: 100%; /* Full width for form and overlay */
-        height: auto; /* Adjust height automatically */
-        position: static; /* Remove absolute positioning */
-    }
+            .form-container,
+            .overlay-container {
+                width: 100%;
+                /* Full width for form and overlay */
+                height: auto;
+                /* Adjust height automatically */
+                position: static;
+                /* Remove absolute positioning */
+            }
 
-    .overlay-container {
-        display: none; /* Hide overlay on small screens */
-    }
+            .overlay-container {
+                display: none;
+                /* Hide overlay on small screens */
+            }
 
-    .form-container.sign-up-container {
-        padding: 20px; /* Add padding for better spacing */
-    }
+            .form-container.sign-up-container {
+                padding: 20px;
+                /* Add padding for better spacing */
+            }
 
-    .overlay-panel {
-        padding: 20px; /* Adjust padding for smaller screens */
-    }
+            .overlay-panel {
+                padding: 20px;
+                /* Adjust padding for smaller screens */
+            }
 
-    .overlay-panel img {
-        width: 200px; /* Reduce image size for smaller screens */
-    }
+            .overlay-panel img {
+                width: 200px;
+                /* Reduce image size for smaller screens */
+            }
 
-    h1 {
-        font-size: 24px; /* Reduce heading size */
-    }
+            h1 {
+                font-size: 24px;
+                /* Reduce heading size */
+            }
 
-    p {
-        font-size: 12px; /* Reduce paragraph text size */
-    }
+            p {
+                font-size: 12px;
+                /* Reduce paragraph text size */
+            }
 
-    button {
-        padding: 10px 30px; /* Adjust button padding */
-        font-size: 10px; /* Reduce button text size */
-    }
+            button {
+                padding: 10px 30px;
+                /* Adjust button padding */
+                font-size: 10px;
+                /* Reduce button text size */
+            }
 
-    input {
-        padding: 10px; /* Adjust input padding */
-    }
+            input {
+                padding: 10px;
+                /* Adjust input padding */
+            }
 
-    .form-group label {
-        font-size: 12px; /* Reduce label size */
-    }
+            .form-group label {
+                font-size: 12px;
+                /* Reduce label size */
+            }
 
-    .error-message {
-        font-size: 10px; /* Reduce error message size */
-    }
+            .error-message {
+                font-size: 10px;
+                /* Reduce error message size */
+            }
 
-    .signup-link {
-        font-size: 12px; /* Reduce signup link size */
-    }
-}
+            .signup-link {
+                font-size: 12px;
+                /* Reduce signup link size */
+            }
 
-@media (max-width: 480px) {
-    .container {
-        width: 100%; /* Full width for very small screens */
-        border-radius: 0; /* Remove border radius */
-    }
+            .mobile-logo {
+                display: block;
+            }
+        }
 
-    .form-container.sign-up-container {
-        padding: 10px; /* Reduce padding further */
-    }
+        @media (max-width: 480px) {
+            .container {
+                width: 100%;
+                /* Full width for very small screens */
+                border-radius: 0;
+                /* Remove border radius */
+            }
 
-    h1 {
-        font-size: 20px; /* Further reduce heading size */
-    }
+            .form-container.sign-up-container {
+                padding: 10px;
+                /* Reduce padding further */
+            }
 
-    p {
-        font-size: 10px; /* Further reduce paragraph text size */
-    }
+            h1 {
+                font-size: 20px;
+                /* Further reduce heading size */
+            }
 
-    button {
-        padding: 8px 20px; /* Further adjust button padding */
-        font-size: 9px; /* Further reduce button text size */
-    }
+            p {
+                font-size: 10px;
+                /* Further reduce paragraph text size */
+            }
 
-    input {
-        padding: 8px; /* Further adjust input padding */
-    }
+            button {
+                padding: 8px 20px;
+                /* Further adjust button padding */
+                font-size: 9px;
+                /* Further reduce button text size */
+            }
 
-    .form-group label {
-        font-size: 11px; /* Further reduce label size */
-    }
+            input {
+                padding: 8px;
+                /* Further adjust input padding */
+            }
 
-    .error-message {
-        font-size: 9px; /* Further reduce error message size */
-    }
+            .form-group label {
+                font-size: 11px;
+                /* Further reduce label size */
+            }
 
-    .signup-link {
-        font-size: 11px; /* Further reduce signup link size */
-    }
-}
+            .error-message {
+                font-size: 9px;
+                /* Further reduce error message size */
+            }
+
+            .signup-link {
+                font-size: 11px;
+                /* Further reduce signup link size */
+            }
+
+            .mobile-logo {
+                display: block;
+                /* Show logo on small screens */
+            }
+        }
     </style>
 </head>
 
@@ -347,9 +402,16 @@
 
         <!-- Signup Form Section -->
         <div class="form-container sign-up-container">
+            <div class="mobile-logo">
+                <img src="img/footer-logo.png" alt="DecibelX">
+            </div>
             <form id="signup-form" method="post" action="/signup">
                 <h1 style="margin-top: 5px;">Sign up</h1>
-
+                <% if (typeof message !=='undefined' && message) { %>
+                    <div class="text-danger-custom">
+                        <%= message %>
+                    </div>
+                    <% } %>
                 <!-- Form Fields -->
                 <div class="form-group">
                     <label for="fullname">Full Name</label>
@@ -377,18 +439,14 @@
                     <p class="error-message" id="confirm-password-error"></p>
                 </div>
 
-                <!-- Error Message (if any) -->
-                <% if (typeof message !=='undefined' && message) { %>
-                    <div class="text-danger-custom">
-                        <%= message %>
-                    </div>
-                <% } %>
+                
+               
 
-                <!-- Submit Button -->
-                <button type="submit">Sign Up</button>
+                        <!-- Submit Button -->
+                        <button type="submit">Sign Up</button>
 
-                <!-- Sign In Link -->
-                <p class="signup-link">Already have an account? <a href="/login">Sign In</a></p>
+                        <!-- Sign In Link -->
+                        <p class="signup-link">Already have an account? <a href="/login">Sign In</a></p>
             </form>
         </div>
     </div>
@@ -421,9 +479,13 @@
             return re.test(String(email).toLowerCase());
         }
 
+        // function validatePhone(phone) {
+        //     const re = /^\d{10}$/; // Simple 10-digit validation - adjust based on your requirements
+        //     return re.test(String(phone).replace(/\D/g, ''));
+        // }
         function validatePhone(phone) {
-            const re = /^\d{10}$/; // Simple 10-digit validation - adjust based on your requirements
-            return re.test(String(phone).replace(/\D/g, ''));
+            const phoneRegex = /^\d{10}$/;
+            return phoneRegex.test(phone);
         }
 
         function validatePassword(password) {
@@ -484,7 +546,7 @@
             if (phone.value.trim() === '') {
                 isValid = showError(phone, 'Phone number is required');
             } else if (!validatePhone(phone.value.trim())) {
-                isValid = showError(phone, 'Please enter a valid 10-digit phone number');
+                isValid = showError(phone, 'Please enter a valid 10-digit phone number without spaces and special characters');
             }
 
             // Validate password

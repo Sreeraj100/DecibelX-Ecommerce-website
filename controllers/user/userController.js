@@ -115,7 +115,7 @@ async function sendVerificationEmail(email, otp, name) {
       html: htmlTemplate
     });
 
-    // console.log("Email sent successfully");
+    // console.log("Email sent successfully"); 
     return true;
 
   } catch (error) {

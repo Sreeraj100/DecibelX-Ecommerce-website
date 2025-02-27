@@ -323,47 +323,279 @@
             padding: 0;
             margin: 0;
         }
+
+        .mobile-logo {
+            display: none;
+            /* Hidden by default */
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .mobile-logo img {
+            width: 250px;
+            /* Adjust the size as needed */
+            height: auto;
+        }
+
+        /* Media Queries for Responsiveness */
+        @media (max-width: 768px) {
+            .container {
+                width: 90%;
+                /* Reduce container width for smaller screens */
+                min-height: auto;
+                /* Allow container to adjust height */
+                flex-direction: column;
+                /* Stack elements vertically */
+            }
+
+            .form-container,
+            .overlay-container {
+                width: 100%;
+                /* Full width for form and overlay */
+                height: auto;
+                /* Adjust height automatically */
+                position: static;
+                /* Remove absolute positioning */
+            }
+
+            .overlay-container {
+                display: none;
+                /* Hide overlay on small screens */
+            }
+
+            .form-container.sign-in-container {
+                padding: 20px;
+                /* Add padding for better spacing */
+            }
+
+            .overlay-panel {
+                padding: 20px;
+                /* Adjust padding for smaller screens */
+            }
+
+            .overlay-panel img {
+                width: 200px;
+                /* Reduce image size for smaller screens */
+            }
+
+            h1 {
+                font-size: 24px;
+                /* Reduce heading size */
+            }
+
+            p {
+                font-size: 12px;
+                /* Reduce paragraph text size */
+            }
+
+            button {
+                padding: 10px 30px;
+                /* Adjust button padding */
+                font-size: 10px;
+                /* Reduce button text size */
+            }
+
+            input {
+                padding: 10px;
+                /* Adjust input padding */
+            }
+
+            .form-group label {
+                font-size: 12px;
+                /* Reduce label size */
+            }
+
+            .error-message {
+                font-size: 10px;
+                /* Reduce error message size */
+            }
+
+            .signup-link {
+                font-size: 12px;
+                /* Reduce signup link size */
+            }
+
+            .social-container .social-btn {
+                padding: 6px;
+                /* Adjust social button padding */
+            }
+
+            .social-container .social-btn img {
+                height: 20px;
+                /* Reduce social icon size */
+            }
+
+            .social-container .social-btn span {
+                font-size: 12px;
+                /* Reduce social button text size */
+            }
+
+            .divider span {
+                font-size: 10px;
+                /* Reduce divider text size */
+            }
+
+            .checkbox-container {
+                font-size: 12px;
+                /* Reduce checkbox and link text size */
+            }
+
+            .forgot-password {
+                font-size: 12px;
+                /* Reduce forgot password link size */
+            }
+
+            .mobile-logo {
+                display: block;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                width: 100%;
+                /* Full width for very small screens */
+                border-radius: 0;
+                /* Remove border radius */
+            }
+
+            .form-container.sign-in-container {
+                padding: 10px;
+                /* Reduce padding further */
+            }
+
+            h1 {
+                font-size: 20px;
+                /* Further reduce heading size */
+            }
+
+            p {
+                font-size: 10px;
+                /* Further reduce paragraph text size */
+            }
+
+            button {
+                padding: 8px 20px;
+                /* Further adjust button padding */
+                font-size: 9px;
+                /* Further reduce button text size */
+            }
+
+            input {
+                padding: 8px;
+                /* Further adjust input padding */
+            }
+
+            .form-group label {
+                font-size: 11px;
+                /* Further reduce label size */
+            }
+
+            .error-message {
+                font-size: 9px;
+                /* Further reduce error message size */
+            }
+
+            .signup-link {
+                font-size: 11px;
+                /* Further reduce signup link size */
+            }
+
+            .social-container .social-btn {
+                padding: 4px;
+                /* Further adjust social button padding */
+            }
+
+            .social-container .social-btn img {
+                height: 18px;
+                /* Further reduce social icon size */
+            }
+
+            .social-container .social-btn span {
+                font-size: 10px;
+                /* Further reduce social button text size */
+            }
+
+            .divider span {
+                font-size: 9px;
+                /* Further reduce divider text size */
+            }
+
+            .checkbox-container {
+                font-size: 11px;
+                /* Further reduce checkbox and link text size */
+            }
+
+            .forgot-password {
+                font-size: 11px;
+                /* Further reduce forgot password link size */
+            }
+
+            .mobile-logo {
+                display: block;
+            }
+        }
     </style>
 </head>
 
 <body>
     <div class="container" id="container">
+        <!-- Login Form Section -->
         <div class="form-container sign-in-container">
+            <div class="mobile-logo">
+                <img src="img/footer-logo.png" alt="DecibelX">
+            </div>
             <form id="signin-form" method="post" action="/login">
-                <h1>Sign in</h1>
+                <h1>Log in</h1>
+
+                <!-- Social Login Button -->
                 <div class="social-container">
                     <a href="/auth/google" class="social-btn">
                         <img src="https://i.ibb.co/smTXFvv/google.png" alt="google">
-                        <span>Sign in with Google</span>
+                        <span>Log in with Google</span>
                     </a>
                 </div>
+
+                <!-- Divider -->
                 <div class="divider">
                     <span>or</span>
                 </div>
+
+                <!-- Error Message (if any) -->
                 <% if (typeof message !=='undefined' && message) { %>
                     <div class="text-danger-custom">
                         <%= message %>
                     </div>
                     <% } %>
+
+                        <!-- Email Field -->
                         <div class="form-group">
                             <label for="signin-email">Email</label>
                             <input type="email" id="signin-email" placeholder="Enter your email" name="email" />
                             <p class="error-message" id="signin-email-error"></p>
                         </div>
+
+                        <!-- Password Field -->
                         <div class="form-group">
                             <label for="signin-password">Password</label>
                             <input type="password" id="signin-password" placeholder="Enter your password"
                                 name="password" />
                             <p class="error-message" id="signin-password-error"></p>
                         </div>
+
+                        <!-- Forgot Password Link -->
                         <div class="checkbox-container">
                             <a href="/forgetPassword" class="forgot-password">Forgot password?</a>
                         </div>
-                        <button type="submit">Sign In</button>
-                        <p class="signup-link">Don't have an account? <a href="/signup">Sign Up</a></p>
 
+                        <!-- Submit Button -->
+                        <button type="submit">Log In</button>
+
+                        <!-- Sign Up Link -->
+                        <p class="signup-link">Don't have an account? <a href="/signup">Sign Up</a></p>
             </form>
         </div>
+
+        <!-- Overlay Section (Hidden on Small Screens) -->
         <div class="overlay-container">
             <div class="overlay">
                 <div class="overlay-panel">

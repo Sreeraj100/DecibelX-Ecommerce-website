@@ -15,7 +15,7 @@ passport.use(
         let user = await User.findOne({ googleId: profile.id });
 
         if (user) {
-          console.log("Google user login attempt:", user.email, "Blocked:", user.isBlocked);
+          // console.log("Google user login attempt:", user.email, "Blocked:", user.isBlocked);
 
           if (user.isBlocked) {
             return done(null, false, { message: "User is blocked by admin" });

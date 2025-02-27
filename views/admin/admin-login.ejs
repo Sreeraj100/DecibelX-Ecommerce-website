@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <!-- <link rel="icon" type="icon" href="/img/icon.png"> -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        /* Add your CSS styles here */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url(/img/Login-page.png);
+            background-repeat: no-repeat;
+            display: flex;
+            background-size: cover;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .signup-container {
+            padding-left: 20px;
+            padding-right: 47px;
+            border-radius: 8px;
+            box-shadow: 0 5px 6px black;
+            width: 350px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        h1 {
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            color: #ffffff;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            width: 100%;
+        }
+
+        label {
+            text-align: left;
+            font-size: 0.9rem;
+            color: rgb(2, 254, 255);
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            padding: 0.8rem;
+            font-size: 1rem;
+            border: 0.1px solid rgba(2, 255, 255, 0.635);
+            border-radius: 4px;
+            width: 100%;
+            background: transparent;
+            color: white;
+        }
+
+        input:focus {
+            border: 0.1px solid white;
+            outline: 3px solid rgb(2, 255, 255);
+        }
+
+        ::placeholder {
+            color: rgba(72, 166, 166, 0.559);
+        }
+
+        p {
+            color: white;
+        }
+
+        button {
+            padding: 0.8rem;
+            font-size: 1rem;
+            background-color: #023690;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-bottom: 12px;
+            margin-left: 23px;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: rgb(6, 196, 196);
+        }
+
+        a {
+            text-decoration: none;
+            color: rgb(2, 254, 255);
+        }
+
+        a:hover {
+            outline: none;
+            text-decoration: underline;
+        }
+
+        .error {
+            color: #FD1C03;
+            font-size: 13px;
+            margin-bottom: 2px;
+            text-align: left;
+            display: none;
+        }
+
+        ::-ms-reveal {
+            border: 3px solid rgb(2, 254, 255);
+            border-radius: 50%;
+            width: 30px;
+            height: 21px;
+            color: rgb(2, 254, 255);
+            background-color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <h1>Administrator</h1>
+        <% if (message) { %>
+            <div class="alert alert-danger text-center" style="color: red; margin-bottom: 10px;"><%= message %></div>
+        <% } %>
+
+        <form id="Form" action="/admin/login" method="POST">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" placeholder="Enter your email">
+            <div class="error" id="email-error"></div>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password">
+            <div class="error" id="password-error"></div>
+
+            <button type="submit">Sign in</button>
+        </form>
+    </div>
+
+    <script>
+        const form = document.getElementById('Form');
+        const email = document.getElementById('email');
+        const password = document.getElementById('password');
+
+        // Function to check email validity
+        const isValidEmail = (email) => {
+            const re = /^(?!.*\.\.)(?!.*[@._%+-]{2})[a-z0-9](?!.*[._%+-]{2})[a-z0-9._%+-]{0,63}[a-z0-9]@[a-z0-9-]{1,63}(\.[a-z]{2,})+$/;
+            return re.test(email.toLowerCase());
+        };
+
+        // Validate inputs function
+        const validateInputs = () => {
+            let isValid = true;
+
+            // Get input values
+            const emailValue = email.value.trim();
+            const passwordValue = password.value.trim();
+
+            // Clear all error messages
+            document.querySelectorAll('.error').forEach(error => {
+                error.innerText = '';
+                error.style.display = 'none';
+            });
+
+            // Validate email
+            if (emailValue === '') {
+                setError(email, 'Email is required', 'email-error');
+                isValid = false;
+            } else if (!isValidEmail(emailValue)) {
+                setError(email, 'Provide a valid email address', 'email-error');
+                isValid = false;
+            }
+
+            // Validate password
+            if (passwordValue === '') {
+                setError(password, 'Password is required', 'password-error');
+                isValid = false;
+            } else if (passwordValue.length < 8) {
+                setError(password, 'Password must be at least 8 characters', 'password-error');
+                isValid = false;
+            }
+
+            return isValid;
+        };
+
+        // Set error message and show it
+        const setError = (element, message, errorId) => {
+            const errorDiv = document.getElementById(errorId);
+            errorDiv.innerText = message;
+            errorDiv.style.display = 'block';
+        };
+
+        // Handle form submit
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            if (validateInputs()) {
+                form.submit();
+            }
+        });
+    </script>
+</body>
+</html>

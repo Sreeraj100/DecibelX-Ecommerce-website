@@ -6,6 +6,7 @@ const session = require ("express-session")
 const passport = require("./config/passport")
 const db = require ("./config/db")
 const userRouter = require ("./routes/userRouter")
+const adminRouter = require ("./routes/adminRouter")
 db()
 
 app.use(express.json())
@@ -39,6 +40,7 @@ app.use(express.static(path.join(__dirname,"public")))
 
 
 app.use("/",userRouter)
+app.use("/admin",adminRouter)
 
 
 
