@@ -128,6 +128,7 @@
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <meta http-equiv="X-UA-Compatible" content="ie=edge">
       <title>DecibelX</title>
+      <link rel="icon" href="img/icon.png" type="image/png">
       <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
       <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css">
       <link rel="stylesheet" href="css/font-awesome.min.css" type="text/css">
@@ -353,7 +354,7 @@
             <div class="header-container">
                <!-- Logo -->
                <div class="logo">
-                  <a href="#"><img src="img/logo.png" alt="DecibelX"></a>
+                  <a href="/"><img src="img/logo.png" alt="DecibelX"></a>
                </div>
                
                <!-- Navigation Menu -->
@@ -362,8 +363,6 @@
                      <li><a href="/contact">Contact</a></li>
                      <li><a href="/about">About</a></li>
                      <li><a href="/products">Products</a></li>
-                     <li><a href="/login">Log in</a></li>
-                     <li><a href="/signup">Sign up</a></li>
                   </ul>
                </nav>
                
@@ -371,33 +370,39 @@
                <div class="nav-icons">
                   <!-- Wishlist Icon -->
                   <a href="/wishlist">
-                     <i class="fas fa-heart" style="color: red;"></i>
-                     <!-- <span class="badge">1</span> -->
+                    <i class="fas fa-heart" style="color: red;"></i>
+                    <!-- <span class="badge">1</span> -->
                   </a>
                   
                   <!-- Cart Icon -->
                   <a href="/cart">
-                     <i class="fas fa-shopping-cart"></i>
-                     <!-- <span class="badge">0</span> -->
+                    <i class="fas fa-shopping-cart"></i>
+                    <!-- <span class="badge">0</span> -->
                   </a>
                   
                   <!-- User Profile/Login -->
-                  <% if(locals.user) { %>
-                     <div class="dropdown">
-                        <a href="#" class="user-icon">
-                           <i class="fas fa-user-circle"></i>
-                        </a>
-                        <div class="dropdown-content">
-                           <a href="/userProfile">Profile</a>
-                           <a href="/logout">Logout</a>
-                        </div>
-                     </div>
+                  <% if (locals.user) { %>
+                    <div class="dropdown">
+                      <a href="#" class="user-icon">
+                        <i class="fas fa-user-circle"></i>
+                        <span style="font-size: 16px; margin-left: 5px;"><%= locals.user.name %></span>
+                      </a>
+                      <div class="dropdown-content">
+                        <a href="/userProfile">Profile</a>
+                        <a href="/logout">Logout</a>
+                      </div>
+                    </div>
                   <% } else { %>
-                     <a href="/login">
-                        <i class="fas fa-user"></i>
-                     </a>
+                    <a href="/login">
+                      <i class="fas fa-user"></i>
+                      <span style="font-size: 16px; margin-left: 5px;">Log in</span>
+                    </a>
+                    <!-- <a href="/signup">
+                      <i class="fas fa-user-plus"></i>
+                      <span style="font-size: 16px; margin-left: 5px;">Sign up</span>
+                    </a> -->
                   <% } %>
-               </div>
+                </div>
                
                <!-- Mobile Menu Toggle -->
                <div class="mobile-menu-toggle">
@@ -417,3 +422,4 @@
             </ul>
          </div>
       </header>
+      

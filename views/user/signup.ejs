@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,7 +28,7 @@
         .container {
             background-color: #fff;
             border-radius: 10px;
-            box-shadow: 0 14px 28px rgba(0,0,0,0.15), 0 10px 10px rgba(0,0,0,0.12);
+            box-shadow: 0 14px 28px rgba(0, 0, 0, 0.15), 0 10px 10px rgba(0, 0, 0, 0.12);
             position: relative;
             overflow: hidden;
             width: 800px;
@@ -91,6 +92,12 @@
             height: 100%;
             width: 100%;
             background-image: url(img/Signup_image.jpg);
+        }
+
+        .overlay-panel img {
+
+            width: 395px;
+            height: auto;
         }
 
         h1 {
@@ -214,69 +221,196 @@
             margin-top: 10px;
             margin-bottom: 10px;
         }
+
+        .text-danger-custom {
+            color: red;
+            background: none;
+            border: none;
+            padding: 0;
+            margin: 0;
+        }
+        /* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+    .container {
+        width: 90%; /* Reduce container width for smaller screens */
+        min-height: auto; /* Allow container to adjust height */
+        flex-direction: column; /* Stack elements vertically */
+    }
+
+    .form-container,
+    .overlay-container {
+        width: 100%; /* Full width for form and overlay */
+        height: auto; /* Adjust height automatically */
+        position: static; /* Remove absolute positioning */
+    }
+
+    .overlay-container {
+        display: none; /* Hide overlay on small screens */
+    }
+
+    .form-container.sign-up-container {
+        padding: 20px; /* Add padding for better spacing */
+    }
+
+    .overlay-panel {
+        padding: 20px; /* Adjust padding for smaller screens */
+    }
+
+    .overlay-panel img {
+        width: 200px; /* Reduce image size for smaller screens */
+    }
+
+    h1 {
+        font-size: 24px; /* Reduce heading size */
+    }
+
+    p {
+        font-size: 12px; /* Reduce paragraph text size */
+    }
+
+    button {
+        padding: 10px 30px; /* Adjust button padding */
+        font-size: 10px; /* Reduce button text size */
+    }
+
+    input {
+        padding: 10px; /* Adjust input padding */
+    }
+
+    .form-group label {
+        font-size: 12px; /* Reduce label size */
+    }
+
+    .error-message {
+        font-size: 10px; /* Reduce error message size */
+    }
+
+    .signup-link {
+        font-size: 12px; /* Reduce signup link size */
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        width: 100%; /* Full width for very small screens */
+        border-radius: 0; /* Remove border radius */
+    }
+
+    .form-container.sign-up-container {
+        padding: 10px; /* Reduce padding further */
+    }
+
+    h1 {
+        font-size: 20px; /* Further reduce heading size */
+    }
+
+    p {
+        font-size: 10px; /* Further reduce paragraph text size */
+    }
+
+    button {
+        padding: 8px 20px; /* Further adjust button padding */
+        font-size: 9px; /* Further reduce button text size */
+    }
+
+    input {
+        padding: 8px; /* Further adjust input padding */
+    }
+
+    .form-group label {
+        font-size: 11px; /* Further reduce label size */
+    }
+
+    .error-message {
+        font-size: 9px; /* Further reduce error message size */
+    }
+
+    .signup-link {
+        font-size: 11px; /* Further reduce signup link size */
+    }
+}
     </style>
 </head>
+
 <body>
     <div class="container" id="container">
+        <!-- Overlay Section (Hidden on Small Screens) -->
         <div class="overlay-container">
             <div class="overlay">
                 <div class="overlay-panel">
                     <h1>Hello, Friend!</h1>
                     <p>Enter your personal details and start your journey with us</p>
+                    <img src="img/footer-logo.png" alt="DecibelX">
                 </div>
             </div>
         </div>
+
+        <!-- Signup Form Section -->
         <div class="form-container sign-up-container">
             <form id="signup-form" method="post" action="/signup">
                 <h1 style="margin-top: 5px;">Sign up</h1>
+
+                <!-- Form Fields -->
                 <div class="form-group">
                     <label for="fullname">Full Name</label>
-                    <input type="text" id="fullname" placeholder="Enter your full name" name="name"/>
+                    <input type="text" id="fullname" placeholder="Enter your full name" name="name" />
                     <p class="error-message" id="fullname-error"></p>
                 </div>
                 <div class="form-group">
                     <label for="signup-email">Email</label>
-                    <input type="email" id="signup-email" placeholder="Enter your email" name="email"/>
+                    <input type="email" id="signup-email" placeholder="Enter your email" name="email" />
                     <p class="error-message" id="signup-email-error"></p>
                 </div>
                 <div class="form-group">
                     <label for="phone">Phone</label>
-                    <input type="tel" id="phone" placeholder="Enter your phone number" name="phone"/>
+                    <input type="tel" id="phone" placeholder="Enter your phone number" name="phone" />
                     <p class="error-message" id="phone-error"></p>
                 </div>
                 <div class="form-group">
                     <label for="signup-password">Password</label>
-                    <input type="password" id="signup-password" placeholder="Enter your password" name="password"/>
+                    <input type="password" id="signup-password" placeholder="Enter your password" name="password" />
                     <p class="error-message" id="signup-password-error"></p>
                 </div>
                 <div class="form-group">
                     <label for="confirm-password">Confirm Password</label>
-                    <input type="password" id="confirm-password" placeholder="Confirm your password" name="cpassword"/>
+                    <input type="password" id="confirm-password" placeholder="Confirm your password" name="cpassword" />
                     <p class="error-message" id="confirm-password-error"></p>
                 </div>
+
+                <!-- Error Message (if any) -->
+                <% if (typeof message !=='undefined' && message) { %>
+                    <div class="text-danger-custom">
+                        <%= message %>
+                    </div>
+                <% } %>
+
+                <!-- Submit Button -->
                 <button type="submit">Sign Up</button>
-                <p class="signup-link">Already have an account? <a href="signin.html">Sign In</a></p>
+
+                <!-- Sign In Link -->
+                <p class="signup-link">Already have an account? <a href="/login">Sign In</a></p>
             </form>
         </div>
     </div>
+
 
     <script>
         // Form validation utilities
         function showError(input, message) {
             const formGroup = input.parentElement;
             const errorElement = formGroup.querySelector('.error-message');
-            
+
             input.classList.add('error');
             errorElement.textContent = message;
             errorElement.style.display = 'block';
-            
+
             return false;
         }
 
         function clearError(input) {
             const formGroup = input.parentElement;
             const errorElement = formGroup.querySelector('.error-message');
-            
+
             input.classList.remove('error');
             errorElement.textContent = '';
             errorElement.style.display = 'none';
@@ -300,35 +434,35 @@
 
         // Signup form validation
         const signupForm = document.getElementById('signup-form');
-        
+
         // Add input event listeners to clear errors when user types
-        document.getElementById('fullname').addEventListener('input', function() {
+        document.getElementById('fullname').addEventListener('input', function () {
             clearError(this);
         });
-        
-        document.getElementById('signup-email').addEventListener('input', function() {
+
+        document.getElementById('signup-email').addEventListener('input', function () {
             clearError(this);
         });
-        
-        document.getElementById('phone').addEventListener('input', function() {
+
+        document.getElementById('phone').addEventListener('input', function () {
             clearError(this);
         });
-        
-        document.getElementById('signup-password').addEventListener('input', function() {
+
+        document.getElementById('signup-password').addEventListener('input', function () {
             clearError(this);
             // Also clear confirm password error if it exists
             clearError(document.getElementById('confirm-password'));
         });
-        
-        document.getElementById('confirm-password').addEventListener('input', function() {
+
+        document.getElementById('confirm-password').addEventListener('input', function () {
             clearError(this);
         });
 
-        signupForm.addEventListener('submit', function(e) {
+        signupForm.addEventListener('submit', function (e) {
             e.preventDefault();
-            
+
             let isValid = true;
-            
+
             // Validate full name
             const fullname = document.getElementById('fullname');
             if (fullname.value.trim() === '') {
@@ -336,7 +470,7 @@
             } else if (fullname.value.trim().length < 3) {
                 isValid = showError(fullname, 'Name must be at least 3 characters');
             }
-            
+
             // Validate email
             const email = document.getElementById('signup-email');
             if (email.value.trim() === '') {
@@ -344,7 +478,7 @@
             } else if (!validateEmail(email.value.trim())) {
                 isValid = showError(email, 'Please enter a valid email');
             }
-            
+
             // Validate phone
             const phone = document.getElementById('phone');
             if (phone.value.trim() === '') {
@@ -352,7 +486,7 @@
             } else if (!validatePhone(phone.value.trim())) {
                 isValid = showError(phone, 'Please enter a valid 10-digit phone number');
             }
-            
+
             // Validate password
             const password = document.getElementById('signup-password');
             if (password.value === '') {
@@ -360,7 +494,7 @@
             } else if (!validatePassword(password.value)) {
                 isValid = showError(password, 'Password must be at least 8 characters with 1 uppercase, 1 lowercase and 1 number');
             }
-            
+
             // Validate confirm password
             const confirmPassword = document.getElementById('confirm-password');
             if (confirmPassword.value === '') {
@@ -368,11 +502,12 @@
             } else if (confirmPassword.value !== password.value) {
                 isValid = showError(confirmPassword, 'Passwords do not match');
             }
-            
+
             if (isValid) {
-                signupForm.submit(); 
-            } 
+                signupForm.submit();
+            }
         });
     </script>
 </body>
+
 </html>
