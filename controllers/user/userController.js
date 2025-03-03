@@ -59,7 +59,7 @@ const signup = async (req, res) => {
     if (!emailSent) {
       return res.json("email-error");
     }
-
+    console.log(otp)
     req.session.userOtp = otp;
     req.session.userData = { name, phone, email, password };
 
@@ -95,7 +95,7 @@ async function sendVerificationEmail(email, otp, name) {
         <div style="background-color: #f0f4ff; border-left: 4px solid #3a86ff; padding: 15px; margin: 15px 0; font-size: 24px; font-weight: bold; text-align: center; letter-spacing: 2px; color: #3a86ff;">
           ${otp}
         </div>
-        <p style="color: #555; font-size: 14px;">This code will expire in 10 minutes.</p>
+        <p style="color: #555; font-size: 14px;">This code will expire in 1 minutes.</p>
         <p style="color: #777; font-size: 14px; margin-top: 20px; text-align: center;">
           Thank you,<br>DecibelX Team
         </p>
@@ -144,7 +144,7 @@ const verifyOtp = async (req, res) => {
         message: "OTP session expired. Please request a new code." 
       });
     }
-
+    console.log()
     if (otp === req.session.userOtp) {
       const User = req.session.userData;
       if (!User) {
@@ -161,7 +161,6 @@ const verifyOtp = async (req, res) => {
         email: User.email,
         phone: User.phone,
         password: passwordHash,
-        googleId: User.email
       });
 
       await saveUserData.save();
@@ -243,7 +242,7 @@ const loadLogin = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const findUser = await user.findOne({ email: email, isAdmin: false });
+    const findUser = await user.findOne({ email: email });
 
     if (!findUser) {
       return res.render("login", { message: "User not found" });
@@ -275,10 +274,11 @@ const login = async (req, res) => {
   } catch (error) {
     res.render("login", { message: "Login failed. Please try again later" });
   }
-};
+}; 
 
 const logout = async (req, res) => {
   req.session.destroy((err) => {
+    
     if (err) {
       console.log("Error destroying session:", err);
     }

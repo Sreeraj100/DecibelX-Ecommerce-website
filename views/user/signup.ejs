@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DecibelX - Sign Up</title>
+    <link rel="icon" href="img/icon.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&display=swap');
@@ -173,8 +174,9 @@
             margin: 4px 0 0 0;
             width: 100%;
         }
-        input:focus{
-         outline: 2px solid #00FFFB;
+
+        input:focus {
+            outline: 2px solid #00FFFB;
         }
 
         .form-group {
@@ -412,35 +414,38 @@
                         <%= message %>
                     </div>
                     <% } %>
-                <!-- Form Fields -->
-                <div class="form-group">
-                    <label for="fullname">Full Name</label>
-                    <input type="text" id="fullname" placeholder="Enter your full name" name="name" />
-                    <p class="error-message" id="fullname-error"></p>
-                </div>
-                <div class="form-group">
-                    <label for="signup-email">Email</label>
-                    <input type="email" id="signup-email" placeholder="Enter your email" name="email" />
-                    <p class="error-message" id="signup-email-error"></p>
-                </div>
-                <div class="form-group">
-                    <label for="phone">Phone</label>
-                    <input type="tel" id="phone" placeholder="Enter your phone number" name="phone" />
-                    <p class="error-message" id="phone-error"></p>
-                </div>
-                <div class="form-group">
-                    <label for="signup-password">Password</label>
-                    <input type="password" id="signup-password" placeholder="Enter your password" name="password" />
-                    <p class="error-message" id="signup-password-error"></p>
-                </div>
-                <div class="form-group">
-                    <label for="confirm-password">Confirm Password</label>
-                    <input type="password" id="confirm-password" placeholder="Confirm your password" name="cpassword" />
-                    <p class="error-message" id="confirm-password-error"></p>
-                </div>
+                        <!-- Form Fields -->
+                        <div class="form-group">
+                            <label for="fullname">Full Name</label>
+                            <input type="text" id="fullname" placeholder="Enter your full name" name="name" />
+                            <p class="error-message" id="fullname-error"></p>
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-email">Email</label>
+                            <input type="email" id="signup-email" placeholder="Enter your email" name="email" />
+                            <p class="error-message" id="signup-email-error"></p>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone</label>
+                            <input type="tel" maxlength="10" id="phone" placeholder="Enter your phone number"
+                                name="phone" />
+                            <p class="error-message" id="phone-error"></p>
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-password">Password</label>
+                            <input type="password" id="signup-password" placeholder="Enter your password"
+                                name="password" />
+                            <p class="error-message" id="signup-password-error"></p>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirm-password">Confirm Password</label>
+                            <input type="password" id="confirm-password" placeholder="Confirm your password"
+                                name="cpassword" />
+                            <p class="error-message" id="confirm-password-error"></p>
+                        </div>
 
-                
-               
+
+
 
                         <!-- Submit Button -->
                         <button type="submit">Sign Up</button>
@@ -527,10 +532,13 @@
 
             // Validate full name
             const fullname = document.getElementById('fullname');
+            const nameRegex = /^[a-zA-Z\s]+$/;
             if (fullname.value.trim() === '') {
                 isValid = showError(fullname, 'Full name is required');
             } else if (fullname.value.trim().length < 3) {
                 isValid = showError(fullname, 'Name must be at least 3 characters');
+            } else if (!nameRegex.test(fullname.value.trim())) {
+                isValid = showError(fullname, 'Name should not contain numbers or special characters');
             }
 
             // Validate email

@@ -1,7 +1,7 @@
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const User = require("../models/userSchema");
-const env = require("dotenv").config();
+require("dotenv").config();
 
 passport.use(
   new GoogleStrategy(
@@ -12,24 +12,30 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        let user = await User.findOne({ googleId: profile.id });
+        // console.log("Google Profile:", profile); // Debugging
+
+        const email = profile.emails[0].value;
+        const name = profile.displayName;
+        
+        let user = await User.findOne({ email });
 
         if (user) {
-          // console.log("Google user login attempt:", user.email, "Blocked:", user.isBlocked);
+          // If user exists but doesn't have a googleId, update it
+          if (!user.googleId) {
+            user.googleId = profile.id;
+            await user.save();
+          }
 
           if (user.isBlocked) {
             return done(null, false, { message: "User is blocked by admin" });
           }
           return done(null, user);
         } else {
-          const namee =  profile.emails[0].value.split('@')[0], 
-
-       
           user = new User({
-            name: profile.displayName,
-            email: profile.emails[0].value,
+            name,
+            email,
             googleId: profile.id,
-            isBlocked: false, 
+            isBlocked: false,
           });
 
           await user.save();
@@ -42,8 +48,6 @@ passport.use(
     }
   )
 );
-
-  
 
 passport.serializeUser((user, done) => {
   done(null, user.id);

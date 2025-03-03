@@ -30,7 +30,7 @@
                             <tr>
                                 <td><%=data[i].name%></td>
                                 <td><%=data[i].email%></td>
-                                <td><%=data[i].phone%></td>
+                                <td><%=data[i].phone ? data[i].phone : "Google Auth User"%></td>
                                 <td> 
                                     <%if(data[i].isBlocked===false){%>
                                         <button class="btn btn-danger" style="width: 80px;">

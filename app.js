@@ -1,20 +1,20 @@
 const express = require("express")
 const app = express()
-const path = require ("path")
 const env = require("dotenv").config()
+const path = require ("path")
 const session = require ("express-session")
 const passport = require("./config/passport")
 const db = require ("./config/db")
 const userRouter = require ("./routes/userRouter")
 const adminRouter = require ("./routes/adminRouter")
-db()
-
-app.use(express.json())
+db()    
+ 
+app.use(express.json()) 
 app.use(express.urlencoded({extended:true}))
 app.use(session({
-    secret:process.env.SESSION_SECRET,
-    resave:false,
-    saveUninitialized:true,
+    secret:process.env.SESSION_SECRET, 
+    resave:false,  
+    saveUninitialized:true, 
     cookie:{
         secure:false,
         httpOnly:true,

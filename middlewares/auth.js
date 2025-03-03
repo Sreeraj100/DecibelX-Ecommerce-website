@@ -29,6 +29,7 @@ const userAuth = async (req, res, next) => {
   }
 };
 
+
 const adminAuth = (req, res, next) => {
   if (req.session.admin) {
     next();
