@@ -94,25 +94,27 @@
          display: flex;
          align-items: center;
          margin-left: 50px;
-         /* Add space between nav menu and icons */
          gap: 24px;
       }
 
       .nav-icons a {
-         margin-left: 20px;
-         color: #333;
          position: relative;
+         color: #333;
+         display: flex;
+         align-items: center;
       }
+
       .nav-icons a i {
          font-size: 22px;
       }
+
       .nav-icons a i:hover {
          font-size: 25px;
       }
 
       .nav-icons .badge {
          position: absolute;
-         top: -10px;
+         top: -8px;
          right: -8px;
          background-color: #ff4757;
          color: white;
@@ -209,6 +211,11 @@
          margin: 15px 0;
       }
 
+      .container {
+         width: 100%;
+      }
+
+      /* Responsive styles */
       @media (max-width: 991px) {
          .nav-menu {
             display: none;
@@ -217,6 +224,7 @@
          .mobile-menu-toggle {
             display: block;
             margin-left: auto;
+            margin-right: 15px;
          }
 
          .header-container {
@@ -225,57 +233,27 @@
 
          .logo {
             margin-right: 0;
-            /* Remove right margin on mobile */
          }
 
          .nav-icons {
-            /* margin-left: 20px; */
-            gap: 0px;
-            /* Reduced space on mobile */
+            margin-left: 20px;
+            gap: 15px;
          }
-
-         .text {
+         
+         .nav-icons a .text {
             display: none;
-         }
-
-         i {
-            margin-right: 20px;
-         }
-
-      }
-
-      .container {
-         width: 100%;
-      }
-
-      @media (max-width: 480px) {
-         .text {
-            display: none;
-         }
-
-         i {
-            margin-right: 20px;
-         }
-
-         .nav-icons {
-            gap: 0px;
-            /* Reduced space on mobile */
          }
       }
 
       @media (max-width: 768px) {
-         .text {
-            display: none;
-         }
-
-         i {
-            margin-right: 20px;
-         }
-
          .nav-icons {
+            gap: 12px;
+         }
+      }
 
-            gap: 0px;
-            /* Reduced space on mobile */
+      @media (max-width: 480px) {
+         .nav-icons {
+            gap: 10px;
          }
       }
 
@@ -431,6 +409,11 @@
                </ul>
             </nav>
 
+            <!-- Mobile Menu Toggle -->
+            <div class="mobile-menu-toggle">
+               <i class="fa fa-bars"></i>
+            </div>
+
             <!-- Icons -->
             <div class="nav-icons">
                <!-- Wishlist Icon -->
@@ -454,7 +437,7 @@
                   <div class="dropdown">
                      <a href="#" class="user-icon">
                         <i class="fas fa-user-circle"></i>
-                        <span style="font-size: 16px; margin-left: 5px;">
+                        <span class="text" style="font-size: 16px; margin-left: 5px;">
                            <%= locals.user.name %>
                         </span>
                      </a>
@@ -466,14 +449,9 @@
                   <% } else { %>
                      <a href="/login">
                         <i class="fas fa-user"></i>
-                        <span style="font-size: 16px; margin-left: 5px;" class="text">Log in</span>
+                        <span class="text" style="font-size: 16px; margin-left: 5px;">Log in</span>
                      </a>
                      <% } %>
-            </div>
-
-            <!-- Mobile Menu Toggle -->
-            <div class="mobile-menu-toggle">
-               <i class="fa fa-bars"></i>
             </div>
          </div>
       </div>

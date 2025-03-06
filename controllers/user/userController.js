@@ -181,9 +181,18 @@ const verifyOtp = async (req, res) => {
       res.status(400).json({ success: false, message: "Invalid OTP, Please try again" });
     }
   } catch (error) {
+    if (error.code === 11000) {
+      // Handle duplicate key error specifically
+      return res.status(400).json({ 
+        success: false, 
+        message: "A user with this email already exists" 
+      });
+    }
     console.log("Error Verifying OTP", error);
     res.status(500).json({ success: false, message: "An error occurred" });
   }
+
+
 };
 
 
@@ -277,13 +286,14 @@ const login = async (req, res) => {
 }; 
 
 const logout = async (req, res) => {
-  req.session.destroy((err) => {
-    
-    if (err) {
-      console.log("Error destroying session:", err);
-    }
+  try {
+    req.session.user = null;
     res.redirect("/");
-  });
+  }
+ catch (error) { 
+  console.log("Logout error:", error);
+  res.redirect("/pageNotFound");
+}
 };
 
 

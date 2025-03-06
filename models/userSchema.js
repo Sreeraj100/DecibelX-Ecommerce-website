@@ -21,10 +21,9 @@ const userSchema=new Schema({
     },
     googleId:{
         type:String,
-        unique:true,
+        unique:false,
         index: true,
         sparse: true,
-        default: null
         },
     password:{
         type:String,

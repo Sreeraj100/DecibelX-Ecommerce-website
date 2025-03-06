@@ -5,7 +5,7 @@ const customerController=require("../controllers/admin/customerController");
 const {userAuth,adminAuth}=require("../middlewares/auth");
 const categoryController = require("../controllers/admin/categoryController")
 
-router.post("/pageerror", adminController.pageerror);
+router.get("/pageerror", adminController.pageerror);
 router.get("/login", adminController.loadLogin);
 router.post("/login", adminController.login);
 router.get("/dashboard", adminController.loadDashboard);
