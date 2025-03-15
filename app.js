@@ -5,6 +5,7 @@ const path = require ("path")
 const session = require ("express-session")
 const passport = require("./config/passport")
 const db = require ("./config/db")
+const morgan = require ("morgan")
 const userRouter = require ("./routes/userRouter")
 const adminRouter = require ("./routes/adminRouter")
 db()    
@@ -20,8 +21,8 @@ app.use(session({
         httpOnly:true,
         maxAge:72*60*60*1000
     }
-}))
-
+})) 
+// app.use(morgan('dev'))
 app.use(passport.initialize())
 app.use(passport.session())
 

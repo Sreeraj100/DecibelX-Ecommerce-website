@@ -337,6 +337,51 @@
             /* Adjust the size as needed */
             height: auto;
         }
+        
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .toast {
+            display: none;
+            background-color: #ff6600;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateX(100%);
+            animation: slideInFromRight 0.8s ease-out forwards;
+        }
+        @keyframes slideInFromRight {
+            0% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOutToRight {
+            0% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+
 
         /* Media Queries for Responsiveness */
         @media (max-width: 768px) {
@@ -539,13 +584,15 @@
 </head>
 
 <body>
+    <div class="toast-container"></div>
     <div class="container" id="container">
+        
         <!-- Login Form Section -->
         <div class="form-container sign-in-container">
             <div class="mobile-logo">
                 <img src="img/footer-logo.png" alt="DecibelX">
             </div>
-            <form id="signin-form" method="post" action="/login">
+            <form id="signin-form">
                 <h1>Log in</h1>
 
                 <!-- Social Login Button -->
@@ -562,11 +609,7 @@
                 </div>
 
                 <!-- Error Message (if any) -->
-                <% if (typeof message !=='undefined' && message) { %>
-                    <div class="text-danger-custom">
-                        <%= message %>
-                    </div>
-                    <% } %>
+        
 
                         <!-- Email Field -->
                         <div class="form-group">
@@ -647,7 +690,7 @@
             clearError(this);
         });
 
-        signinForm.addEventListener('submit', function (e) {
+        signinForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
             let isValid = true;
@@ -668,9 +711,50 @@
                 isValid = showError(password, 'Password must be at least 8 characters');
             }
 
-            if (isValid) {
-                // Form is valid, you would typically submit to your backend here
-                signinForm.submit(); // Uncomment this when ready to submit to your backend
+            if (!isValid) {
+                return
+            } else {
+                
+                let emailval = email.value
+                let passwordval = password.value
+
+                let formData = {
+                    email: emailval,
+                    password: passwordval
+                }
+                    try {
+                        let response = await fetch('/login', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(formData)
+                        });
+                        const result = await response.json();
+                        const toastContainer = document.querySelector(".toast-container");
+                        const toast = document.createElement("div");
+                        toast.className = "toast";
+                        if (result.success==false) {
+                            toast.textContent = "Incorrect Email or Password!";
+                            toast.style.backgroundColor = "#dc3545"; // Red color for error
+                            toastContainer.appendChild(toast);
+                            setTimeout(() => {
+                                toast.style.display = "block";
+                            }, 100);
+
+                            setTimeout(() => {
+                                toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+                            }, 3000);
+
+                            setTimeout(() => {
+                                toast.style.display = "none";
+                                toast.remove(); // Remove toast from DOM
+                            }, 3800);
+                        } else {
+                            // Redirect on successful login
+                            window.location.href = "/";
+                        }
+                    } catch (error) {
+                        console.error("Login error:", error);
+                    }
             }
         });
     </script>

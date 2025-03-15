@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>DecibelX</title>
+    <title>LaxeLane</title>
     <link rel="icon" href="/img/icon.png" type="image/png">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="description" content="">
@@ -11,12 +11,36 @@
     <meta property="og:type" content="">
     <meta property="og:url" content="">
     <meta property="og:image" content="">
-    <link rel="shortcut icon" type="image/x-icon" href="#">
+    <link rel="shortcut icon" type="image/x-icon" href="assets/imgs/theme/favicon.svg" />
+
     <link href="/admin-assets/css/main.css" rel="stylesheet" type="text/css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.16.6/dist/sweetalert2.min.css">
-<script src="https://kit.fontawesome.com/16d4885483.js" crossorigin="anonymous"></script>
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+  
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-MCrpBZZg4wOnAFOxRehZ3VKKq+EwA7Kly/8vcGQBIhMLjr6/8W2Yz0PKtvjDVFJg" crossorigin="anonymous">
+
+   
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@400;600&family=Lora:wght@400;700&family=Great+Vibes&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+   
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11">
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css">
+ 
+<link href="https://fonts.googleapis.com/css2?family=Material+Icons+Round&family=Material+Icons+Outlined&family=Material+Icons" rel="stylesheet">
+
+ 
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+  
+    <script src="https://kit.fontawesome.com/16d4885483.js" crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
 <style>
+   
 body {
     background-color: #ffffff;
 }
@@ -43,7 +67,53 @@ body {
     background-color: #33053d;
     color: #ffffff;
 }
+   
+    .material-icons {
+        font-family: 'Material Icons';
+        font-weight: normal;
+        font-style: normal;
+        font-size: 24px;
+        line-height: 1;
+        letter-spacing: normal;
+        text-transform: none;
+        display: inline-block;
+        white-space: nowrap;
+        word-wrap: normal;
+        direction: ltr;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+    }
 
+    .menu-link .material-icons {
+        margin-right: 10px;
+        vertical-align: middle;
+    }
+
+  
+    .menu-item a.menu-link {
+        color: #310505;
+        display: flex;
+        align-items: center;
+        padding: 10px 15px;
+    }
+
+    .image-cropper {
+            display: none;
+            width: 300px;
+            height: 200px;
+            margin-bottom: 20px;
+        }
+
+        .image-cropper img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        #imgView {
+            max-width: 200px;
+            display: none;
+        }
 </style>
 </head>
 <body>
@@ -51,7 +121,7 @@ body {
     <aside class="navbar-aside" id="offcanvas_aside">
         <div class="aside-top">
             <a href="#" class="brand-wrap">
-                <img src="/img/footer-logo.png"  alt="DecibelX Dashboard">
+                <img src="/img/footer-logo.png" alt="DecibelX Dashboard">
             </a>
             <div>
                 <button class="btn btn-icon btn-aside-minimize"> <i class="text-muted material-icons md-menu_open"></i> </button>
@@ -60,51 +130,56 @@ body {
         <nav>
             <ul class="menu-aside">
                 <li class="menu-item">
-                    <a class="menu-link" href="/admin/dashboard"> <i class="icon material-icons md-home"></i>
+                    <a class="menu-link" href="/admin/dashboard">
+                        <i class="material-icons">dashboard</i>
                         <span class="text">Dashboard</span>
                     </a>
                 </li>
+        
                 <li class="menu-item">
-                    <a class="menu-link" href="/admin/users"> <i class="icon material-icons md-person"></i>
+                    <a class="menu-link" href="/admin/users">
+                        <i class="material-icons">people</i>
                         <span class="text">Customers</span>
                     </a>
-
                 </li>
+        
                 <li class="menu-item">
-                    <a class="menu-link" href="/admin/category"> <i class="icon material-icons md-person"></i>
+                    <a class="menu-link" href="/admin/category">
+                        <i class="material-icons">category</i>
                         <span class="text">Category</span>
                     </a>
-
                 </li>
-                <li class="menu-item">
+                <!-- <li class="menu-item">
                     <a class="menu-link" href="/admin/brands"> <i class="icon material-icons md-stars"></i>
-                        <span class="text">Brands</span> </a>
+                        <span class="text">Brands</span> </a> -->
                 </li>
                 <li class="menu-item">
-                    <a class="menu-link" href="/admin/addProducts"> <i class="icon material-icons md-add_box"></i>
+                    <a class="menu-link" href="/admin/addProducts">
+                        <i class="material-icons">add_box</i>
                         <span class="text">Add product</span>
                     </a>
                 </li>
                 <li class="menu-item">
-                    <a class="menu-link" href="/admin/products"> <i class="icon material-icons md-shopping_bag"></i>
+                    <a class="menu-link" href="/admin/products">
+                        <i class="material-icons">inventory_2</i>
                         <span class="text">Products</span>
                     </a>
                 </li>
             
-                <li class="menu-item">
+                <!-- <li class="menu-item">
                     <a class="menu-link" href="/admin/coupon"> <i class="icon material-icons md-class"></i>
                         <span class="text">Coupon</span> </a>
                 </li>
                 <li class="menu-item">
                     <a class="menu-link" href="/admin/banner"> <i class="icon material-icons md-photo_size_select_actual"></i>
                         <span class="text">Banner</span> </a>
-                </li>
+                </li> -->
 
-                <li class="menu-item">
+                <!-- <li class="menu-item">
                     <a class="menu-link" href="/admin/orderList"> <i class="icon material-icons md-shopping_cart"></i>
                         <span class="text">Orders</span>
                     </a>
-                </li>
+                </li> -->
             </ul>
         </nav>
     </aside>
@@ -124,4 +199,17 @@ body {
                     </li>
                 </ul>
             </div>
-        </header>
+        </header> 
+
+
+
+
+
+
+
+
+    
+
+
+
+        

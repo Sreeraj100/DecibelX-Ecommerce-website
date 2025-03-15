@@ -386,10 +386,58 @@
                 /* Show logo on small screens */
             }
         }
+
+
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .toast {
+            display: none;
+            background-color: #ff6600;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateX(100%);
+            animation: slideInFromRight 0.8s ease-out forwards;
+        }
+
+        @keyframes slideInFromRight {
+            0% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOutToRight {
+            0% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
     </style>
 </head>
 
 <body>
+    <div class="toast-container"></div>
     <div class="container" id="container">
         <!-- Overlay Section (Hidden on Small Screens) -->
         <div class="overlay-container">
@@ -407,7 +455,7 @@
             <div class="mobile-logo">
                 <img src="img/footer-logo.png" alt="DecibelX">
             </div>
-            <form id="signup-form" method="post" action="/signup">
+            <form id="signup-form" >
                 <h1 style="margin-top: 5px;">Sign up</h1>
                 <% if (typeof message !=='undefined' && message) { %>
                     <div class="text-danger-custom">
@@ -525,7 +573,7 @@
             clearError(this);
         });
 
-        signupForm.addEventListener('submit', function (e) {
+        signupForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
             let isValid = true;
@@ -572,9 +620,60 @@
             } else if (confirmPassword.value !== password.value) {
                 isValid = showError(confirmPassword, 'Passwords do not match');
             }
+            if(!isValid){
+                return
+            }
+            else{
+                let emailval = document.getElementById("signup-email").value
+                let passwordval = document.getElementById("signup-password").value
+                try {
+                    let formData = {
+                        fullname : fullname.value,
+                        emailval: emailval,
+                        phone : phone.value,
+                        passwordval : passwordval               
+                    }
+                    let response = await fetch('/signup', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
+                    });
+                    const result = await response.json();
+                    const toastContainer = document.querySelector(".toast-container");
+                    const toast = document.createElement("div");
+                    toast.className = "toast";
 
-            if (isValid) {
-                signupForm.submit();
+                    if (result.success === false) {
+                        toast.textContent = "Email already exists!";
+                        toast.style.backgroundColor = "#dc3545"; // Red for error
+                    } else {
+                        toast.textContent = "OTP Sent Successfully!";
+                        toast.style.backgroundColor = "#28a745"; // Green for success
+                        setTimeout(() => {
+                            window.location.href = "/otpsend";
+                        }, 1500);
+                    }
+
+                    toastContainer.appendChild(toast);
+                    setTimeout(() => {
+                        toast.style.display = "block";
+                    }, 100);
+
+                    setTimeout(() => {
+                        toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+                    }, 3000);
+
+                    setTimeout(() => {
+                        toast.style.display = "none";
+                        toast.remove();
+                    }, 3800);
+
+                } catch (error) {
+                    console.error("Signup error:", error);
+                }
+
+
+
             }
         });
     </script>

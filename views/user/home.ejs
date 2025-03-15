@@ -1,8 +1,180 @@
-<%- include("../../views/partials/user/header") %>
+<%- include("../../views/partials/user/headers") %>
 
 
+<style>
+
+   /* Hero styles */
+   .hero {
+         overflow: hidden;
+         position: relative;
+      }
+
+      .hero__items {
+         height: 515px;
+         position: relative;
+         display: flex;
+         align-items: center;
+      }
+
+      .hero-bg {
+         position: absolute;
+         top: 0;
+         left: 0;
+         width: 100%;
+         height: 100%;
+         background-size: cover;
+         background-position: center;
+         z-index: -1;
+      }
+
+      .hero__text {
+         padding: 30px;
+         background-color: rgba(210, 232, 233, 0.336);
+         border-radius: 8px;
+         max-width: 500px;
+         margin-bottom: 50px;
+      }
+
+      .hero__text h6 {
+         color: #ff6b6b;
+         letter-spacing: 2px;
+         margin-bottom: 10px;
+         font-weight: 600;
+      }
+
+      .hero__text h2 {
+         color: #ffffff;
+         font-size: 36px;
+         line-height: 1.2;
+         margin-bottom: 15px;
+      }
+
+      .hero__text p {
+         color: #f1f1f1;
+         margin-bottom: 20px;
+      }
+
+      .primary-btn {
+         display: inline-block;
+         padding: 12px 30px;
+         color: #fff;
+         background-color: #ff6b6b;
+         text-decoration: none;
+         border-radius: 4px;
+         font-weight: 600;
+         text-transform: uppercase;
+         transition: all 0.3s ease;
+      }
+
+      .primary-btn:hover {
+         background-color: #ff4c4c;
+         transform: translateY(-3px);
+         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      }
+ /* Category Section Styles */
+ .category-item {
+         position: relative;
+         overflow: hidden;
+         transition: all 0.3s ease;
+      }
+
+      .category-item:hover {
+         transform: translateY(-5px);
+      }
+
+      .category-overlay {
+         position: absolute;
+         top: 0;
+         left: 0;
+         width: 100%;
+         height: 100%;
+         background: rgba(0, 0, 0, 0.5);
+         opacity: 0;
+         transition: all 0.3s ease;
+      }
+
+      .category-item:hover .category-overlay {
+         opacity: 1;
+      }
+
+      .category-info {
+         transform: translateY(20px);
+         transition: all 0.3s ease;
+      }
+
+      .category-item:hover .category-info {
+         transform: translateY(0);
+      }
+      
+      /* Product Card Styles */
+      .product-card {
+         position: relative;
+         transition: all 0.3s ease;
+         border: 1px solid #eee;
+      }
+
+      .product-card:hover {
+         transform: translateY(-5px);
+         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+      }
+
+      .product-img-wrap {
+         position: relative;
+         overflow: hidden;
+      }
+
+      .product-title {
+         font-size: 1rem;
+         font-weight: 600;
+      }
+
+
+      /* Owl Carousel custom styles */
+      .owl-dots {
+         position: absolute;
+         bottom: 20px;
+         left: 50%;
+         transform: translateX(-50%);
+      }
+
+      .owl-nav button {
+         position: absolute;
+         top: 50%;
+         transform: translateY(-50%);
+         width: 40px;
+         height: 40px;
+         background: rgba(255, 255, 255, 0.7) !important;
+         border-radius: 50% !important;
+         color: #333 !important;
+         font-size: 20px !important;
+         line-height: 40px !important;
+         margin: 0 !important;
+         transition: all 0.3s ease;
+      }
+
+      .owl-nav button:hover {
+         background: rgba(255, 255, 255, 1) !important;
+      }
+
+      .owl-prev {
+         left: 20px;
+      }
+
+      .owl-next {
+         right: 20px;
+      }
+
+      /* Animation styles */
+      .fadeIn {
+         animation: fadeIn 1s ease-in-out;
+      }
+
+      .fadeOut {
+         animation: fadeOut 1s ease-in-out;
+      }
+</style>
 <!-- Hero Section -->
-<section class="hero">
+<section class="hero" id="mainContent">
   <div class="hero__slider owl-carousel owl-theme">
     <div class="hero__items">
       <div class="hero-bg" style="background-image: url('/img/hero/hero-1.jpg');"></div>
@@ -13,7 +185,7 @@
               <h6>SOUND REVOLUTION SALE</h6> 
               <h2>Wireless Freedom - Limited Offers</h2>
               <p>Wireless convenience meets audiophile quality. Save up to 40% this week only.</p>
-              <a href="/products" class="primary-btn">SHOP NOW </a>
+              <a href="/shop" class="primary-btn">SHOP NOW </a>
             </div>
           </div>
         </div>
@@ -28,7 +200,7 @@
               <h6>ULTIMATE AUDIO COLLECTION</h6>
               <h2>Immersive Audio Essentials 2025</h2>
               <p>Discover crystal-clear sound with our expert-curated collection. Free shipping on all orders.</p>
-              <a href="/products" class="primary-btn">Shop now </a>
+              <a href="/shop" class="primary-btn">Shop now </a>
             </div>
           </div>
         </div>
@@ -43,7 +215,7 @@
               <h6>NEW ARRIVALS</h6>
               <h2>Premium Studio Monitors</h2>
               <p>Experience professional-grade audio quality with our latest studio monitor collection.</p>
-              <a href="/products" class="primary-btn">Explore Now </a>
+              <a href="/shop" class="primary-btn">Explore Now </a>
             </div>
           </div>
         </div>
@@ -55,10 +227,10 @@
         <div class="row">
           <div class="col-xl-5 col-lg-7 col-md-8">
             <div class="hero__text">
-              <h6>NEW ARRIVALS</h6>
-              <h2>Premium Studio Monitors</h2>
-              <p>Experience professional-grade audio quality with our latest studio monitor collection.</p>
-              <a href="/products" class="primary-btn">Explore Now </a>
+              <h6>PREMIUM HEADPHONES</h6>
+              <h2>Noise-Canceling Excellence</h2>
+              <p>Immerse yourself in pure sound with our top-rated noise-canceling headphones collection.</p>
+              <a href="/shop" class="primary-btn">Discover Now </a>
             </div>
           </div>
         </div>
@@ -66,14 +238,292 @@
     </div>
     <div class="hero__items">
       <div class="hero-bg" style="background-image: url('/img/hero/hero-5.jpg');"></div>
-      
+      <div class="container">
+        <div class="row">
+          <div class="col-xl-5 col-lg-7 col-md-8">
+            <div class="hero__text">
+              <h6>EXCLUSIVE DEAL</h6>
+              <h2>Home Theater Systems</h2>
+              <p>Transform your living room into a cinematic experience with our premium sound systems.</p>
+              <a href="/shop" class="primary-btn">Shop Collections </a>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
-<section class="categories-section">
- 
+<!-- Featured Categories Section -->
+<section class="categories-section py-5">
+  <div class="container">
+    <div class="section-title text-center mb-5">
+      <h2>Shop By Category</h2>
+      <p>Discover premium audio equipment for every need</p>
+    </div>
+    <div class="row">
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="category-item">
+          <div class="category-img position-relative overflow-hidden" style="height: 250px; border-radius: 8px;">
+            <img src="/img/categories/headphones.jpg" alt="Headphones" class="img-fluid w-100 h-100" style="object-fit: cover;">
+            <div class="category-overlay d-flex align-items-center justify-content-center">
+              <div class="category-info text-center">
+                <h4 class="text-white mb-0">Headphones</h4>
+                <a href="/shop?category=headphones" class="btn btn-outline-light mt-3">Shop Now</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="category-item">
+          <div class="category-img position-relative overflow-hidden" style="height: 250px; border-radius: 8px;">
+            <img src="/img/" alt="Speakers" class="img-fluid w-100 h-100" style="object-fit: cover;">
+            <div class="category-overlay d-flex align-items-center justify-content-center">
+              <div class="category-info text-center">
+                <h4 class="text-white mb-0">Speakers</h4>
+                <a href="/shop?category=speakers" class="btn btn-outline-light mt-3">Shop Now</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="category-item">
+          <div class="category-img position-relative overflow-hidden" style="height: 250px; border-radius: 8px;">
+            <img src="/img/categories/earbuds.jpg" alt="Earbuds" class="img-fluid w-100 h-100" style="object-fit: cover;">
+            <div class="category-overlay d-flex align-items-center justify-content-center">
+              <div class="category-info text-center">
+                <h4 class="text-white mb-0">Earbuds</h4>
+                <a href="/shop?category=earbuds" class="btn btn-outline-light mt-3">Shop Now</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 
-<%- include("../../views/partials/user/footer") %>
+<!-- Featured Products Section -->
+<section class="product-section py-5 bg-light">
+  <div class="container">
+    <div class="section-title text-center mb-5">
+      <h2>Featured Products</h2>
+      <p>Our most popular audio equipment</p>
+    </div>
+    <div class="row">
+      <!-- Product 1 -->
+      <div class="col-lg-3 col-md-6 mb-4">
+        <div class="product-card bg-white p-3 rounded shadow-sm h-100">
+          <div class="product-badge bg-danger text-white px-3 py-1 rounded position-absolute" style="top: 10px; right: 10px;">Sale</div>
+          <div class="product-img-wrap mb-3">
+            <img src="/img/products/product-1.jpg" alt="Premium Headphones" class="img-fluid w-100" style="height: 200px; object-fit: contain;">
+          </div>
+          <div class="product-info">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h5 class="product-title mb-0">Premium Headphones</h5>
+              <div class="product-rating">
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star-half-alt text-warning"></i>
+              </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div class="product-price">
+                <span class="text-muted text-decoration-line-through">$299.99</span>
+                <span class="fw-bold ms-2">$249.99</span>
+              </div>
+            </div>
+            <div class="d-flex justify-content-between">
+              <a href="/product/1" class="btn btn-sm btn-outline-secondary">View Details</a>
+              <button class="btn btn-sm btn-primary add-to-cart">Add to Cart</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Product 2 -->
+      <div class="col-lg-3 col-md-6 mb-4">
+        <div class="product-card bg-white p-3 rounded shadow-sm h-100">
+          <div class="product-badge bg-primary text-white px-3 py-1 rounded position-absolute" style="top: 10px; right: 10px;">New</div>
+          <div class="product-img-wrap mb-3">
+            <img src="/img/products/product-2.jpg" alt="Wireless Earbuds" class="img-fluid w-100" style="height: 200px; object-fit: contain;">
+          </div>
+          <div class="product-info">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h5 class="product-title mb-0">Wireless Earbuds</h5>
+              <div class="product-rating">
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="far fa-star text-warning"></i>
+              </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div class="product-price">
+                <span class="fw-bold">$129.99</span>
+              </div>
+            </div>
+            <div class="d-flex justify-content-between">
+              <a href="/product/2" class="btn btn-sm btn-outline-secondary">View Details</a>
+              <button class="btn btn-sm btn-primary add-to-cart">Add to Cart</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Product 3 -->
+      <div class="col-lg-3 col-md-6 mb-4">
+        <div class="product-card bg-white p-3 rounded shadow-sm h-100">
+          <div class="product-img-wrap mb-3">
+            <img src="/img/products/product-3.jpg" alt="Bluetooth Speaker" class="img-fluid w-100" style="height: 200px; object-fit: contain;">
+          </div>
+          <div class="product-info">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h5 class="product-title mb-0">Bluetooth Speaker</h5>
+              <div class="product-rating">
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+              </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div class="product-price">
+                <span class="fw-bold">$89.99</span>
+              </div>
+            </div>
+            <div class="d-flex justify-content-between">
+              <a href="/product/3" class="btn btn-sm btn-outline-secondary">View Details</a>
+              <button class="btn btn-sm btn-primary add-to-cart">Add to Cart</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Product 4 -->
+      <div class="col-lg-3 col-md-6 mb-4">
+        <div class="product-card bg-white p-3 rounded shadow-sm h-100">
+          <div class="product-badge bg-success text-white px-3 py-1 rounded position-absolute" style="top: 10px; right: 10px;">Popular</div>
+          <div class="product-img-wrap mb-3">
+            <img src="/img/products/product-4.jpg" alt="Studio Monitors" class="img-fluid w-100" style="height: 200px; object-fit: contain;">
+          </div>
+          <div class="product-info">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h5 class="product-title mb-0">Studio Monitors</h5>
+              <div class="product-rating">
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star-half-alt text-warning"></i>
+              </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div class="product-price">
+                <span class="fw-bold">$349.99</span>
+              </div>
+            </div>
+            <div class="d-flex justify-content-between">
+              <a href="/product/4" class="btn btn-sm btn-outline-secondary">View Details</a>
+              <button class="btn btn-sm btn-primary add-to-cart">Add to Cart</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="text-center mt-4">
+      <a href="/shop" class="btn btn-lg btn-outline-primary">View All Products</a>
+    </div>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section py-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+        <div class="feature-item text-center">
+          <div class="feature-icon mb-3">
+            <i class="fas fa-truck fa-3x text-primary"></i>
+          </div>
+          <h4>Free Shipping</h4>
+          <p>On all orders over $99</p>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+        <div class="feature-item text-center">
+          <div class="feature-icon mb-3">
+            <i class="fas fa-undo fa-3x text-primary"></i>
+          </div>
+          <h4>30 Days Return</h4>
+          <p>Hassle-free returns</p>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+        <div class="feature-item text-center">
+          <div class="feature-icon mb-3">
+            <i class="fas fa-lock fa-3x text-primary"></i>
+          </div>
+          <h4>Secure Payment</h4>
+          <p>100% secure checkout</p>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+        <div class="feature-item text-center">
+          <div class="feature-icon mb-3">
+            <i class="fas fa-headset fa-3x text-primary"></i>
+          </div>
+          <h4>24/7 Support</h4>
+          <p>Dedicated support team</p>
+        </div>
+      </div> 
+    </div>
+  </div>
+</section>
+<%- include("../../views/partials/user/footers") %>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+<script>
+  $(document).ready(function() {
+  // Initialize Owl Carousel for hero section
+  $(".hero__slider").owlCarousel({
+    items: 1,
+    loop: true,
+    autoplay: true,
+    autoplayTimeout: 3000,
+    autoplayHoverPause: true,
+    smartSpeed: 1000,
+    animateIn: 'fadeIn',
+    animateOut: 'fadeOut',
+    nav: true,
+    margin: 0,
+    dots: false,
+    responsive: {
+      0: {
+        nav: false
+      },
+      768: {
+        nav: true
+      }
+    }
+  });
+
+
+  // Category hover effects
+  $('.category-item').hover(
+    function() {
+      $(this).find('.category-overlay').css('opacity', '1');
+      $(this).find('.category-info').css('transform', 'translateY(0)');
+    },
+    function() {
+      $(this).find('.category-overlay').css('opacity', '0');
+      $(this).find('.category-info').css('transform', 'translateY(20px)');
+    }
+  );
+});
+</script>
+
 

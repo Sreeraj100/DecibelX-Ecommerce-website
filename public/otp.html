@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DecibelX Verification Code</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f5f5;
+      color: #333;
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      background-color: #ffffff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+    
+    .header {   
+      background-color: #280024;
+      padding: 30px 0;
+      text-align: center;
+    }
+    
+    .header img {
+      max-width: 180px;
+      height: auto;
+    }
+    
+    .content {
+      padding: 35px;
+    }
+    
+    h1 {
+      color: #ffffff;
+      font-size: 24px;
+      font-weight: 600;
+      margin: 0;
+      letter-spacing: 0.5px;
+    }
+    
+    h2 {
+      color: #333;
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+    
+    p {
+      margin-bottom: 20px;
+      font-size: 16px;
+      color: #555;
+    }
+    
+    .code-container {
+      background-color: #f0f4ff;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 25px 0;
+      text-align: center;
+    }
+    
+    .code {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      color: #3a86ff;
+    }
+    
+    .expiry {
+      font-size: 14px;
+      color: #ff5a5f;
+      margin-top: 15px;
+      font-weight: 500;
+    }
+    
+    .divider {
+      height: 1px;
+      background-color: #eaeaea;
+      margin: 30px 0;
+    }
+    
+    .footer {
+      text-align: center;
+      padding: 20px 35px 35px;
+      font-size: 14px;
+      color: #888;
+    }
+    
+    .footer p {
+      margin-bottom: 10px;
+      font-size: 14px;
+      color: #888;
+    }
+    
+    .social-icons {
+      margin-top: 20px;
+    }
+    
+    .social-icons a {
+      display: inline-block;
+      margin: 0 10px;
+      color: #3a86ff;
+      text-decoration: none;
+    }
+    
+    @media only screen and (max-width: 600px) {
+      .content {
+        padding: 25px;
+      }
+      
+      .code {
+        font-size: 28px;
+        letter-spacing: 3px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="https://i.imgur.com/l1LAQSO.png" alt="DecibelX">
+    </div>
+    <div class="content">
+      <h2>Verify Your Account</h2>
+      <p>Hello {{NAME}},</p>
+      <p>Thank you for choosing DecibelX. To complete your account verification, please use the code below:</p>
+      
+      <div class="code-container">
+        <div class="code">{{OTP}}</div>
+        <div class="expiry">This code will expire in 1 minute</div>
+      </div>
+      
+      <p>If you didn't request this verification code, please ignore this email or contact our support team if you have concerns.</p>
+      
+      <div class="divider"></div>
+      
+      <div class="footer">
+        <p><strong>DecibelX Team</strong></p>
+        <p>Need help? Contact us at <a href="mailto:support@decibelx.com">support@decibelx.com</a></p>
+        
+        <div class="social-icons">
+          <a href="#">Twitter</a>
+          <a href="#">Facebook</a>
+          <a href="#">Instagram</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

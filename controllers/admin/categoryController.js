@@ -105,7 +105,7 @@ const categoryInfo = async (req, res) => {
         const {categoryName,description} = req.body;
         const existingCategory = await Category.findOne({name:categoryName});
         if(existingCategory){
-            return res.status(400).json({error:"Category exists,please choose another name"})
+            return res.json({error:"Category exists,please choose another name"})
         }
         const updateCategory = await Category.findByIdAndUpdate(id,{
             name:categoryName,

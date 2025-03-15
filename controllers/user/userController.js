@@ -1,350 +1,295 @@
-const user = require("../../models/userSchema")
-const nodemailer = require("nodemailer")
-const env = require("dotenv").config()
 const bcrypt = require("bcrypt")
+const usercollection = require("../../models/userSchema")
+const product = require("../../models/productSchema")
+const category = require("../../models/categorySchema");
+const otpCollection = require("../../models/otp");
+const sendotp = require('../../helpers/sendOtp')
+const passport = require('passport');
+const AppError = require("../../middlewares/errorHandling")
 
 
 
-const loadHomepage = async (req, res) => {
-  try {
-    return res.render("home", { user: req.session.user });
-  } catch (error) {
-    console.log("Home page not found");
-    res.status(500).send("Server error");
-  }
-};
-
-const pageNotFound = async (req, res) => {
-  try {
-    res.render("page-404")
-  } catch (error) {
-    res.redirect("/pageNotFound")
-  }
+async function securePassword(password) {
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    return hashedPassword;
 }
 
-
-
-const loadSignup = async (req, res) => {
-  try {
-    //  if(req.session.user){
-    //   res.redirect('/')
-    //  } else {
-    return res.render("signup");
-    //  }
-  } catch (error) {
-    console.log("signup page not found");
-    res.status(500).send("Server error")
-  }
+async function comparePassword(enteredPassword, storedPassword) {
+    const isMatch = await bcrypt.compare(enteredPassword, storedPassword);
+    return isMatch;
 }
 
+const loadHome = async (req,res,next)=>{
+    try{
+        let name = ""      
+        const products = await product.find({}).limit(4)
+        const categories = await category.find({}).limit(5)
 
-
-const signup = async (req, res) => {
-  try {
-    const { name, phone, email, password, cpassword } = req.body;
-
-    if (password !== cpassword) {
-      return res.render("signup", { message: "Passwords do not match" });
+        if(req.session.loginSession || req.session.signupSession){
+            const userEmail = req.session.email
+            const userVer = await usercollection.findOne({ email: userEmail });
+            if(userVer){
+                req.session.otpSession = false
+                if(!userVer.isActive){
+                    return res.redirect("/blocked")
+                } else {
+                    name = userVer.name
+                    return res.render("home",{name,products,categories})
+                }
+            } else {
+                return res.render("home",{name,products,categories})
+            }
+        } else {
+            return res.render("home",{name,products,categories})
+        }
+    }catch(error) {
+        console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
-
-    const findUser = await user.findOne({ email });
-
-    if (findUser) {
-      return res.render("signup", { message: "User already exists with this email" });
-    }
-
-    const otp = generateOtp();
-    const emailSent = await sendVerificationEmail(email, otp, name);
-
-    if (!emailSent) {
-      return res.json("email-error");
-    }
-    console.log(otp)
-    req.session.userOtp = otp;
-    req.session.userData = { name, phone, email, password };
-
-    res.render("verify-otp");
-  } catch (error) {
-    console.error("Signup error", error);
-    res.redirect("/pageNotFound");
-  }
-};
-
-
-function generateOtp() {
-  return Math.floor(100000 + Math.random() * 900000).toString()
 }
 
-async function sendVerificationEmail(email, otp, name) {
-  try {
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      port: 587,
-      secure: false,
-      auth: {
-        user: process.env.NODEMAILER_EMAIL,
-        pass: process.env.NODEMAILER_PASSWORD
-      }
-    });
-
-    const htmlTemplate = `
-      <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 500px; margin: auto; padding: 25px; border-radius: 8px; background-color: #fafafa;">
-        <h2 style="color: #3a86ff; margin-bottom: 20px; text-align: center;">Verify Your Account</h2>
-        <p style="color: #333; font-size: 16px;">Hello ${name},</p>
-        <p style="color: #555; font-size: 16px;">Your verification code is:</p>
-        <div style="background-color: #f0f4ff; border-left: 4px solid #3a86ff; padding: 15px; margin: 15px 0; font-size: 24px; font-weight: bold; text-align: center; letter-spacing: 2px; color: #3a86ff;">
-          ${otp}
-        </div>
-        <p style="color: #555; font-size: 14px;">This code will expire in 1 minutes.</p>
-        <p style="color: #777; font-size: 14px; margin-top: 20px; text-align: center;">
-          Thank you,<br>DecibelX Team
-        </p>
-      </div>
-    `;
-
-    const textVersion = `Hello ${name}, Your verification code is: ${otp}. This code will expire in 10 minutes. Thank you, DecibelX Team`;
-
-    const info = await transporter.sendMail({
-      from: {
-        name: 'DecibelX',
-        address: process.env.NODEMAILER_EMAIL
-      },
-      to: email,
-      subject: "Your Verification Code",
-      text: textVersion,
-      html: htmlTemplate
-    });
-
-    // console.log("Email sent successfully"); 
-    return true;
-
-  } catch (error) {
-    console.error("Error sending email:", error.message);
-    return false;
-  }
+const loadLogin = async(req,res,next)=>{
+    try {
+        if(req.session.loginSession || req.session.signupSession){
+            return res.redirect("/")
+        } else {
+            const logErr = req.session.logError
+            res.render("login",{logErr})
+        } 
+    } catch (error){
+        console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
+    }
 }
 
-
-const securePassword = async (password) => {
-  try {
-    const passwordHash = await bcrypt.hash(password, 10);
-    return passwordHash;
-  } catch (error) {
-    console.error("Error hashing password:", error);
-    throw new Error("Password encryption failed");
-  }
-};
-const verifyOtp = async (req, res) => {
-  try {
-    const { otp } = req.body;
-
-    if (!req.session.userOtp) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "OTP session expired. Please request a new code." 
-      });
+const loadSignup = async(req,res,next)=>{
+    try {
+        if(req.session.loginSession || req.session.signupSession){
+            return res.redirect("/")
+        } else {
+            const signErr =  req.session.signError
+            res.render("signup",{signErr})
+        }
+    } catch (error){
+        console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
-    console.log()
-    if (otp === req.session.userOtp) {
-      const User = req.session.userData;
-      if (!User) {
-        return res.status(400).json({ 
-          success: false, 
-          message: "User data not found in session. Please signup again." 
-        });
-      }
+}
 
-      const passwordHash = await securePassword(User.password);
+const otpSend = async(req,res,next)=>{
+    req.session.otpSession = true
+    const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString()
+    req.session.otpError = null
+    req.session.otpTime = 75;  // Set it only if it's not already set
+    const userData = await otpCollection.findOne({email:req.session.email})
+    await otpCollection.updateOne({email:userData.email},{$set:{otp:generatedOtp}})
+    await sendotp(generatedOtp,userData.email,userData.name)
+    const hashedOtp = await securePassword(generatedOtp)
+    await otpCollection.updateOne({email:req.session.email},{$set:{otp:hashedOtp}},{upsert:true})
+    req.session.otpStartTime = null
+    res.redirect("/otp")
+}
 
-      const saveUserData = new user({
-        name: User.name,
-        email: User.email,
-        phone: User.phone,
-        password: passwordHash,
-      });
+const otpPage = async(req,res,next)=>{
+    if(req.session.otpSession){
+        const otpError = req.session.otpError
+        // If OTP time isn't set, set it
+        if (!req.session.otpStartTime) {
+            req.session.otpStartTime = Date.now();
+        }
+        const elapsedTime = Math.floor((Date.now() - req.session.otpStartTime) / 1000);
+        const remainingTime = Math.max(req.session.otpTime - elapsedTime, 0);
+        return res.render("verify-otp",{otpError:otpError,time:remainingTime})
+    } else {
+        return res.redirect("/")
+    }
+} 
 
-      await saveUserData.save();
 
-      // Set session user
+const otpPost = async(req,res,next)=>{
+    const findOtp = await otpCollection.findOne({email:req.session.email})
+    // console.log(req.body);
+    // console.log(findOtp);
+    if(await comparePassword(req.body.otp,findOtp.otp)){
+        const newUser = new usercollection({
+            email:findOtp.email,
+            name:findOtp.name,
+            password:findOtp.password,
+            phone:findOtp.phone,
+        })
+        newUser.save()
+        req.session.signupSession = true
+        res.redirect("/")
+    } else {
+        req.session.otpError = "Incorrect OTP"
+        res.redirect("/otp")
+    }
+}
+
+const signup = async(req,res,next)=>{
+    try{
+        const userExists = await usercollection.findOne({ email: req.body.emailval });
+        if (userExists) {
+            return res.status(409).send({ "success": false });
+        } else {
+            const hashedPassword = await securePassword(req.body.passwordval)
+            const result = await otpCollection.updateOne({email:req.body.emailval},{
+                $set:{
+                        name: req.body.fullname,
+                        email: req.body.emailval,
+                        phone: req.body.phone,
+                        password: hashedPassword
+                }
+            },{upsert:true})
+            // console.log(result);
+            req.session.email=req.body.emailval
+            return res.status(200).send({ success: true });
+        }
+    } catch (error){
+        console.error("Signup error:", error);
+        next(new AppError('Sorry...Something went wrong', 500));
+    }
+}
+
+const login = async(req,res,next)=>{
+    try{
+        // console.log(req.body);
+        const userData = await usercollection.findOne({ email: req.body.email });
+        if (userData) {
+            if (userData.password && await comparePassword(req.body.password,userData.password)) {
+              req.session.loginSession = true;
+              req.session.email = req.body.email
+              return res.status(200).send({ success: true })
+            } else {
+                return res.status(208).send({ success: false })
+            }
+          } else {
+            return res.status(208).send({ success: false })
+          }
+    } catch (error) {
+        console.log(error);
+        next(new AppError('Sorry...Something went wrong', 500));
+    }
+}
+
+const googleCallback=async (req, res) => {
+    try {
+      const user = await usercollection.findOneAndUpdate(
+        { email: req.user._json.email},
+        { $set: { name: req.user.displayName} },
+        { upsert: true, new :true }
+      );
+      const userId = await usercollection.findOne({ email:req.user._json.email })
+
       req.session.user = {
-        id: saveUserData._id,
-        name: saveUserData.name,
-        email: saveUserData.email
-      };
-
-      // Clear session data after successful verification
-      req.session.userOtp = null;
-      req.session.userData = null;
-
-      res.json({ success: true, redirectUrl: "/" });
-    } else {
-      res.status(400).json({ success: false, message: "Invalid OTP, Please try again" });
-    }
-  } catch (error) {
-    if (error.code === 11000) {
-      // Handle duplicate key error specifically
-      return res.status(400).json({ 
-        success: false, 
-        message: "A user with this email already exists" 
-      });
-    }
-    console.log("Error Verifying OTP", error);
-    res.status(500).json({ success: false, message: "An error occurred" });
-  }
-
-
-};
-
-
-
-const resendOtp = async (req, res) => {
-  try {
-      // Get user data from session
-      const userData = req.session.userData;
-
-      if (!userData || !userData.email) {
-          console.log("Email not found in session");
-          return res.status(400).json({ success: false, message: "Email not found in session. Please signup again." });
+        email:req.user._json.email
       }
-
-      // Generate new OTP
-      const otp = generateOtp();
-      req.session.userOtp = otp; // Update session OTP
-      console.log("New OTP generated:", otp);
-
-      // Send email with OTP
-      const emailSent = await sendVerificationEmail(userData.email, otp, userData.name);
-
-      if (emailSent) {
-          console.log("OTP resent successfully");
-          return res.status(200).json({ success: true, message: "OTP Resent Successfully" });
-      } else {
-          console.log("Failed to send OTP email");
-          return res.status(500).json({ success: false, message: "Failed to resend OTP. Please try again" });
-      }
-  } catch (error) {
-      console.log("Error resending OTP", error);
-      res.status(500).json({ success: false, message: "Internal Server Error. Please try again" });
-  }
-};
+      // Set the user session
+      req.session.loginSession = true
+      // Redirect to the homepage
+      res.redirect('/');
+    } catch (err) {
+      console.error(err);
+      next(new AppError('Sorry...Something went wrong', 500));
+    }
+  } 
 
 
-
-
-
-
-const loadLogin = async (req, res) => {
-  try {
-    let message = req.query.message || "";
-    if (!req.session.user) {
-      return res.render("login", { message });
+const blockedUser = async(req,res,next)=>{
+    const user = await usercollection.findOne({ email: req.session.user.email })
+    if(user.isActive == false){
+        return res.render("blockedUser")
     } else {
-      res.redirect("/");
+        return res.redirect("/")
     }
-  } catch (error) {
-    res.redirect("/pageNotFound");
-  }
-};
-
-
-
-const login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const findUser = await user.findOne({ email: email });
-
-    if (!findUser) {
-      return res.render("login", { message: "User not found" });
-    }
-
-    if (findUser.isBlocked) {
-      req.session.destroy();
-      return res.render("login", { message: "User is blocked by admin" });
-    }
-
-    if (findUser.password) {
-      const passwordMatch = await bcrypt.compare(password, findUser.password);
-      if (!passwordMatch) {
-        return res.render("login", { message: "Incorrect Password" });
-      }
-    } else {
-      req.session.destroy();
-      return res.render("login", { message: "Please log in using Google" });
-    }
-
-    // Set session user
-    req.session.user = {
-      id: findUser._id,
-      name: findUser.name,
-      email: findUser.email
-    };
-
-    res.redirect("/");
-  } catch (error) {
-    res.render("login", { message: "Login failed. Please try again later" });
-  }
-}; 
-
-const logout = async (req, res) => {
-  try {
-    req.session.user = null;
-    res.redirect("/");
-  }
- catch (error) { 
-  console.log("Logout error:", error);
-  res.redirect("/pageNotFound");
 }
-};
+const about = async (req, res) => {
+    let name = ""; // Initialize name variable
+    if (req.session.loginSession || req.session.signupSession) {
+        const userEmail = req.session.email;
+        const userVer = await usercollection.findOne({ email: userEmail });
+        if (userVer) {
+            name = userVer.name; // Set name if user is found
+        }
+    }
+    return res.render("about", { name }); // Pass name to the view
+}
 
-
-const loadShopping = async (req, res) => {
-  try {
-    //   const user = req.session.user;
-    //   const page = parseInt(req.query.page) || 1; 
-    //   const limit = 6; 
-
-
-    //   const totalProducts = await Product.countDocuments({isBlocked: false});
-    //   const totalPages = Math.ceil(totalProducts / limit);
-
-    //   const skip = (page - 1) * limit;
-
-    //   const product = await Product.find({isBlocked: false})
-    //     .populate('category')
-    //     .skip(skip)
-    //     .limit(limit)
-    //     .sort({ createdAt: -1 });  
-    res.render("shop")
-    //   res.render("user/shop", {
-    //     product,
-    //     login: user,
-    //     currentPage: page,
-    //     totalPages: totalPages,
-    //     hasNextPage: page < totalPages,
-    //     hasPrevPage: page > 1,
-    //     nextPage: page + 1,
-    //     prevPage: page - 1,
-    //     lastPage: totalPages
-    //   });
-  } catch (error) {
-    console.error('Shopping page error:', error);
-    res.redirect("/pageNotFound");
-  }
-};
-
+const logout = async(req,res)=>{
+    req.session.loginSession = null
+    req.session.signupSession = null
+    req.session.user = null
+    req.session.logError = null
+    req.session.signError = null
+    req.session.otp = null
+    req.session.otpError = null
+    return res.redirect('/')
+}
 
 
 
 module.exports = {
-  loadHomepage,
-  pageNotFound,
-  loadSignup,
-  signup,
-  loadShopping,
-  verifyOtp,
-  resendOtp,
-  login,
-  loadLogin,
-  logout,
+    loadHome,
+    loadLogin,
+    loadSignup,
+    otpPage,
+    signup,
+    otpPost,
+    otpSend,
+    login,
+    googleCallback,
+    blockedUser,
+    about,
+    logout,
 }
 
+
+// async function sendVerificationEmail(email, otp, name) {
+//   try {
+//     const transporter = nodemailer.createTransport({
+//       service: 'gmail',
+//       port: 587,
+//       secure: false,
+//       auth: {
+//         user: process.env.NODEMAILER_EMAIL,
+//         pass: process.env.NODEMAILER_PASSWORD
+//       }
+//     });
+
+//     const htmlTemplate = `
+//       <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 500px; margin: auto; padding: 25px; border-radius: 8px; background-color: #fafafa;">
+//         <h2 style="color: #3a86ff; margin-bottom: 20px; text-align: center;">Verify Your Account</h2>
+//         <p style="color: #333; font-size: 16px;">Hello ${name},</p>
+//         <p style="color: #555; font-size: 16px;">Your verification code is:</p>
+//         <div style="background-color: #f0f4ff; border-left: 4px solid #3a86ff; padding: 15px; margin: 15px 0; font-size: 24px; font-weight: bold; text-align: center; letter-spacing: 2px; color: #3a86ff;">
+//           ${otp}
+//         </div>
+//         <p style="color: #555; font-size: 14px;">This code will expire in 1 minutes.</p>
+//         <p style="color: #777; font-size: 14px; margin-top: 20px; text-align: center;">
+//           Thank you,<br>DecibelX Team
+//         </p>
+//       </div>
+//     `;
+
+//     const textVersion = `Hello ${name}, Your verification code is: ${otp}. This code will expire in 10 minutes. Thank you, DecibelX Team`;
+
+//     const info = await transporter.sendMail({
+//       from: {
+//         name: 'DecibelX',
+//         address: process.env.NODEMAILER_EMAIL
+//       },
+//       to: email,
+//       subject: "Your Verification Code",
+//       text: textVersion,
+//       html: htmlTemplate
+//     });
+
+//     // console.log("Email sent successfully"); 
+//     return true;
+
+//   } catch (error) {
+//     console.error("Error sending email:", error.message);
+//     return false;
+//   }
+// }
