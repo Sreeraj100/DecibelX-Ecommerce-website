@@ -31,19 +31,21 @@ const productSchema = new Schema(
     productImage3: {
       type: String,
     },
+    productImage4: {
+      type: String,
+    },
     productCategoryId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "category",
       required: true,
     },
-    productBrandId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "brand",
-      required: true,
-    },
     isListed: {
       type: Boolean,
       default: true,
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
     },
     salesCount: {
       type: Number,

@@ -1,4 +1,3 @@
-const User = require("../../models/userSchema");
 const bcrypt = require("bcrypt");
 require("dotenv").config(); 
 
@@ -29,7 +28,7 @@ const login = async (req, res) => {
     if (!passwordMatch) {
       return res.render("admin-login", { message: "Invalid email or password" });
     }
-
+    req.session.adminVer=true
     req.session.admin = true;
     return res.redirect("/admin/dashboard");
   } catch (error) {
@@ -37,6 +36,8 @@ const login = async (req, res) => {
     return res.redirect("/pageerror");
   }
 };
+
+
 
 const loadDashboard = async (req, res) => {
   if (req.session.admin) {

@@ -1,133 +1,63 @@
-const { compareSync } = require("bcrypt");
-const Category=require("../../models/categorySchema");
-const Product=require("../../models/productSchema");
+const category=require("../../models/categorySchema");
 
+const categoryPage = async(req,res,next)=>{
+    const categories = await category.find({}).sort({ createdAt: -1 })
+    return res.render("category",{categories})
+}
 
-
-const categoryInfo = async (req, res) => {
+const addCategory = async(req,res,next)=>{
     try {
-        const page = parseInt(req.query.page) || 1;
-        const limit = 4;
-        const skip = (page - 1) * limit;
-        const search = req.query.search || ""; // Get search query
-
-        // Search with case-insensitive regex
-        const categoryData = await Category.find({ 
-            name: { $regex: search, $options: "i" } 
-        })
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit);
-
-        const totalCategories = await Category.countDocuments({
-            name: { $regex: search, $options: "i" } 
-        });
-
-        const totalPages = Math.ceil(totalCategories / limit);
-
-        res.render("category", {
-            cat: categoryData,
-            currentPage: page,
-            totalPages: totalPages,
-            totalCategories: totalCategories,
-            search: search, // Pass search term to keep it in input field
-        });
-    } catch (error) {
-        console.log(error);
-        res.redirect("/pageerror");
-    }
-};
-
-
-    const addCategory=async(req,res)=>{
-        let {name,description} = req.body;
-        try {
-            name = name.trim();
-            // const existingCategory = await Category.findOne({name});
-            const existingCategory = await Category.findOne({ name: { $regex: new RegExp("^" + name + "$", "i") } });
-            if(existingCategory){
-                return res.status(400).json({error:"Category already exists"})
-            }
-
-            console.log("existingCategory")
-            const newCategory= new Category({
-                name,
-                description,
-            })
-            console.log()
-            await newCategory.save();
-            return res.json({message:"Category added succesfully"})
-
-        } catch (error) {
-            return res.status(500).json({error:"Internal Server Error"})
-            
-        }
-    }
-
-
-    const getListCategory = async(req,res)=>{
-        try {
-            let id = req.query.id;
-            console.log("islisted id",id)
-
-            await Category.updateOne({_id:id},{$set:{isListed:false}});
-            res.redirect("/admin/category");
-        } catch (error) {
-            res.redirect("/pageerror");
-        }
-    }
-
-    const getUnlistCategory = async(req,res)=>{
-        try {
-            let id = req.query.id;
-            console.log("isunlisted id",id)
-            await Category.updateOne({_id:id},{$set:{isListed:true}});
-            res.redirect("/admin/category");
-        } catch (error) {
-            res.redirect("/pageerror");
-        }
-    }
- 
-    const getEditCategory = async(req,res)=>{
-        try {
-            const id = req.query.id;
-            const category = await Category.findOne({_id:id});
-            res.render("edit-category",{category:category}); 
-        } catch (error) {
-            res.redirect("/pageerror")
-            
-        }
-    };
-
-  const editCategory = async(req,res)=>{
-    try {
-        const id = req.params.id;
-        const {categoryName,description} = req.body;
-        const existingCategory = await Category.findOne({name:categoryName});
-        if(existingCategory){
-            return res.json({error:"Category exists,please choose another name"})
-        }
-        const updateCategory = await Category.findByIdAndUpdate(id,{
-            name:categoryName,
-            description:description, 
-        },{new:true});
-        if(updateCategory){
-           res.redirect("/admin/category"); 
-        }else{
-            res.status(404).json({error:"Category not found"})
+        const categoryCheck = await category.findOne({categoryName:{$regex: new RegExp('^'+req.body.categoryName +'$','i') }});
+        if (categoryCheck) {
+            return res.status(208).send({ categoryExists: true })
+        } else {
+            const newCategory = new category({
+                categoryName: req.body.categoryName,
+                categoryDescription: req.body.categoryDescription
+            });
+            newCategory.save();
+            return res.status(200).send({ success: true })
         }
     } catch (error) {
-        res.status(500).json({error:"Internal server error"})
+        console.log("addCategory error:",error);
+    }
+}
+
+const unListCategory = async(req,res,next)=>{
+    try {
+        const categoryId = req.params.id;
+        await category.updateOne({ _id:categoryId}, { isListed:false});
+        res.json({ success: true, message: 'Category Unlisted successfully.' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Failed to list category.' });
+    }
+}
+
+const listCategory = async(req,res,next)=>{
+    try {
+        const categoryId = req.params.id;
+        await category.updateOne({ _id:categoryId}, { isListed:true});
+        res.json({ success: true, message: 'Category Listed successfully.' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Failed to unlist category.' });
+    }
+}
+
+const editCategory = async(req,res,next)=>{
+    try{
+        const categoryCheck = await category.find({categoryName:{$regex: new RegExp('^'+req.body.categoryName +'$','i') }});
+        if((categoryCheck.length == 1 && req.body._id == categoryCheck[0]._id) || categoryCheck.length == 0){
+            await category.updateOne({ _id: req.body._id }, { $set: { categoryName: req.body.categoryName, categoryDescription: req.body.categoryDescription } });
+            res.json({ success: true, message: 'Category Edited successfully.'});
+        } else {
+            res.json({ success: false, message: 'Category already exits!'});
+        }
+    } catch(error) {
+        console.log("editCategory error:",error)
         
     }
-  }
+}
 
-
-    module.exports={
-        categoryInfo,
-        addCategory,
-        getListCategory,
-        getUnlistCategory,
-        getEditCategory,
-        editCategory
-    }
+module.exports = {categoryPage, addCategory, listCategory, unListCategory, editCategory}

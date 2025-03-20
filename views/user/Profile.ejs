@@ -11,7 +11,7 @@
             color: #333;
         }
 
-        .header {
+        /* .header {
             position: fixed;
             top: 0;
             left: 0;
@@ -20,7 +20,7 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             padding: 10px 20px;
             box-sizing: border-box;
-        }
+        } */
 
         .page-content {
             padding-top: 15px;
@@ -58,6 +58,11 @@
             min-height: calc(100vh - 60px);
             /* Minimum height accounts for header */
         }
+        .user{
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
         .user-avatar {
             width: 48px;
@@ -71,6 +76,7 @@
             font-weight: bold;
             color: #e91e63;
             margin-bottom: 10px;
+            border: 1px solid red;
         }
 
         .user-name {
@@ -263,12 +269,14 @@
     <div class="page-content">
         <div class="container">
             <div class="sidebar">
+                <div class="user">
                 <div class="user-avatar">
                     <%= userVer.name.charAt(0).toUpperCase() %>
                 </div>
                 <div class="user-name">
                     <%= userVer.name %>
                 </div>
+            </div>
                 <div class="menu-section">
                     <div class="menu-title">Manage account</div>
                     <a href="/profile" class="menu-item active">Personal info</a>
@@ -302,7 +310,7 @@
                         </div>
                         <div class="form-field">
                             <label for="email">Email</label>
-                            <input type="email" id="email" name="email" value="<%= userVer.email %>" required />
+                            <input type="email" id="email" name="email" value="<%= userVer.email %>" disabled />
                         </div>
                         <div style="margin-top: 20px;">
                             <button type="submit" class="button primary-button">Save changes</button>

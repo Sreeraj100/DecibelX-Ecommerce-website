@@ -1,14 +1,13 @@
-const multer = require("multer");
+const multer = require('multer');
 
-// Configure storage for uploaded files
+// Set up multer storage
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.join("public", "uploads", "temp")); // Temporary storage for uncropped images
+  destination: (req, file, cb) => {
+      cb(null, 'uploads/'); // Destination folder for uploads
   },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + path.extname(file.originalname)); // Unique filename
-  },
+  filename: (req, file, cb) => {
+      cb(null, Date.now() + '-' + file.originalname); // Unique filename to avoid conflicts
+  }
 });
 
 // File type filter (only images)
@@ -21,8 +20,6 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-
-// Initialize multer
 const upload = multer({
   storage: storage,
   fileFilter: fileFilter,

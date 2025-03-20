@@ -113,6 +113,72 @@
             letter-spacing: 0.5px;
             margin: 20px 0 30px;
         }
+        
+        .social-container {
+            margin: 15px 0;
+            display: flex;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .social-container .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .social-container .social-btn:hover {
+            background-color: #dbdada;
+        }
+
+        .social-container .social-btn img {
+            height: 24px;
+            margin-right: 10px;
+        }
+
+        .social-container .social-btn span {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .social-container a {
+            text-decoration: none;
+
+        }
+
+        .divider {
+            width: 100%;
+            text-align: center;
+            margin: 10px 0;
+            position: relative;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background-color: #eee;
+            z-index: 1;
+        }
+
+        .divider span {
+            background-color: white;
+            padding: 0 15px;
+            position: relative;
+            z-index: 2;
+            color: #777;
+            font-size: 12px;
+        }
 
         button {
             border-radius: 20px;
@@ -315,6 +381,10 @@
                 font-size: 12px;
                 /* Reduce label size */
             }
+            .divider span {
+                font-size: 10px;
+                /* Reduce divider text size */
+            }
 
             .error-message {
                 font-size: 10px;
@@ -364,6 +434,10 @@
             input {
                 padding: 8px;
                 /* Further adjust input padding */
+            }
+            .divider span {
+                font-size: 9px;
+                /* Further reduce divider text size */
             }
 
             .form-group label {
@@ -456,12 +530,22 @@
                 <img src="img/footer-logo.png" alt="DecibelX">
             </div>
             <form id="signup-form" >
+
+                <!-- Social Login Button -->
+                <div class="social-container">
+                    <a href="/auth/google" class="social-btn">
+                        <img src="https://i.ibb.co/smTXFvv/google.png" alt="google">
+                        <span>SignUp in with Google</span>
+                    </a>
+                </div>
+
+                 <!-- Divider -->
+                 <div class="divider">
+                    <span>or</span>
+                </div>
+
                 <h1 style="margin-top: 5px;">Sign up</h1>
-                <% if (typeof message !=='undefined' && message) { %>
-                    <div class="text-danger-custom">
-                        <%= message %>
-                    </div>
-                    <% } %>
+            
                         <!-- Form Fields -->
                         <div class="form-group">
                             <label for="fullname">Full Name</label>

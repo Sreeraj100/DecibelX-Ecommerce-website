@@ -1,0 +1,463 @@
+<%- include("../../views/partials/user/headers") %>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Add jQuery -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <!-- Add jQuery zoom plugin -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-zoom/1.7.21/jquery.zoom.min.js"></script>
+
+  <style>
+ 
+   body {
+      box-sizing: border-box;
+      margin-top: 130px;
+      padding: 0;
+    }
+
+  .header{
+    margin-bottom: 200px;
+  }
+  
+    /* Product Details Container */
+    .product-details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 40px;
+      margin-top: 30px;
+    }
+
+    /* MODIFIED: Image Section with standardized sizes */
+    .product-images {
+      flex: 1;
+      min-width: 300px;
+      max-width: 500px;
+      /* Added max-width for standardization */
+    }
+
+    .main-image-container {
+      position: relative;
+      overflow: hidden;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      height: 400px;
+      /* Fixed height */
+      width: 80%;
+    }
+
+    .main-image {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f8f8f8;
+      border-radius: 8px;
+      height: 100%;
+      width: 100%;
+    }
+
+    .main-image img,
+    .zoom-container img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      width: auto;
+      height: auto;
+    }
+
+    /* MODIFIED: jQuery zoom container */
+    .zoom-container {
+      cursor: crosshair;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .thumbnail-images {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+    }
+
+    .thumbnail {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      cursor: pointer;
+      border: 2px solid #ddd;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .thumbnail:hover {
+      border-color: #0066cc;
+      transform: translateY(-2px);
+    }
+
+    .thumbnail.active {
+      border-color: #0066cc;
+    }
+
+    /* Product Info Section */
+    .product-info {
+      flex: 1;
+      min-width: 300px;
+    }
+
+    .product-info h1 {
+      font-size: 28px;
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    /* Ratings */
+    .ratings {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .ratings .fa-star {
+      color: #ddd;
+      margin-right: 3px;
+      font-size: 18px;
+    }
+
+    .ratings .fa-star.active {
+      color: #ffd700;
+    }
+
+    .rating-count {
+      margin-left: 10px;
+      color: #666;
+      font-size: 14px;
+    }
+
+    /* Price */
+    .price {
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .current-price {
+      font-size: 28px;
+      font-weight: bold;
+      color: #0066cc;
+    }
+
+    .original-price {
+      font-size: 18px;
+      color: #888;
+      text-decoration: line-through;
+    }
+
+    .discount-badge {
+      background-color: #ff4d4d;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    /* Stock Status */
+    .stock-status {
+      font-weight: bold;
+      margin: 15px 0;
+      padding: 8px 0;
+      font-size: 16px;
+    }
+
+    .stock-status.in-stock {
+      color: #2ecc71;
+    }
+
+    .stock-status.low-stock {
+      color: #f39c12;
+    }
+
+    .stock-status.out-of-stock {
+      color: #e74c3c;
+    }
+
+    /* Description */
+    .description {
+      margin: 25px 0;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    .description h3 {
+      font-size: 20px;
+      margin-bottom: 10px;
+      color: #333;
+      position: relative;
+      padding-bottom: 10px;
+    }
+
+    .description h3:after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 50px;
+      height: 3px;
+      background-color: #0066cc;
+    }
+
+    .description p {
+      margin-bottom: 15px;
+    }
+
+    /* Button */
+    .add-to-cart {
+      background-color: #0066cc;
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .add-to-cart i {
+      font-size: 18px;
+    }
+
+    .add-to-cart:hover:not(:disabled) {
+      background-color: #004d99;
+      transform: translateY(-2px);
+    }
+
+    .add-to-cart:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    /* Quantity Control */
+    .quantity-control {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .quantity-control button {
+      width: 40px;
+      height: 40px;
+      background: #f1f1f1;
+      border: 1px solid #ddd;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .quantity-control input {
+      width: 60px;
+      height: 40px;
+      text-align: center;
+      border: 1px solid #ddd;
+      border-left: none;
+      border-right: none;
+      font-size: 16px;
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+      .product-details {
+        flex-direction: column;
+        gap: 30px;
+      }
+
+      .product-images {
+        max-width: 100%;
+        /* Allow full width on mobile */
+      }
+
+      .main-image-container {
+        height: 350px;
+        /* Slightly smaller on mobile */
+      }
+
+      .thumbnail {
+        width: 60px;
+        height: 60px;
+      }
+
+      .current-price {
+        font-size: 24px;
+      }
+
+      .product-info h1 {
+        font-size: 24px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 10px;
+      }
+
+      .main-image-container {
+        height: 300px;
+        /* Even smaller on very small screens */
+      }
+
+      .thumbnail-images {
+        justify-content: center;
+      }
+
+      .price {
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+
+  <div class="container">
+    <!-- Product Details -->
+    <div class="product-details">
+      <!-- Product Images with jQuery Zoom -->
+      <div class="product-images">
+        <div class="main-image-container">
+          <div class="zoom-container">
+            <img src="<%= product.productImage1 %>" alt="<%= product.productName %>" id="main-image">
+          </div>
+        </div>
+        <div class="thumbnail-images">
+          <img src="<%= product.productImage1 %>" alt="Main Image" class="thumbnail active"
+            onclick="changeImage('<%= product.productImage1 %>', this)">
+          <img src="<%= product.productImage2 %>" alt="Thumbnail 1" class="thumbnail"
+            onclick="changeImage('<%= product.productImage2 %>', this)">
+          <img src="<%= product.productImage3 %>" alt="Thumbnail 2" class="thumbnail"
+            onclick="changeImage('<%= product.productImage3 %>', this)">
+          <img src="<%= product.productImage4 %>" alt="Thumbnail 3" class="thumbnail"
+            onclick="changeImage('<%= product.productImage4 %>', this)">
+        </div>
+      </div>
+
+      <!-- Product Info -->
+      <div class="product-info">
+        <h1>
+          <%= product.productName %>
+        </h1>
+        <div class="ratings">
+          <% for(let i=1; i <=5; i++) { %>
+            <i class="fas fa-star <%= i <= Math.round(product.productRating || 0) ? 'active' : '' %>"></i>
+            <% } %>
+              <span class="rating-count">(<%= product.productRating || '0' %> / 5)</span>
+        </div>
+
+        <div class="price">
+          <span class="current-price">₹<%= product.productOfferPrice || product.productPrice %></span>
+          <% if (product.productOfferPrice) { %>
+            <span class="original-price">₹<%= product.productPrice %></span>
+            <% const discount=Math.round((product.productPrice - product.productOfferPrice) / product.productPrice *
+              100); %>
+              <span class="discount-badge">
+                <%= discount %>% OFF
+              </span>
+              <% } %>
+        </div>
+
+        <div class="stock-status <%= stockStatus.toLowerCase().replace(' ', '-') %>">
+          <i class="<%= product.productStock > 0 ? 'fas fa-check-circle' : 'fas fa-times-circle' %>"></i>
+          <%= stockStatus %>
+        </div>
+
+        <% if (product.productStock> 0) { %>
+          <div class="quantity-control">
+            <button id="decrease-quantity">-</button>
+            <input type="number" id="quantity" value="1" min="1" max="<%= product.productStock %>">
+            <button id="increase-quantity">+</button>
+          </div>
+          <% } %>
+            <button class="add-to-cart" <%=product.productStock <=0 ? 'disabled' : '' %>>
+              <i class="fas fa-shopping-cart"></i>
+              <%= product.productStock <=0 ? 'Out of Stock' : 'Add to Cart' %>
+            </button>
+            <div class="description">
+              <h3>Product Description</h3>
+              <p>
+                <%= product.productDescription %>
+              </p>
+            </div>
+
+
+      </div>
+    </div>
+  </div>
+
+  <%- include("../../views/partials/user/footers") %>
+
+    <script>
+      $(document).ready(function () {
+        // Initialize jQuery zoom on the main image
+        $('.zoom-container').zoom({
+          magnify: 1.5, // Zoom magnification level
+          onZoomIn: function () {
+            $(this).css('cursor', 'zoom-out');
+          },
+          onZoomOut: function () {
+            $(this).css('cursor', 'zoom-in');
+          }
+        });
+
+        // Initialize active thumbnail
+        document.querySelector('.thumbnail').classList.add('active');
+      });
+
+      // Change Image on Thumbnail Click with jQuery Zoom refresh
+      function changeImage(imageUrl, thumbnail) {
+        // Remove zoom first
+        $('.zoom-container').trigger('zoom.destroy');
+
+        // Change the image
+        $('#main-image').attr('src', imageUrl);
+
+        // Reinitialize zoom
+        $('.zoom-container').zoom({
+          magnify: 1.5
+        });
+
+        // Update active state on thumbnails
+        document.querySelectorAll('.thumbnail').forEach(thumb => {
+          thumb.classList.remove('active');
+        });
+        if (thumbnail) {
+          thumbnail.classList.add('active');
+        }
+      }
+
+      // Quantity Control
+      const decreaseBtn = document.getElementById('decrease-quantity');
+      const increaseBtn = document.getElementById('increase-quantity');
+      const quantityInput = document.getElementById('quantity');
+
+      if (decreaseBtn && increaseBtn && quantityInput) {
+        decreaseBtn.addEventListener('click', () => {
+          if (quantityInput.value > 1) {
+            quantityInput.value = parseInt(quantityInput.value) - 1;
+          }
+        });
+
+        increaseBtn.addEventListener('click', () => {
+          if (parseInt(quantityInput.value) < parseInt(quantityInput.max)) {
+            quantityInput.value = parseInt(quantityInput.value) + 1;
+          }
+        });
+
+        quantityInput.addEventListener('change', () => {
+          if (quantityInput.value < 1) {
+            quantityInput.value = 1;
+          }
+          if (parseInt(quantityInput.value) > parseInt(quantityInput.max)) {
+            quantityInput.value = quantityInput.max;
+          }
+        });
+      }
+    </script>
