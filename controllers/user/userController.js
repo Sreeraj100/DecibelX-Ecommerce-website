@@ -17,12 +17,21 @@ async function comparePassword(enteredPassword, storedPassword) {
   const isMatch = await bcrypt.compare(enteredPassword, storedPassword);
   return isMatch;
 }
-
 const loadHome = async (req, res, next) => {
   try {
     let name = "";
-    const products = await product.find({}).limit(4);
-    const categories = await category.find({});
+    // First get all listed categories
+    const categories = await category.find({isListed:true});
+    
+    // Get only the category IDs that are listed
+    const listedCategoryIds = categories.map(cat => cat._id);
+    
+    // Find products that are listed, not deleted, and belong to listed categories
+    const products = await product.find({
+      isListed: true,
+      isDeleted: false,
+      productCategoryId: { $in: listedCategoryIds }
+    }).sort({ createdAt: -1 }).limit(4);
 
     if (req.session.loginSession || req.session.signupSession) {
       const userEmail = req.session.email;
@@ -43,6 +52,7 @@ const loadHome = async (req, res, next) => {
     }
   } catch (error) {
     console.log("Homepage error:", error);
+  
   }
 };
 
@@ -259,9 +269,7 @@ const logout = async (req, res) => {
   req.session.loginSession = null;
   req.session.signupSession = null;
   req.session.user = null;
-  req.session.logError = null;
-  req.session.signError = null;
-  req.session.otp = null;
+  req.session.email =null;
   req.session.otpError = null;
   return res.redirect("/");
 };

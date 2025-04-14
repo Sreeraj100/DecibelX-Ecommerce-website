@@ -237,6 +237,7 @@
 
         setTimeout(() => {
             toast.remove();
+            window.location.reload()
         }, 3800);
     }
 
@@ -251,7 +252,7 @@
             toggle.removeEventListener("change", toggleProductStatus); // Remove existing listener
             toggle.addEventListener("change", function () {
                 const productId = this.id.replace("statusToggle", "");
-                toggleProductStatus(productId, this.checked);
+                // toggleProductStatus(productId, this.checked);
             });
         });
     });

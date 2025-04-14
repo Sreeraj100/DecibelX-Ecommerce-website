@@ -6,17 +6,206 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-zoom/1.7.21/jquery.zoom.min.js"></script>
 
   <style>
- 
-   body {
+    body {
       box-sizing: border-box;
       margin-top: 130px;
       padding: 0;
     }
 
-  .header{
-    margin-bottom: 200px;
-  }
-  
+    /* for loader */
+    #loader-wrapper {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 12, 20, 0.769);
+      backdrop-filter: blur(8px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      transition: opacity 0.7s ease, visibility 0.7s ease;
+    }
+
+    /* Custom futuristic loader */
+    .cyber-loader {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cyber-loader::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      box-shadow: 0 0 30px #00FFFB;
+      animation: pulse 2s infinite;
+    }
+
+    .orbit {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      border-top: 2px solid #00FFFB;
+      border-left: 2px solid #00FFFB;
+      animation: spin 1.5s linear infinite;
+    }
+
+    .orbit-inner {
+      position: absolute;
+      width: 70%;
+      height: 70%;
+      top: 15%;
+      left: 15%;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      border-bottom: 2px solid #00FFFB;
+      border-right: 2px solid #00FFFB;
+      animation: spin-reverse 1.2s linear infinite;
+    }
+
+    .orbit-dot {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-color: #00FFFB;
+      border-radius: 50%;
+      top: calc(50% - 10px);
+      right: -10px;
+      box-shadow: 0 0 15px #00FFFB, 0 0 30px #00FFFB;
+      animation: blink 1s infinite alternate;
+    }
+
+    /* Added DecibelX text inside the circle */
+    .logo-text {
+      position: relative;
+      color: #00FFFB;
+      font-size: 16px;
+      font-weight: bold;
+      text-shadow: 0 0 10px #00FFFB;
+      letter-spacing: 1px;
+      z-index: 10;
+      animation: glow 2s infinite alternate;
+    }
+
+    .loading-text {
+      margin-top: 30px;
+      color: #00FFFB;
+      font-size: 18px;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      animation: flicker 2s infinite alternate;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes spin-reverse {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(-360deg);
+      }
+    }
+
+    @keyframes pulse {
+      0% {
+        opacity: 0.4;
+        transform: scale(0.8);
+      }
+
+      50% {
+        opacity: 0.6;
+        transform: scale(1);
+      }
+
+      100% {
+        opacity: 0.4;
+        transform: scale(0.8);
+      }
+    }
+
+    @keyframes blink {
+      0% {
+        opacity: 0.7;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+    @keyframes glow {
+      0% {
+        opacity: 0.8;
+        text-shadow: 0 0 5px #00FFFB;
+      }
+
+      100% {
+        opacity: 1;
+        text-shadow: 0 0 15px #00FFFB, 0 0 30px #00FFFB;
+      }
+    }
+
+    @keyframes flicker {
+
+      0%,
+      19%,
+      21%,
+      23%,
+      25%,
+      54%,
+      56%,
+      100% {
+        opacity: 0.95;
+        text-shadow: 0 0 5px #00FFFB, 0 0 15px #00FFFB;
+      }
+
+      20%,
+      24%,
+      55% {
+        opacity: 0.5;
+        text-shadow: none;
+      }
+    }
+
+    /* Blurred main content */
+    .blur {
+      filter: blur(6px);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    /* Fade-out effect */
+    #loader-wrapper.fade-out {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .header {
+      margin-bottom: 200px;
+    }
+
     /* Product Details Container */
     .product-details {
       display: flex;
@@ -211,6 +400,147 @@
       margin-bottom: 15px;
     }
 
+    /* Related Products */
+    .related-products {
+      margin-top: 60px;
+      padding-top: 30px;
+      border-top: 1px solid #eee;
+      margin-bottom: 60px;
+    }
+
+    .related-products h2 {
+      font-size: 24px;
+      margin-bottom: 25px;
+      color: #333;
+      position: relative;
+      padding-bottom: 10px;
+    }
+
+    .related-products h2:after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 50px;
+      height: 3px;
+      background-color: #0066cc;
+    }
+
+    .related-products .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .related-products .product-card {
+      background-color: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s;
+      position: relative;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .related-products .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+    }
+
+    .related-products .product-image {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      background-color: #f9f9f9;
+      height: 180px;
+    }
+
+    .related-products .product-image img {
+      width: 80%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .related-products .product-info {
+      padding: 15px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .related-products .product-title {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      line-height: 1.3;
+      color: #333;
+    }
+
+    .related-products .product-price {
+      display: flex;
+      align-items: baseline;
+      margin-bottom: 10px;
+      margin-top: auto;
+    }
+
+    .related-products .current-price {
+      font-weight: bold;
+      font-size: 16px;
+      color: #333;
+    }
+
+    .related-products .original-price {
+      font-size: 14px;
+      color: #888;
+      text-decoration: line-through;
+      margin-left: 8px;
+    }
+
+    .related-products .add-to-cart {
+      background: #00fffb;
+      border: 1px solid #ddd;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: absolute;
+      bottom: 15px;
+      right: 15px;
+      transition: all 0.2s;
+    }
+
+    .related-products .add-to-cart:hover {
+      background-color: #0066cc;
+      color: white;
+      border-color: #0066cc;
+    }
+
+    .no-related {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 20px;
+      color: #777;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .related-products .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .related-products .products-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
     /* Button */
     .add-to-cart {
       background-color: #0066cc;
@@ -318,6 +648,17 @@
     }
   </style>
 
+  <div id="loader-wrapper">
+    <div class="cyber-loader">
+      <div class="orbit">
+        <div class="orbit-dot"></div>
+      </div>
+      <div class="orbit-inner"></div>
+      <div class="logo-text">DecibelX</div>
+    </div>
+    <div class="loading-text">Loading ▫️▫️▫️</div>
+  </div>
+
   <div class="container">
     <!-- Product Details -->
     <div class="product-details">
@@ -390,7 +731,47 @@
 
       </div>
     </div>
+
+
+    <!-- Related Products Section -->
+    <div class="related-products">
+      <h2>Related Products</h2>
+      <div class="products-grid">
+        <% if (relatedProducts && relatedProducts.length> 0) { %>
+          <% relatedProducts.forEach(relatedProduct=> { %>
+            <div class="product-card">
+              <a href="/product/<%= relatedProduct._id %>" style="text-decoration: none; color: inherit;">
+                <div class="product-image">
+                  <img src="<%= relatedProduct.productImage1 %>" alt="<%= relatedProduct.productName %>">
+                </div>
+                <div class="product-info">
+                  <h3 class="product-title">
+                    <%= relatedProduct.productName %>
+                  </h3>
+                  <div class="product-price">
+                    <span class="current-price">₹<%= relatedProduct.productOfferPrice || relatedProduct.productPrice %>
+                        </span>
+                    <% if (relatedProduct.productOfferPrice) { %>
+                      <span class="original-price">₹<%= relatedProduct.productPrice %></span>
+                      <% } %>
+                  </div>
+                </div>
+              </a>
+              <button class="add-to-cart" data-product-id="<%= relatedProduct._id %>">
+                <i class="fas fa-shopping-cart"></i>
+              </button>
+            </div>
+            <% }); %>
+              <% } else { %>
+                <p class="no-related">No related products found</p>
+                <% } %>
+      </div>
+    </div>
+
+
+
   </div>
+
 
   <%- include("../../views/partials/user/footers") %>
 
@@ -460,4 +841,20 @@
           }
         });
       }
+
+      window.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("main-content").classList.add("blur");
+      });
+
+      window.addEventListener("load", () => {
+        // Add a slight delay for a better visual effect
+        setTimeout(() => {
+          const loader = document.getElementById("loader-wrapper");
+          const mainContent = document.getElementById("main-content");
+
+          loader.classList.add("fade-out");
+          mainContent.classList.remove("blur");
+        }, 1000);
+      });
+
     </script>

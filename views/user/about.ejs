@@ -2,12 +2,20 @@
 
 <%- include("../../views/partials/user/headers") %>
 
-<style>
+  <style>
+    .nav-menu #about {
+      color: #00c3ff;
+    }
+
+    .nav-menu #about {
+      font-size: 19px;
+      font-weight: 700;
+    }
     .about-container {
       font-family: 'Roboto', sans-serif;
       color: #333333;
     }
-    
+
     .hero-section {
       background-color: #1a1a2e;
       color: #fff;
@@ -15,36 +23,36 @@
       text-align: center;
       margin-bottom: 40px;
     }
-    
+
     .hero-section h1 {
       font-size: 2.5rem;
       margin-bottom: 10px;
       color: #00FFFB;
     }
-    
+
     .tagline {
       font-size: 1.2rem;
       opacity: 0.9;
     }
-    
+
     .container {
       max-width: 1200px;
       margin: 0 auto;
       padding: 0 20px;
     }
-    
+
     .about-grid {
       display: flex;
       flex-wrap: wrap;
       gap: 40px;
       margin-bottom: 60px;
     }
-    
+
     .about-text {
       flex: 1;
       min-width: 300px;
     }
-    
+
     .about-image {
       flex: 1;
       min-width: 300px;
@@ -52,44 +60,44 @@
       align-items: center;
       justify-content: center;
     }
-    
+
     .featured-image {
       max-width: 100%;
       border-radius: 8px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     }
-    
+
     h2 {
       color: #1a1a2e;
       font-size: 1.8rem;
       margin: 30px 0 20px;
     }
-    
+
     p {
       line-height: 1.6;
       margin-bottom: 15px;
     }
-    
+
     ul {
       margin-left: 20px;
       margin-bottom: 30px;
     }
-    
+
     li {
       margin-bottom: 10px;
     }
-    
+
     .values-section {
       margin: 40px 0 60px;
     }
-    
+
     .values-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 30px;
       margin-top: 30px;
     }
-    
+
     .value-card {
       background-color: #f8f9fa;
       padding: 30px 20px;
@@ -97,117 +105,123 @@
       text-align: center;
       transition: transform 0.3s, box-shadow 0.3s;
     }
-    
+
     .value-card:hover {
       transform: translateY(-5px);
       box-shadow: 0 2px 10px rgb(0, 0, 0);
     }
-    
+
     .value-icon {
       font-size: 2rem;
       color: #1a1a2e;
       margin-bottom: 15px;
     }
-    
+
     .value-card h3 {
       font-size: 1.3rem;
       margin-bottom: 10px;
       color: #00FFFB;
     }
-    
+
     @media (max-width: 768px) {
       .hero-section {
         padding: 40px 0;
       }
-      
+
       .hero-section h1 {
         font-size: 2rem;
       }
-      
+
       .about-grid {
         flex-direction: column;
       }
-      
+
       .values-grid {
         grid-template-columns: 1fr 1fr;
       }
     }
-    
+
     @media (max-width: 480px) {
       .values-grid {
         grid-template-columns: 1fr;
       }
     }
   </style>
-<main class="about-container">
-  <section class="hero-section">
-    <div class="container">
-      <h1>About DecibelX</h1>
-      <p class="tagline">Premium Audio Solutions for Every Lifestyle</p>
-    </div>
-  </section>
+  <main class="about-container">
+    <section class="hero-section">
+      <div class="container">
+        <h1>About DecibelX</h1>
+        <p class="tagline">Premium Audio Solutions for Every Lifestyle</p>
+      </div>
+    </section>
 
-  <section class="about-content">
-    <div class="container">
-      <div class="about-grid">
-        <div class="about-text">
-          <h2>Our Story</h2>
-          <p>Founded with a passion for exceptional sound quality, DecibelX began with a simple mission: to create audio products that elevate your listening experience without breaking the bank.</p>
-          <p>Since our inception, we've been dedicated to crafting headsets, earbuds, neckbands, and wired solutions that combine cutting-edge technology with comfortable design. We believe that premium audio experiences should be accessible to everyone.</p>
-          
-          <h2>Our Commitment</h2>
-          <p>At DecibelX, we're committed to:</p>
-          <ul>
-            <li><strong>Quality Sound:</strong> Delivering rich, immersive audio experiences across all our products</li>
-            <li><strong>Innovation:</strong> Constantly evolving our technology to stay ahead of industry trends</li>
-            <li><strong>Durability:</strong> Creating products that withstand daily use and stand the test of time</li>
-            <li><strong>Customer Satisfaction:</strong> Ensuring that every customer finds the perfect audio solution for their needs</li>
-          </ul>
+    <section class="about-content">
+      <div class="container">
+        <div class="about-grid">
+          <div class="about-text">
+            <h2>Our Story</h2>
+            <p>Founded with a passion for exceptional sound quality, DecibelX began with a simple mission: to create
+              audio products that elevate your listening experience without breaking the bank.</p>
+            <p>Since our inception, we've been dedicated to crafting headsets, earbuds, neckbands, and wired solutions
+              that combine cutting-edge technology with comfortable design. We believe that premium audio experiences
+              should be accessible to everyone.</p>
+
+            <h2>Our Commitment</h2>
+            <p>At DecibelX, we're committed to:</p>
+            <ul>
+              <li><strong>Quality Sound:</strong> Delivering rich, immersive audio experiences across all our products
+              </li>
+              <li><strong>Innovation:</strong> Constantly evolving our technology to stay ahead of industry trends</li>
+              <li><strong>Durability:</strong> Creating products that withstand daily use and stand the test of time
+              </li>
+              <li><strong>Customer Satisfaction:</strong> Ensuring that every customer finds the perfect audio solution
+                for their needs</li>
+            </ul>
+          </div>
+
+          <div class="about-image">
+            <img src="/img/DecibelX.webp" alt="DecibelX Headphones Collection" class="featured-image">
+          </div>
         </div>
-        
-        <div class="about-image">
-          <img src="/img/DecibelX.webp" alt="DecibelX Headphones Collection" class="featured-image">
+
+        <div class="values-section">
+          <h2>Why Choose DecibelX?</h2>
+          <div class="values-grid">
+            <div class="value-card">
+              <div class="value-icon">
+                <i class="fas fa-headphones"></i>
+              </div>
+              <h3>Sound Expertise</h3>
+              <p>Our team of audio engineers fine-tune each product for exceptional clarity and depth.</p>
+            </div>
+
+            <div class="value-card">
+              <div class="value-icon">
+                <i class="fas fa-medal"></i>
+              </div>
+              <h3>Premium Quality</h3>
+              <p>We use high-grade materials and rigorous testing to ensure product excellence.</p>
+            </div>
+
+            <div class="value-card">
+              <div class="value-icon">
+                <i class="fas fa-users"></i>
+              </div>
+              <h3>Customer First</h3>
+              <p>Your satisfaction drives our innovation and product development process.</p>
+            </div>
+
+            <div class="value-card">
+              <div class="value-icon">
+                <i class="fas fa-globe"></i>
+              </div>
+              <h3>Global Standards</h3>
+              <p>We adhere to international quality standards for all our audio solutions.</p>
+            </div>
+          </div>
         </div>
       </div>
+    </section>
+  </main>
 
-      <div class="values-section">
-        <h2>Why Choose DecibelX?</h2>
-        <div class="values-grid">
-          <div class="value-card">
-            <div class="value-icon">
-              <i class="fas fa-headphones"></i>
-            </div>
-            <h3>Sound Expertise</h3>
-            <p>Our team of audio engineers fine-tune each product for exceptional clarity and depth.</p>
-          </div>
-
-          <div class="value-card">
-            <div class="value-icon">
-              <i class="fas fa-medal"></i>
-            </div>
-            <h3>Premium Quality</h3>
-            <p>We use high-grade materials and rigorous testing to ensure product excellence.</p>
-          </div>
-
-          <div class="value-card">
-            <div class="value-icon">
-              <i class="fas fa-users"></i>
-            </div>
-            <h3>Customer First</h3>
-            <p>Your satisfaction drives our innovation and product development process.</p>
-          </div>
-          
-          <div class="value-card">
-            <div class="value-icon">
-              <i class="fas fa-globe"></i>
-            </div>
-            <h3>Global Standards</h3>
-            <p>We adhere to international quality standards for all our audio solutions.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-</main>
-
-<%- include("../../views/partials/user/footers") %>
+  <%- include("../../views/partials/user/footers") %>

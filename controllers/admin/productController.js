@@ -31,7 +31,7 @@ const addProduct = async(req,res,next)=>{
 
 const addProductPost = async (req,res,next) => {
     try {
-        console.log("Hello");
+        // console.log("Hello");
         const productCheck = await  product.findOne({productName:{$regex: new RegExp('^'+req.body.productName +'$','i') }})
         
         if(productCheck){

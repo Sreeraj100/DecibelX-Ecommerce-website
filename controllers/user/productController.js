@@ -5,13 +5,13 @@ const category = require("../../models/categorySchema");
 const singleProductView = async (req, res, next) => {
   try {
     const userEmail = req.session.email;
-    let name =''
+    let name = "";
     console.log(userEmail);
-    if(userEmail){
+    if (userEmail) {
       const userVer = await usercollection.findOne({ email: userEmail });
       name = userVer.name;
     }
-    
+
     const productId = req.params.id;
     const productDetails = await product
       .findById(productId)
@@ -30,17 +30,31 @@ const singleProductView = async (req, res, next) => {
       stockStatus = "Low Stock";
     }
 
-    // Calculate average rating
-    //   const totalRatings = productDetails.reviews.length;
-    //   const avgRating =
-    //     totalRatings > 0
-    //       ? productDetails.reviews.reduce((sum, review) => sum + review.rating, 0) / totalRatings
-    //       : 0;
- console.log(productDetails)
+    const categories = await category.find({ isListed: true });
+
+    // Get only the category IDs that are listed
+    const listedCategoryIds = categories.map((cat) => cat._id);
+
+    // Fetch related products (same category, excluding current product)
+    const relatedProducts = await product.find({
+        productCategoryId: productDetails.productCategoryId, // Same category as current product
+        isListed: true,
+        isDeleted: false,
+        _id: { $ne: productId }, // Exclude current product
+      })
+      .sort({ createdAt: -1 }) // Sort by newest first
+      .limit(4) // Get only 4 related products
+      .populate({
+        path: "productCategoryId",
+        select: "categoryName isListed _id",
+        match: { isListed: true }, // Ensure populated category is listed
+      });
+
     res.render("product", {
       name,
       product: productDetails,
       stockStatus,
+      relatedProducts, // Pass related products to the view
       breadcrumbs: [
         { name: "Home", url: "/" },
         { name: "Shop", url: "/shop" },

@@ -6,20 +6,31 @@ const loadShopping = async (req, res, next) => {
     try {
         let name = "";
         const page = parseInt(req.query.page) || 1;
-        const limit = 6;
+        const limit = 8;
         const skip = (page - 1) * limit;
 
-        let query = { isListed: true, isDeleted: false };
+        // First get all listed categories
+        const listedCategories = await category.find({ isListed: true });
+        const listedCategoryIds = listedCategories.map(cat => cat._id);
+
+        let query = { 
+            isListed: true, 
+            isDeleted: false,
+            productCategoryId: { $in: listedCategoryIds } // Only products from listed categories
+        };
 
         // Search functionality
         if (req.query.search) {
             query.productName = { $regex: req.query.search, $options: 'i' };
         }
 
-        // Filter by category
+        // Filter by category (only allow filtering by listed categories)
         if (req.query.category) {
-            const categoryIds = req.query.category.split(',').map(id => new mongoose.Types.ObjectId(id));
-            query.productCategoryId = { $in: categoryIds };
+            const requestedCategoryIds = req.query.category.split(',').map(id => new mongoose.Types.ObjectId(id));
+            // Only include categories that are actually listed
+            query.productCategoryId = { 
+                $in: requestedCategoryIds.filter(id => listedCategoryIds.some(listedId => listedId.equals(id)))
+            };
         }
 
         // Filter by price range
@@ -28,14 +39,14 @@ const loadShopping = async (req, res, next) => {
         }
 
         // Sorting
-        let sortOption = {};
+        let sortOption = { createdAt: -1 };
         if (req.query.sort) {
             switch (req.query.sort) {
                 case 'price-asc':
-                    sortOption = { productPrice: 1 };
+                    sortOption = { productOfferPrice: 1 };
                     break;
                 case 'price-desc':
-                    sortOption = { productPrice: -1 };
+                    sortOption = { productOfferPrice: -1 };
                     break;
                 case 'name-asc':
                     sortOption = { productName: 1 };
@@ -54,13 +65,16 @@ const loadShopping = async (req, res, next) => {
         const products = await product.find(query)
             .populate({
                 path: "productCategoryId",
-                select: "categoryName isListed _id"
+                select: "categoryName isListed _id",
+                match: { isListed: true } // Ensure populated category is listed
             })
             .sort(sortOption)
             .skip(skip)
             .limit(limit);
 
-        const categories = await category.find({});
+        // Only show listed categories to the user
+        const categories = await category.find({ isListed: true });
+
         if (req.session.loginSession || req.session.signupSession) {
             const userEmail = req.session.email;
             const userVer = await usercollection.findOne({ email: userEmail });
@@ -76,7 +90,7 @@ const loadShopping = async (req, res, next) => {
 
         res.render("shop", {
             name,
-            products,
+            products: products.filter(p => p.productCategoryId), // Filter out products with unlisted categories
             categories,
             currentPage: page,
             totalPages,
@@ -84,6 +98,7 @@ const loadShopping = async (req, res, next) => {
         });
     } catch (error) {
         console.log("shopPage error:", error);
+        next(error);
     }
 };
 
