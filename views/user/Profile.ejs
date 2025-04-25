@@ -1,139 +1,181 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - <%= userVer.name %></title>
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        :root {
+            --primary-color: #00f2ea;
+            --primary-dark: #00d6d0;
+            --text-dark: #333;
+            --text-light: #666;
+            --border-color: #eee;
+            --bg-light: #fafafa;
+            --bg-white: #ffffff;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --spacing-sm: 10px;
+            --spacing-md: 20px;
+            --spacing-lg: 30px;
+        }
+
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            background-color: #fafafa;
-            color: #333;
         }
 
-        /* .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            padding: 10px 20px;
-            box-sizing: border-box;
-        } */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
 
         .page-content {
-            padding-top: 15px;
-            /* Match header height + padding */
             width: 100%;
+            /* max-width: 1200px; */
+            margin: 0 auto;
+            padding: 20px;
         }
 
-        /* Then nest your container inside this */
-        .page-content .container {
+        .Pcontainer {
             display: flex;
-            /* Remove margin-top from here */
+            gap: 30px;
+            padding: 10px;
         }
 
         .sidebar {
-            width: 240px;
-            padding: 20px;
-            background-color: #fff;
-            border-right: 1px solid #eee;
+            width: 320px;
+            background-color: var(--bg-white);
+            border-radius: var(--radius);
+            padding: var(--spacing-md);
+            box-shadow: var(--shadow);
             position: sticky;
-            top: 0;
-            /* Change from 60px to 0 */
-            height: 100vh;
-            /* Use full viewport height */
-            overflow-y: auto;
-            /* Ensure sidebar content is scrollable if needed */
-            box-sizing: border-box;
-            /* Include padding in width calculation */
+            top: 20px;
+            height: fit-content;
         }
 
         .main-content {
             flex: 1;
-            padding: 20px 40px;
-            overflow-y: auto;
-            /* Ensure main content is scrollable if needed */
-            min-height: calc(100vh - 60px);
-            /* Minimum height accounts for header */
+            min-width: 0;
         }
-        .user{
+
+        .user {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
         }
 
         .user-avatar {
-            width: 48px;
-            height: 48px;
+            width: 64px;
+            height: 64px;
             background-color: #f8e4e6;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 24px;
             font-weight: bold;
             color: #e91e63;
-            margin-bottom: 10px;
-            border: 1px solid red;
+            box-shadow: 0 2px 8px rgba(233, 30, 99, 0.2);
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
         }
 
         .user-name {
             font-weight: 600;
-            margin-bottom: 5px;
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+
+        .user-email {
+            color: var(--text-light);
+            font-size: 14px;
         }
 
         .menu-section {
-            margin-top: 30px;
-            margin-bottom: 20px;
+            margin-bottom: var(--spacing-lg);
         }
 
         .menu-title {
             font-weight: 600;
             margin-bottom: 15px;
-            color: #666;
+            color: var(--text-light);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .menu-section a {
+            color: #333;
+            text-decoration: none !important;
+            font-weight: 600;
+            font-size: 16px;
         }
 
         .menu-item {
             display: flex;
             align-items: center;
-            padding: 10px;
-            margin-bottom: 5px;
-            border-radius: 6px;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: var(--radius-sm);
             cursor: pointer;
-            color: #555;
+            color: var(--text-dark);
             text-decoration: none;
-            transition: background-color 0.2s ease;
+            transition: all 0.2s ease;
+            font-weight: 500;
         }
 
         .menu-item.active {
-            background-color: #f5f5f7;
-            color: #333;
-            font-weight: 500;
+            background-color: rgba(0, 242, 234, 0.1);
+            color: var(--primary-color);
+            font-weight: 600;
         }
 
         .menu-item:hover:not(.active) {
-            background-color: #f9f9f9;
+            background-color: rgba(0, 0, 0, 0.03);
+            transform: translateX(3px);
+        }
+
+        .logout-item {
+            margin-top: 40px;
+            color: #ff5252;
         }
 
         h1 {
-            font-size: 24px;
-            margin-bottom: 30px;
+            font-size: 28px;
+            margin-bottom: 25px;
+            font-weight: 700;
         }
 
         h2 {
-            font-size: 18px;
+            font-size: 20px;
             margin-bottom: 20px;
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .form-section {
-            margin-bottom: 40px;
-            background-color: #fff;
-            padding: 25px;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            background-color: var(--bg-white);
+            padding: 30px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .form-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
         }
 
         .form-row {
@@ -144,90 +186,107 @@
 
         .form-field {
             flex: 1;
+            min-width: 0;
         }
 
         label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             font-weight: 500;
+            color: var(--text-dark);
         }
 
         input[type="text"],
         input[type="email"],
         input[type="password"] {
             width: 100%;
-            padding: 10px 12px;
+            padding: 12px 15px;
             border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-            box-sizing: border-box;
-            transition: border-color 0.2s ease;
+            border-radius: var(--radius-sm);
+            font-size: 16px;
+            transition: all 0.2s ease;
         }
 
         input[type="text"]:focus,
         input[type="email"]:focus,
         input[type="password"]:focus {
-            border-color: #00f2ea;
+            border-color: var(--primary-color);
             outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 242, 234, 0.2);
+        }
+
+        input:disabled {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
         }
 
         .button {
-            padding: 10px 20px;
+            padding: 12px 24px;
             border: none;
-            border-radius: 6px;
-            font-size: 14px;
+            border-radius: var(--radius-sm);
+            font-size: 16px;
+            font-weight: 500;
             cursor: pointer;
             margin-right: 10px;
-            transition: background-color 0.2s ease;
+            transition: all 0.2s ease;
         }
 
         .primary-button {
-            background-color: #00f2ea;
+            background-color: var(--primary-color);
             color: #000;
-            font-weight: 500;
         }
 
         .primary-button:hover {
-            background-color: #00d6d0;
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         .secondary-button {
             background-color: #f0f0f0;
-            color: #333;
+            color: var(--text-dark);
         }
 
         .secondary-button:hover {
-            background-color: #e5e5e5;
+            background-color: #e0e0e0;
         }
 
         .divider {
             height: 1px;
-            background-color: #eee;
+            background-color: var(--border-color);
             margin: 30px 0;
         }
 
-        .password-field {
+        .password-section {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
+        .password-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
         .password-dots {
             font-size: 16px;
-            letter-spacing: 2px;
-            margin-top: 5px;
-            color: #666;
+            letter-spacing: 3px;
+            color: var(--text-light);
         }
 
         .edit-button {
             background-color: transparent;
             border: 1px solid #ddd;
             padding: 8px 16px;
-            border-radius: 6px;
+            border-radius: var(--radius-sm);
             cursor: pointer;
-            color: #555;
+            color: var(--text-dark);
             font-size: 14px;
             transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .edit-button:hover {
@@ -235,164 +294,446 @@
             border-color: #ccc;
         }
 
-        .password-change-form {
-            display: none;
-            margin-top: 20px;
+        .edit-button svg {
+            width: 16px;
+            height: 16px;
         }
 
-        @media (max-width: 768px) {
-            .container {
+        .password-change-form {
+            display: none;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .error-message {
+            color: #ff5252;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .toast {
+            display: none;
+            background-color: #333;
+            color: white;
+            padding: 15px 25px;
+            border-radius: var(--radius);
+            font-size: 16px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateX(100%);
+            animation: slideInFromRight 0.8s ease-out forwards;
+        }
+
+        .toast.success {
+            background-color: #28a745;
+        }
+
+        .toast.error {
+            background-color: #dc3545;
+        }
+
+        @keyframes slideInFromRight {
+            0% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOutToRight {
+            0% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+
+        /* Responsive styles */
+        @media (max-width: 990px) {
+            .Pcontainer {
                 flex-direction: column;
             }
 
             .sidebar {
                 width: 100%;
-                border-right: none;
-                border-bottom: 1px solid #eee;
                 position: static;
-                height: auto;
-                padding-bottom: 0;
+                margin-bottom: 20px;
             }
 
+            .user {
+                padding-bottom: 15px;
+                margin-bottom: 15px;
+            }
+        }
+
+        @media (max-width: 768px) {
             .form-row {
                 flex-direction: column;
                 gap: 15px;
             }
+
+            .form-section {
+                padding: 20px;
+            }
+
+            .password-section {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .edit-button {
+                align-self: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .button {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
         }
     </style>
 </head>
-
 <body>
-    <div class="header">
-        <%- include("../../views/partials/user/headers") %>
-    </div>
+    <%- include("../../views/partials/user/headers") %>
+    
+    <div class="toast-container"></div>
+
     <div class="page-content">
-        <div class="container">
+        <div class="Pcontainer">
             <div class="sidebar">
                 <div class="user">
-                <div class="user-avatar">
-                    <%= userVer.name.charAt(0).toUpperCase() %>
+                    <div class="user-avatar">
+                        <%= userVer.name.charAt(0).toUpperCase() %>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name"><%= userVer.name %></div>
+                        <div class="user-email"><%= userVer.email %></div>
+                    </div>
                 </div>
-                <div class="user-name">
-                    <%= userVer.name %>
-                </div>
-            </div>
+
                 <div class="menu-section">
-                    <div class="menu-title">Manage account</div>
-                    <a href="/profile" class="menu-item active">Personal info</a>
-                    <a href="/addresses" class="menu-item">Addresses</a>
-                    <a href="/wishlist" class="menu-item">Wishlist</a>
-                    <a href="/wallet" class="menu-item">Wallet</a>
-                    <a href="/orders" class="menu-item">Orders</a>
+                    <a href="/profile" class="menu-item active">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 10px;">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        Personal Info
+                    </a>
+                    <a href="/address" class="menu-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 10px;">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        Addresses
+                    </a>
+                    <a href="/wishlist" class="menu-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 10px;">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                        Wishlist
+                    </a>
+                    <a href="/wallet" class="menu-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 10px;">
+                            <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                            <line x1="16" y1="12" x2="16" y2="12"></line>
+                        </svg>
+                        Wallet
+                    </a>
+                    <a href="/orders" class="menu-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 10px;">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <path d="M16 10a4 4 0 0 1-8 0"></path>
+                        </svg>
+                        Orders
+                    </a>
+
+                    <a href="#" class="menu-item logout-item" onclick="document.getElementById('logoutForm').submit(); return false;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 10px;">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                        Log out
+                    </a>
                 </div>
-                <div class="menu-section">
-                    <div class="menu-title">Customer service</div>
-                    <a href="/terms" class="menu-item">Terms and conditions</a>
-                </div>
-                <a href="#" class="menu-item" style="margin-top: 40px;"
-                    onclick="document.getElementById('logoutForm').submit(); return false;">Log out</a>
+
                 <form id="logoutForm" action="/logout" method="post" style="display: none"></form>
             </div>
 
             <div class="main-content">
                 <div class="form-section">
-                    <h2>Personal info</h2>
-                    <form action="/update-profile" method="POST">
+                    <div class="form-section-header">
+                        <h2>Personal Information</h2>
+                    </div>
+
+                    <form id="profileForm" method="POST">
                         <div class="form-row">
                             <div class="form-field">
-                                <label for="name">Name</label>
+                                <label for="name">Full Name</label>
                                 <input type="text" id="name" name="name" value="<%= userVer.name %>" required />
                             </div>
-                            <div class="form-field">
-                                <label for="phone">Phone</label>
-                                <input type="text" id="phone" name="phone" value="<%= userVer.phone %>" required />
-                            </div>
+                            <% if(userVer.phone) { %>
+                                <div class="form-field">
+                                    <label for="phone">Phone Number</label>
+                                    <input type="text" id="phone" name="phone" value="<%= userVer.phone %>" maxlength="10" required />
+                                </div>
+                            <% } %>
                         </div>
+
                         <div class="form-field">
-                            <label for="email">Email</label>
+                            <label for="email">Email Address</label>
                             <input type="email" id="email" name="email" value="<%= userVer.email %>" disabled />
                         </div>
-                        <div style="margin-top: 20px;">
-                            <button type="submit" class="button primary-button">Save changes</button>
-                            <button type="button" class="button secondary-button"
-                                onclick="window.location.href='/'">Cancel</button>
+
+                        <div style="margin-top: 25px; display: flex; flex-wrap: wrap;">
+                            <button type="submit" class="button primary-button">Save Changes</button>
+                            <button type="button" class="button secondary-button" onclick="window.location.href='/'">Cancel</button>
                         </div>
                     </form>
                 </div>
-                <div class="divider"></div>
-                <div class="form-section">
-                    <div class="password-field">
-                        <div>
-                            <h2 style="margin: 0;">Password</h2>
-                            <div class="password-dots">••••••••••••••</div>
-                        </div>
-                        <button type="button" class="edit-button" id="editPasswordBtn">Edit</button>
-                    </div>
 
-                    <div id="passwordChangeForm" class="password-change-form">
-                        <form action="/update-password" method="POST">
-                            <div class="form-field" style="margin-top: 20px;">
-                                <label for="currentPassword">Current Password</label>
-                                <input type="password" id="currentPassword" name="currentPassword" required />
+                <% if(userVer.password) { %>
+                    <div class="form-section">
+                        <div class="password-section">
+                            <div class="password-info">
+                                <h2 style="margin: 0;">Password</h2>
+                                <div class="password-dots">••••••••</div>
                             </div>
-                            <div class="form-row">
+                            <button type="button" class="edit-button" id="editPasswordBtn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                </svg>
+                                Change Password
+                            </button>
+                        </div>
+
+                        <div id="passwordChangeForm" class="password-change-form">
+                            <form id="changePasswordForm">
                                 <div class="form-field">
-                                    <label for="newPassword">New Password</label>
-                                    <input type="password" id="newPassword" name="newPassword" required />
+                                    <label for="currentPassword">Current Password</label>
+                                    <input type="password" id="currentPassword" name="currentPassword">
+                                    <div class="error-message" id="old-password-error"></div>
                                 </div>
-                                <div class="form-field">
-                                    <label for="confirmPassword">Confirm Password</label>
-                                    <input type="password" id="confirmPassword" name="confirmPassword" required />
+
+                                <div class="form-row">
+                                    <div class="form-field">
+                                        <label for="newPassword">New Password</label>
+                                        <input type="password" id="newPassword" name="newPassword">
+                                        <div class="error-message" id="passwordError"></div>
+                                    </div>
+
+                                    <div class="form-field">
+                                        <label for="confirmPassword">Confirm Password</label>
+                                        <input type="password" id="confirmPassword" name="confirmPassword">
+                                        <div class="error-message" id="confirmError"></div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div style="margin-top: 20px;">
-                                <button type="submit" class="button primary-button">Update Password</button>
-                                <button type="button" class="button secondary-button"
-                                    id="cancelPasswordBtn">Cancel</button>
-                            </div>
-                        </form>
+
+                                <div style="margin-top: 25px; display: flex; flex-wrap: wrap;">
+                                    <button type="submit" class="button primary-button" id="updateBtn">Update Password</button>
+                                    <button type="button" class="button secondary-button" id="cancelPasswordBtn">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                </div>
+                <% } %>
             </div>
         </div>
     </div>
 
     <%- include("../../views/partials/user/footers") %>
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                // Password edit functionality
-                const editPasswordBtn = document.getElementById('editPasswordBtn');
-                const passwordChangeForm = document.getElementById('passwordChangeForm');
-                const cancelPasswordBtn = document.getElementById('cancelPasswordBtn');
-
-                editPasswordBtn.addEventListener('click', function () {
-                    passwordChangeForm.style.display = 'block';
-                    editPasswordBtn.style.display = 'none';
-                });
-
-                cancelPasswordBtn.addEventListener('click', function () {
-                    passwordChangeForm.style.display = 'none';
-                    editPasswordBtn.style.display = 'block';
-                    // Clear form fields
-                    document.getElementById('currentPassword').value = '';
-                    document.getElementById('newPassword').value = '';
-                    document.getElementById('confirmPassword').value = '';
-                });
-
-                // Form validation for password change
-                const passwordForm = passwordChangeForm.querySelector('form');
-                passwordForm.addEventListener('submit', function (event) {
-                    const newPassword = document.getElementById('newPassword').value;
-                    const confirmPassword = document.getElementById('confirmPassword').value;
-
-                    if (newPassword !== confirmPassword) {
-                        event.preventDefault();
-                        alert('New password and confirm password do not match!');
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Profile form submission
+            const profileForm = document.getElementById('profileForm');
+            profileForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                try {
+                    const formData = new FormData(profileForm);
+                    const response = await fetch('/editProfile', {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            name: formData.get('name'),
+                            phone: formData.get('phone')
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    showToast(result.message, result.success ? 'success' : 'error');
+                    
+                    if (result.success) {
+                        // Update the displayed name if successful
+                        document.querySelector('.user-name').textContent = formData.get('name');
+                        document.querySelector('.user-avatar').textContent = formData.get('name').charAt(0).toUpperCase();
+                        window.location.reload();
                     }
-                });
+                } catch (error) {
+                    console.error('Error:', error);
+                    showToast('An error occurred while updating profile', 'error');
+                }
             });
-        </script>
-</body>
 
+            // Password edit functionality
+            const editPasswordBtn = document.getElementById('editPasswordBtn');
+            const passwordChangeForm = document.getElementById('passwordChangeForm');
+            const cancelPasswordBtn = document.getElementById('cancelPasswordBtn');
+            const updateBtn = document.getElementById('updateBtn');
+            const oldPasswordError = document.getElementById("old-password-error");
+            const passwordError = document.getElementById("passwordError");
+            const confirmError = document.getElementById("confirmError");
+
+            editPasswordBtn.addEventListener('click', function () {
+                passwordChangeForm.style.display = 'block';
+                editPasswordBtn.style.display = 'none';
+            });
+
+            cancelPasswordBtn.addEventListener('click', function () {
+                passwordChangeForm.style.display = 'none';
+                editPasswordBtn.style.display = 'block';
+
+                // Clear form fields
+                document.getElementById('currentPassword').value = '';
+                document.getElementById('newPassword').value = '';
+                document.getElementById('confirmPassword').value = '';
+                oldPasswordError.style.display = 'none';
+                passwordError.style.display = 'none';
+                confirmError.style.display = 'none';
+            });
+
+            const passwordForm = document.getElementById("changePasswordForm");
+            const oldPasswordInput = document.getElementById("currentPassword");
+            const newPasswordInput = document.getElementById("newPassword");
+            const confirmPasswordInput = document.getElementById("confirmPassword");
+
+            const validateOldPassword = () => {
+                if (!oldPasswordInput.value.trim()) {
+                    oldPasswordError.textContent = "Current password is required";
+                    oldPasswordError.style.display = "block";
+                    return false;
+                } else {
+                    oldPasswordError.style.display = "none";
+                    return true;
+                }
+            };
+
+            const validateNewPassword = () => {
+                const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+                if (!newPasswordInput.value.trim()) {
+                    passwordError.textContent = "New password is required";
+                    passwordError.style.display = "block";
+                    return false;
+                } else if (!passwordRegex.test(newPasswordInput.value)) {
+                    passwordError.textContent = "Password must be at least 8 characters with at least one digit, one uppercase and one lowercase letter";
+                    passwordError.style.display = "block";
+                    return false;
+                } else {
+                    passwordError.style.display = "none";
+                    return true;
+                }
+            };
+
+            const validateConfirmPassword = () => {
+                if (!confirmPasswordInput.value.trim()) {
+                    confirmError.textContent = "Please confirm your password";
+                    confirmError.style.display = "block";
+                    return false;
+                } else if (confirmPasswordInput.value !== newPasswordInput.value) {
+                    confirmError.textContent = "Passwords do not match";
+                    confirmError.style.display = "block";
+                    return false;
+                } else {
+                    confirmError.style.display = "none";
+                    return true;
+                }
+            };
+
+            oldPasswordInput.addEventListener("blur", validateOldPassword);
+            newPasswordInput.addEventListener("blur", validateNewPassword);
+            confirmPasswordInput.addEventListener("blur", validateConfirmPassword);
+
+            // Show toast notification
+            function showToast(message, type) {
+                const toastContainer = document.querySelector(".toast-container");
+                const toast = document.createElement("div");
+                toast.className = `toast ${type}`;
+                toast.textContent = message;
+                toastContainer.appendChild(toast);
+
+                setTimeout(() => {
+                    toast.style.display = "block";
+                    setTimeout(() => {
+                        toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+                        setTimeout(() => {
+                            toast.remove();
+                        }, 800);
+                    }, 3000);
+                }, 100);
+            }
+
+            passwordForm.addEventListener("submit", async (e) => {
+                e.preventDefault();
+
+                // Validate all fields
+                const isOldValid = validateOldPassword();
+                const isNewValid = validateNewPassword();
+                const isConfirmValid = validateConfirmPassword();
+
+                if (isOldValid && isNewValid && isConfirmValid) {
+                    try {
+                        const response = await fetch('/changePassword', {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                currentPassword: oldPasswordInput.value,
+                                newPassword: newPasswordInput.value,
+                                confirmPassword: confirmPasswordInput.value
+                            })
+                        });
+
+                        const result = await response.json();
+
+                        if (result.success) {
+                            showToast(result.message, "success");
+                            passwordForm.reset();
+                            passwordChangeForm.style.display = 'none';
+                            editPasswordBtn.style.display = 'block';
+                        } else {
+                            showToast(result.message, "error");
+                        }
+                    } catch (error) {
+                        console.error("Error:", error);
+                        showToast("An error occurred. Please try again.", "error");
+                    }
+                }
+            });
+        });
+    </script>
+</body>
 </html>

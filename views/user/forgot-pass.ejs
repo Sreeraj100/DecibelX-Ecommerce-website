@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DecibelX - Forgot Password</title>
+    <link rel="icon" href="img/icon.png" type="image/png">
+    <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #f6f5f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            font-family: 'Montserrat', sans-serif;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 14px 28px rgba(0, 0, 0, 0.15), 0 10px 10px rgba(0, 0, 0, 0.12);
+            position: relative;
+            overflow: hidden;
+            width: 800px;
+            max-width: 100%;
+            min-height: 550px;
+        }
+
+        .form-container {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            width: 50%;
+        }
+
+        .forgot-password-container {
+            left: 0;
+            z-index: 2;
+        }
+
+        .overlay-container {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 50%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 100;
+        }
+
+        .overlay {
+            background: #3498db;
+            background: linear-gradient(to right, rgba(52, 152, 219, 0.7), rgba(41, 128, 185, 0.7));
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: 0 0;
+            color: #FFFFFF;
+            position: relative;
+            height: 100%;
+            width: 100%;
+        }
+
+        .overlay-panel {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 0 40px;
+            text-align: center;
+            top: 0;
+            height: 100%;
+            width: 100%;
+            background-image: url(img/Signup_image.jpg);
+        }
+
+        .overlay-panel img {
+            width: 395px;
+            height: auto;
+        }
+
+        h1 {
+            font-weight: bold;
+            margin: 0;
+            margin-bottom: 15px;
+        }
+
+        p {
+            font-size: 14px;
+            line-height: 20px;
+            letter-spacing: 0.5px;
+            margin: 20px 0 30px;
+        }
+
+        button {
+            border-radius: 20px;
+            border: 1px solid #3498db;
+            background-color: #3498db;
+            color: #FFFFFF;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 12px 45px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: transform 80ms ease-in, background-color 0.3s;
+            cursor: pointer;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        button:focus {
+            outline: none;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        form {
+            background-color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 20px 50px;
+            height: 100%;
+            text-align: center;
+            overflow-y: hidden;
+        }
+
+        input {
+            background-color: #eee;
+            border: none;
+            border-radius: 4px;
+            padding: 12px 15px;
+            margin: 4px 0 0 0;
+            width: 100%;
+        }
+
+        input:focus {
+            outline: 2px solid #00FFFB;
+        }
+
+        .form-group {
+            width: 100%;
+            text-align: left;
+            margin-bottom: 6px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 2px;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 11px;
+            margin-top: 2px;
+            margin-bottom: 2px;
+            text-align: left;
+            display: none;
+        }
+
+        input.error {
+            border: 1px solid #e74c3c;
+        }
+
+        .login-link {
+            margin-top: 20px;
+            color: #777;
+            font-size: 14px;
+        }
+
+        .login-link a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        #forgot-password-form button[type="submit"] {
+            margin-top: 30px;
+            margin-bottom: 10px;
+        }
+
+        .instructions {
+            color: #555;
+            font-size: 13px;
+            margin-bottom: 20px;
+            text-align: center;
+            max-width: 90%;
+        }
+
+        .mobile-logo {
+            display: none;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .mobile-logo img {
+            width: 250px;
+            height: auto;
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .toast {
+            display: none;
+            background-color: #ff6600;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateX(100%);
+            animation: slideInFromRight 0.8s ease-out forwards;
+        }
+
+        @keyframes slideInFromRight {
+            0% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOutToRight {
+            0% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+
+        /* Media Queries for Responsiveness */
+        @media (max-width: 768px) {
+            .container {
+                width: 90%;
+                min-height: auto;
+                flex-direction: column;
+            }
+
+            .form-container,
+            .overlay-container {
+                width: 100%;
+                height: auto;
+                position: static;
+            }
+
+            .overlay-container {
+                display: none;
+            }
+
+            .form-container.forgot-password-container {
+                padding: 20px;
+            }
+
+            .overlay-panel {
+                padding: 20px;
+            }
+
+            .overlay-panel img {
+                width: 200px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            p {
+                font-size: 12px;
+            }
+
+            button {
+                padding: 10px 30px;
+                font-size: 10px;
+            }
+
+            input {
+                padding: 10px;
+            }
+
+            .form-group label {
+                font-size: 12px;
+            }
+
+            .error-message {
+                font-size: 10px;
+            }
+
+            .login-link {
+                font-size: 12px;
+            }
+
+            .instructions {
+                font-size: 12px;
+            }
+
+            .mobile-logo {
+                display: block;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                width: 100%;
+                border-radius: 0;
+            }
+
+            .form-container.forgot-password-container {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            p {
+                font-size: 10px;
+            }
+
+            button {
+                padding: 8px 20px;
+                font-size: 9px;
+            }
+
+            input {
+                padding: 8px;
+            }
+
+            .form-group label {
+                font-size: 11px;
+            }
+
+            .error-message {
+                font-size: 9px;
+            }
+
+            .login-link {
+                font-size: 11px;
+            }
+
+            .instructions {
+                font-size: 11px;
+            }
+
+            .mobile-logo {
+                display: block;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="toast-container"></div>
+    <div class="container" id="container">
+        
+        <!-- Forgot Password Form Section -->
+        <div class="form-container forgot-password-container">
+            <div class="mobile-logo">
+                <img src="img/footer-logo.png" alt="DecibelX">
+            </div>
+            <form id="forgot-password-form">
+                <h1>Forgot Password</h1>
+                
+                <p class="instructions">Enter your email address below, and we'll send you an OTP to reset your password.</p>
+
+                <!-- Email Field -->
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="Enter your email" name="email" required>
+                    <p class="error-message" id="email-error"></p>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit">Send OTP</button>
+
+                <!-- Login Link -->
+                <p class="login-link">Remember your password? <a href="/login">Log in</a></p>
+            </form>
+        </div>
+
+        <!-- Overlay Section (Hidden on Small Screens) -->
+        <div class="overlay-container">
+            <div class="overlay">
+                <div class="overlay-panel">
+                    <h1>Reset Password</h1>
+                    <p>Enter your email to receive a one-time password to reset your account</p>
+                    <img src="img/footer-logo.png" alt="DecibelX">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Form validation utilities
+        function showError(input, message) {
+            const formGroup = input.parentElement;
+            const errorElement = formGroup.querySelector('.error-message');
+
+            input.classList.add('error');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+
+            return false;
+        }
+
+        function clearError(input) {
+            const formGroup = input.parentElement;
+            const errorElement = formGroup.querySelector('.error-message');
+
+            input.classList.remove('error');
+            errorElement.textContent = '';
+            errorElement.style.display = 'none';
+        }
+
+        function validateEmail(email) {
+            const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            return re.test(String(email).toLowerCase());
+        }
+
+        // Show toast message
+        function showToast(message, isSuccess) {
+            const toastContainer = document.querySelector(".toast-container");
+            const toast = document.createElement("div");
+            toast.className = "toast";
+            toast.textContent = message;
+            toast.style.backgroundColor = isSuccess ? "#28a745" : "#dc3545";
+            
+            toastContainer.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.display = "block";
+            }, 100);
+
+            setTimeout(() => {
+                toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+            }, 3000);
+
+            setTimeout(() => {
+                toast.style.display = "none";
+                toast.remove();
+            }, 3800);
+        }
+
+        // Forgot password form submission
+        document.getElementById('forgot-password-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const emailInput = document.getElementById('email');
+            const email = emailInput.value.trim();
+            let isValid = true;
+
+            // Validate email
+            if (email === '') {
+                isValid = showError(emailInput, 'Email is required');
+            } else if (!validateEmail(email)) {
+                isValid = showError(emailInput, 'Please enter a valid email');
+            }
+
+            if (!isValid) return;
+
+            try {
+                // Send request to server
+                const response = await fetch('/forgotPassword', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast("OTP sent successfully! Please check your email.", true);
+                    // Redirect to OTP verification page after delay
+                    setTimeout(() => {
+                        window.location.href = `/verifyOtpGet`;
+                    }, 2000);
+                } else {
+                    showToast(data.message || "Email not found!", false);
+                }
+            } catch (error) {
+                console.error("Forgot password error:", error);
+                showToast("Error sending OTP. Please try again.", false);
+            }
+        });
+
+        // Clear error when typing
+        document.getElementById('email').addEventListener('input', function() {
+            clearError(this);
+        });
+    </script>
+</body>
+</html>

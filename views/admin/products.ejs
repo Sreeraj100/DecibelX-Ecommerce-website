@@ -4,27 +4,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Products</title>
+    <link rel="icon" href="/img/icon.png" type="image/png" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* .content-wrapper {
-            display: none;
-        } */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .main-container {
+            padding: 1.5rem;
+            width: 80%;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+        }
 
         .search-bar {
-            max-width: 300px;
+            max-width: 100%;
+            width: 300px;
+            transition: all 0.3s ease;
+        }
+
+        .search-bar input {
+            border-radius: 20px 0 0 20px;
+            border: 1px solid #ced4da;
+        }
+
+        .search-bar button {
+            border-radius: 0 20px 20px 0;
         }
 
         .table-responsive {
             overflow-x: auto;
         }
 
-        .table img {
-            max-width: 50px;
-            height: auto;
+        .table {
+            margin-bottom: 0;
         }
 
+        .table th {
+            white-space: nowrap;
+            font-weight: 600;
+            vertical-align: middle;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: rgba(0, 123, 255, 0.05);
+        }
+
+        .table img {
+            max-width: 60px;
+            height: auto;
+            border-radius: 5px;
+            object-fit: cover;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-action {
+            margin: 0.15rem;
+            border-radius: 5px;
+            transition: all 0.2s;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+        }
+
+        .form-check-input {
+            width: 2.5em;
+            height: 1.2em;
+            cursor: pointer;
+        }
+
+        .pagination {
+            margin-bottom: 0;
+        }
+
+        .page-item.active .page-link {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+
+        .page-link {
+            color: #0d6efd;
+            padding: 0.5rem 0.75rem;
+        }
+
+        .page-link:hover {
+            background-color: #e9ecef;
+        }
 
         .toast-container {
             position: fixed;
@@ -35,7 +120,6 @@
 
         .toast {
             display: none;
-            background-color: #00ff4c;
             color: white;
             padding: 15px 30px;
             border-radius: 12px;
@@ -47,12 +131,123 @@
             animation: slideInFromRight 0.8s ease-out forwards;
         }
 
+        .toast.success {
+            background-color: #28a745;
+        }
+
+        .toast.error {
+            background-color: #dc3545;
+        }
+
+        .toast.warning {
+            background-color: #ffc107;
+            color: #212529;
+        }
+
+        .status-badge {
+            padding: 0.35em 0.65em;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .in-stock {
+            background-color: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .out-of-stock {
+            background-color: #f8d7da;
+            color: #842029;
+        }
+
+        .product-name {
+            font-weight: 500;
+            color: #212529;
+        }
+
+        .product-category {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+
+        .product-price {
+            font-weight: 600;
+        }
+
+        .offer-price {
+            color: #28a745;
+        }
+
+        @media (max-width: 767.98px) {
+            .table-responsive {
+                border: 0;
+            }
+
+            .card-mobile {
+                margin-bottom: 1rem;
+                border: 1px solid rgba(0, 0, 0, 0.125);
+                border-radius: 0.25rem;
+            }
+
+            .card-mobile .card-body {
+                padding: 1rem;
+            }
+
+            .mobile-row {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 0.5rem;
+            }
+
+            .mobile-label {
+                font-weight: 600;
+                color: #6c757d;
+            }
+
+            .mobile-content {
+                text-align: right;
+            }
+
+            .mobile-action-buttons {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 1rem;
+            }
+
+            .mobile-image {
+                width: 70px;
+                height: 70px;
+                object-fit: cover;
+                border-radius: 5px;
+            }
+
+            .desktop-table {
+                display: none;
+            }
+
+            .mobile-cards {
+                display: block;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .desktop-table {
+                display: table;
+            }
+
+            .mobile-cards {
+                display: none;
+            }
+        }
+
         @keyframes slideInFromRight {
             0% {
                 opacity: 0;
                 transform: translateX(100%);
             }
-
             100% {
                 opacity: 1;
                 transform: translateX(0);
@@ -64,7 +259,6 @@
                 opacity: 1;
                 transform: translateX(0);
             }
-
             100% {
                 opacity: 0;
                 transform: translateX(100%);
@@ -75,188 +269,297 @@
 
 <body>
     <%- include("../../views/partials/admin/header") %>
-        <div class="toast-container"></div>
-        <div class="container mt-4 ">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <a href="/admin/addproduct" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Add Product
-                </a>
-                <form class="d-flex search-bar" action="/admin/products/search" method="GET">
-                    <input class="form-control me-2" type="search" name="q" placeholder="Search products..."
-                        aria-label="Search">
-                    <button class="btn btn-outline-success" type="submit">Search</button>
-                </form>
+    <div class="toast-container"></div>
+    
+    <div class="container-fluid main-container">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
+                <h5 class="mb-0">Product Management</h5>
+                <div class="d-flex gap-2 align-items-center flex-wrap mt-2 mt-md-0">
+                    <form class="d-flex search-bar" action="/admin/products/search" method="GET">
+                        <input class="form-control" type="search" name="q" placeholder="Search products..." aria-label="Search">
+                        <button class="btn btn-outline-primary" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+                    <a href="/admin/addproduct" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i> Add Product
+                    </a>
+                </div>
             </div>
-
-            <div class="table-responsive">
-                <table class="table table-bordered table-hover">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>S.No</th>
-                            <th>Product Name</th>
-                            <th>Parent Category</th>
-                            <th>Product Image</th>
-                            <th>Product Price</th>
-                            <th>Offer Price</th>
-                            <th>In Stock</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% if (products.length === 0) { %>
+            
+            <div class="card-body p-0">
+                <!-- Desktop Table View -->
+                <div class="table-responsive desktop-table">
+                    <table class="table table-hover">
+                        <thead class="table-light">
                             <tr>
-                                <td colspan="9" class="text-center">No match found</td>
+                                <th scope="col">#</th>
+                                <th scope="col">Product</th>
+                                <th scope="col">Category</th>
+                                <th scope="col">Image</th>
+                                <th scope="col">Price</th>
+                                <th scope="col">Offer Price</th>
+                                <th scope="col">Stock</th>
+                                <th scope="col">Status</th>
+                                <th scope="col" class="text-end">Actions</th>
                             </tr>
-                        <% } else { %>
-                            <% products.forEach((product, index)=> { %>
+                        </thead>
+                        <tbody>
+                            <% if (products.length === 0) { %>
                                 <tr>
-                                    <td><%= index + 1 %></td>
-                                    <td><%= product.productName %></td>
-                                    <td><%= product.productCategoryId.categoryName %></td>
-                                    <td><img src="<%= product.productImage1 %>" alt="Product Image"></td>
-                                    <td>$<%= product.productPrice %></td>
-                                    <td>$<%= product.productOfferPrice %></td>
-                                    <td><%= product.productStock > 0 ? product.productStock : 'Out of Stock' %></td>
-                                    <td>
-                                        <div class="d-flex justify-content-end mt-3">
+                                    <td colspan="9" class="text-center py-4">
+                                        <div class="d-flex flex-column align-items-center">
+                                            <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                                            <h5>No products found</h5>
+                                            <p class="text-muted">Try changing your search criteria</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% } else { %>
+                                <% products.forEach((product, index) => { 
+                                    // Calculate the actual index based on pagination
+                                    const actualIndex = currentPage ? (currentPage - 1) * itemsPerPage + index + 1 : index + 1;
+                                %>
+                                    <tr>
+                                        <td><%= actualIndex %></td>
+                                        <td>
+                                            <span class="product-name"><%= product.productName %></span>
+                                        </td>
+                                        <td>
+                                            <span class="product-category"><%= product.productCategoryId.categoryName %></span>
+                                        </td>
+                                        <td>
+                                            <img src="<%= product.productImage1 %>" alt="<%= product.productName %>" class="img-thumbnail">
+                                        </td>
+                                        <td class="product-price">₹<%= product.productPrice %></td>
+                                        <td class="offer-price">₹<%= product.productOfferPrice %></td>
+                                        <td>
+                                            <% if (product.productStock > 0) { %>
+                                                <span class="status-badge in-stock"><%= product.productStock %></span>
+                                            <% } else { %>
+                                                <span class="status-badge out-of-stock">Out of Stock</span>
+                                            <% } %>
+                                        </td>
+                                        <td>
                                             <div class="form-check form-switch">
-                                                <input class="form-check-input" type="checkbox" id="statusToggle<%= product._id %>" <%= product.isListed ? 'checked' : '' %> onchange="toggleProductStatus('<%= product._id %>', this.checked)">
+                                                <input class="form-check-input" type="checkbox" id="statusToggle<%= product._id %>" 
+                                                    <%= product.isListed ? 'checked' : '' %> 
+                                                    onchange="toggleProductStatus('<%= product._id %>', this.checked)">
                                                 <label class="form-check-label" for="statusToggle<%= product._id %>">
                                                     <%= product.isListed ? 'Listed' : 'Unlisted' %>
                                                 </label>
                                             </div>
+                                        </td>
+                                        <td class="text-end">
+                                            <button type="button" class="btn btn-sm btn-outline-warning btn-action" onclick="editProduct('<%= product._id %>')">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-danger btn-action" onclick="deleteProduct('<%= product._id %>')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Mobile Card View -->
+                <div class="mobile-cards">
+                    <% if (products.length === 0) { %>
+                        <div class="text-center py-4">
+                            <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                            <h5>No products found</h5>
+                            <p class="text-muted">Try changing your search criteria</p>
+                        </div>
+                    <% } else { %>
+                        <% products.forEach((product, index) => { 
+                            // Calculate the actual index based on pagination
+                            const actualIndex = currentPage ? (currentPage - 1) * itemsPerPage + index + 1 : index + 1;
+                        %>
+                            <div class="card card-mobile">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <div>
+                                            <h6 class="product-name mb-1"><%= product.productName %></h6>
+                                            <span class="product-category"><%= product.productCategoryId.categoryName %></span>
                                         </div>
-                                    </td>
-                                    <td>
-                                        <button type="button" class="btn btn-danger me-2" onclick="deleteProduct('<%= product._id %>')">
-                                            <i class="fas fa-trash"></i>
-                                            <%= product.isDeleted ? "Restore" : "Delete" %>
+                                        <img src="<%= product.productImage1 %>" alt="<%= product.productName %>" class="mobile-image">
+                                    </div>
+                                    
+                                    <div class="mobile-row">
+                                        <span class="mobile-label">Price:</span>
+                                        <span class="mobile-content product-price">₹<%= product.productPrice %></span>
+                                    </div>
+                                    
+                                    <div class="mobile-row">
+                                        <span class="mobile-label">Offer Price:</span>
+                                        <span class="mobile-content offer-price">₹<%= product.productOfferPrice %></span>
+                                    </div>
+                                    
+                                    <div class="mobile-row">
+                                        <span class="mobile-label">Stock:</span>
+                                        <span class="mobile-content">
+                                            <% if (product.productStock > 0) { %>
+                                                <span class="status-badge in-stock"><%= product.productStock %></span>
+                                            <% } else { %>
+                                                <span class="status-badge out-of-stock">Out of Stock</span>
+                                            <% } %>
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="mobile-row">
+                                        <span class="mobile-label">Status:</span>
+                                        <div class="form-check form-switch mobile-content">
+                                            <input class="form-check-input" type="checkbox" id="mobileStatusToggle<%= product._id %>" 
+                                                <%= product.isListed ? 'checked' : '' %> 
+                                                onchange="toggleProductStatus('<%= product._id %>', this.checked)">
+                                            <label class="form-check-label" for="mobileStatusToggle<%= product._id %>">
+                                                <%= product.isListed ? 'Listed' : 'Unlisted' %>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mobile-action-buttons mt-3">
+                                        <button type="button" class="btn btn-warning btn-sm flex-grow-1 me-1" onclick="editProduct('<%= product._id %>')">
+                                            <i class="fas fa-edit me-1"></i> Edit
                                         </button>
-                                        <button type="button" class="btn btn-warning me-2" onclick="editProduct('<%= product._id %>')">
-                                            <i class="fas fa-edit"></i> Edit
+                                        <button type="button" class="btn btn-danger btn-sm flex-grow-1" onclick="deleteProduct('<%= product._id %>')">
+                                            <i class="fas fa-trash me-1"></i> <%= product.isDeleted ? "Restore" : "Delete" %>
                                         </button>
-                                    </td>
-                                </tr>
-                            <% }); %>
-                        <% } %>
-                    </tbody>
-                </table>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } %>
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="card-footer">
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                    <div class="text-muted small">
+                        Showing <span class="fw-bold"><%= products.length %></span> of <span class="fw-bold"><%= totalProducts || products.length %></span> products
+                    </div>
+                    <nav aria-label="Product pagination">
+                        <ul class="pagination pagination-sm mb-0">
+                            <% if (typeof totalPages !== 'undefined' && totalPages > 1) { %>
+                                <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                                    <a class="page-link" href="/admin/products?page=<%= currentPage - 1 %>" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                                
+                                <% for (let i = 1; i <= totalPages; i++) { %>
+                                    <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                                        <a class="page-link" href="/admin/products?page=<%= i %>"><%= i %></a>
+                                    </li>
+                                <% } %>
+                                
+                                <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                                    <a class="page-link" href="/admin/products?page=<%= currentPage + 1 %>" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            <% } %>
+                        </ul>
+                    </nav>
+                </div>
             </div>
         </div>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-    function deleteProduct(productId) {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You want to toggle the delete status of this product?",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Delete'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                fetch(`/admin/products/delete/${productId}`, { method: "POST" })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            showToast(data.message, "success");
-                            setTimeout(() => {
-                                window.location.reload();
-                            }, 2000);
-                        } else {
-                            showToast("Failed to toggle delete status.", "error");
-                        }
-                    })
-                    .catch(error => {
-                        console.error("Error:", error);
-                        showToast("An error occurred. Please try again.", "error");
-                    });
-            }
-        });
-    }
+    </div>
 
-    function toggleProductStatus(productId, isChecked) {
-        const endpoint = isChecked ? `/admin/product/list/${productId}` : `/admin/product/unlist/${productId}`;
-        fetch(endpoint, { method: "POST" })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showToast(`Product ${isChecked ? "listed" : "unlisted"} successfully!`, "success");
-                } else {
-                    showToast("Failed to update product status.", "error");
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function deleteProduct(productId) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You want to toggle the delete status of this product?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Delete'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/admin/products/delete/${productId}`, { method: "POST" })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                showToast(data.message, "success");
+                                setTimeout(() => {
+                                    window.location.reload();
+                                }, 2000);
+                            } else {
+                                showToast("Failed to toggle delete status.", "error");
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error:", error);
+                            showToast("An error occurred. Please try again.", "error");
+                        });
                 }
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                showToast("An error occurred. Please try again.", "error");
             });
-    }
+        }
 
-    function editProduct(productId) {
-        window.location.href = `/admin/product/edit/${productId}`;
-    }
+        function toggleProductStatus(productId, isChecked) {
+            const endpoint = isChecked ? `/admin/product/list/${productId}` : `/admin/product/unlist/${productId}`;
+            fetch(endpoint, { method: "POST" })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast(`Product ${isChecked ? "listed" : "unlisted"} successfully!`, "success");
+                    } else {
+                        showToast("Failed to update product status.", "error");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    showToast("An error occurred. Please try again.", "error");
+                });
+        }
 
-    function searchProducts() {
-        const query = document.querySelector('input[name="q"]').value;
-        fetch(`/admin/products/search?q=${query}`, { method: "GET" })
-            .then(response => response.text())
-            .then(html => {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, "text/html");
-                const newTableBody = doc.querySelector("tbody");
-                const noMatchFound = doc.querySelector(".no-match-found");
+        function editProduct(productId) {
+            window.location.href = `/admin/product/edit/${productId}`;
+        }
 
-                if (noMatchFound) {
-                    document.querySelector("tbody").innerHTML = `<tr><td colspan="9" class="text-center">No match found</td></tr>`;
-                } else {
-                    document.querySelector("tbody").innerHTML = newTableBody.innerHTML;
-                }
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                showToast("An error occurred during search.", "error");
-            });
-    }
+        function showToast(message, type) {
+            const toastContainer = document.querySelector(".toast-container");
+            const toast = document.createElement("div");
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            toastContainer.appendChild(toast);
 
-    function showToast(message, type) {
-        const toastContainer = document.querySelector(".toast-container");
-        const toast = document.createElement("div");
-        toast.className = `toast ${type}`;
-        toast.textContent = message;
-        toastContainer.appendChild(toast);
+            setTimeout(() => {
+                toast.style.display = "block";
+            }, 100);
 
-        setTimeout(() => {
-            toast.style.display = "block";
-        }, 100);
+            setTimeout(() => {
+                toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+            }, 3000);
 
-        setTimeout(() => {
-            toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
-        }, 3000);
+            setTimeout(() => {
+                toast.remove();
+                window.location.reload()
+            }, 3800);
+        }
 
-        setTimeout(() => {
-            toast.remove();
-            window.location.reload()
-        }, 3800);
-    }
-
-    document.addEventListener("DOMContentLoaded", function () {
-        const searchForm = document.querySelector(".search-bar");
-        searchForm.addEventListener("submit", function (e) {
-            e.preventDefault();
-            searchProducts();
-        });
-
-        document.querySelectorAll(".form-check-input").forEach(toggle => {
-            toggle.removeEventListener("change", toggleProductStatus); // Remove existing listener
-            toggle.addEventListener("change", function () {
-                const productId = this.id.replace("statusToggle", "");
-                // toggleProductStatus(productId, this.checked);
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchForm = document.querySelector(".search-bar");
+            searchForm.addEventListener("submit", function (e) {
+                e.preventDefault();
+                
+                const query = document.querySelector('input[name="q"]').value;
+                const currentUrl = new URL(window.location);
+                currentUrl.searchParams.set('q', query);
+                currentUrl.searchParams.set('page', '1'); // Reset to first page on new search
+                window.location.href = currentUrl.toString();
             });
         });
-    });
-</script>
+    </script>
 </body>
 
 </html>

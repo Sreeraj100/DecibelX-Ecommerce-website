@@ -5,24 +5,59 @@ const fs = require('fs');
 
 const productPage = async (req, res, next) => {
     try {
-        const products = await product.find({ isDeleted: false }) // Exclude soft-deleted products
+        // Pagination parameters
+        const page = parseInt(req.query.page) || 1;
+        const itemsPerPage = 10; // You can adjust this number based on your preference
+        const skip = (page - 1) * itemsPerPage;
+        
+        // Search parameter
+        const searchQuery = req.query.q || "";
+        
+        // Build the filter object
+        const filter = { isDeleted: false };
+        
+        // Add search condition if search query exists
+        if (searchQuery) {
+            filter.$or = [
+                { productName: { $regex: searchQuery, $options: 'i' } },
+                { productDescription: { $regex: searchQuery, $options: 'i' } }
+                // Add any other fields you want to search
+            ];
+        }
+        
+        // Get total count for pagination
+        const totalProducts = await product.countDocuments(filter);
+        const totalPages = Math.ceil(totalProducts / itemsPerPage);
+        
+        // Fetch paginated products
+        const products = await product.find(filter)
             .populate({
                 path: "productCategoryId",
                 select: "categoryName -_id"
             })
-            .sort({ createdAt: -1 });
-
-        return res.render("products", { products });
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(itemsPerPage);
+        
+        return res.render("products", { 
+            products,
+            currentPage: page,
+            totalPages,
+            totalProducts,
+            itemsPerPage,
+            searchQuery
+        });
     } catch (error) {
         console.log("productPage error", error);
-        res.status(500).json({ error: "Internal Server Error" });
+
     }
 };
+
 
 const addProduct = async(req,res,next)=>{
     try{
         const categories = await category.find({isListed: true}).sort({ createdAt: -1 })
-        console.log(categories);
+        // console.log(categories);
         res.render("add-product",{categories})
     } catch (error) {
         console.log("addProduct error:",error)
@@ -214,5 +249,54 @@ const searchProducts = async (req, res, next) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 };
+
+
+
+
+// const searchProducts = async (req, res, next) => {
+//     try {
+//         const searchQuery = req.query.q || "";
+//         const page = parseInt(req.query.page) || 1;
+//         const itemsPerPage = 10;
+//         const skip = (page - 1) * itemsPerPage;
+        
+//         if (!searchQuery) {
+//             return res.redirect('/admin/products');
+//         }
+        
+//         const filter = {
+//             isDeleted: false,
+//             $or: [
+//                 { productName: { $regex: searchQuery, $options: 'i' } },
+//                 { productDescription: { $regex: searchQuery, $options: 'i' } }
+//                 // Add any other fields you want to search
+//             ]
+//         };
+        
+//         const totalProducts = await product.countDocuments(filter);
+//         const totalPages = Math.ceil(totalProducts / itemsPerPage);
+        
+//         const products = await product.find(filter)
+//             .populate({
+//                 path: "productCategoryId",
+//                 select: "categoryName -_id"
+//             })
+//             .sort({ createdAt: -1 })
+//             .skip(skip)
+//             .limit(itemsPerPage);
+        
+//         return res.render("products", { 
+//             products,
+//             currentPage: page,
+//             totalPages,
+//             totalProducts,
+//             itemsPerPage,
+//             searchQuery
+//         });
+//     } catch (error) {
+//         console.log("searchProducts error", error);
+//         res.status(500).json({ error: "Internal Server Error" });
+//     }
+// };
 
 module.exports = {productPage,addProduct,addProductPost,productEdit,productEditPost,unListProduct,listProduct,deleteProduct,searchProducts}

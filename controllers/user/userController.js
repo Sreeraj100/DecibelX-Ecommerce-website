@@ -2,6 +2,8 @@ const bcrypt = require("bcrypt");
 const usercollection = require("../../models/userSchema");
 const product = require("../../models/productSchema");
 const category = require("../../models/categorySchema");
+const wishlist = require("../../models/wishlistSchema");
+const cart = require("../../models/cartSchema");
 const otpCollection = require("../../models/otp");
 const sendotp = require("../../helpers/sendOtp");
 const passport = require("passport");
@@ -20,6 +22,8 @@ async function comparePassword(enteredPassword, storedPassword) {
 const loadHome = async (req, res, next) => {
   try {
     let name = "";
+    let wishlistCount = 0;
+    let cartCount=0
     // First get all listed categories
     const categories = await category.find({isListed:true});
     
@@ -31,24 +35,27 @@ const loadHome = async (req, res, next) => {
       isListed: true,
       isDeleted: false,
       productCategoryId: { $in: listedCategoryIds }
-    }).sort({ createdAt: -1 }).limit(4);
+    }).sort({ createdAt: -1 }).limit(5);
 
     if (req.session.loginSession || req.session.signupSession) {
       const userEmail = req.session.email;
       const userVer = await usercollection.findOne({ email: userEmail });
+      
       if (userVer) {
         req.session.otpSession = false;
         if (!userVer.isActive) {
           return res.redirect("/blocked");
         } else {
           name = userVer.name;
-          return res.render("home", { name, products, categories });
+           wishlistCount = await wishlist.countDocuments({ userId: userVer._id })
+          cartCount = await cart.countDocuments({ userId: userVer._id })
+          return res.render("home", { name, products, categories,wishlistCount,cartCount});
         }
       } else {
-        return res.render("home", { name, products, categories });
+        return res.render("home", { name, products, categories,wishlistCount });
       }
     } else {
-      return res.render("home", { name, products, categories });
+      return res.render("home", { name, products, categories,wishlistCount });
     }
   } catch (error) {
     console.log("Homepage error:", error);
@@ -143,7 +150,7 @@ const otpPost = async (req, res, next) => {
   }
 };
 
-const signup = async (req, res, next) => {
+const signup = async (req, res) => {
   try {
     const userExists = await usercollection.findOne({
       email: req.body.emailval,
@@ -174,7 +181,7 @@ const signup = async (req, res, next) => {
   }
 };
 
-const login = async (req, res, next) => {
+const login = async (req, res) => {
   try {
     // console.log(req.body);
     const userData = await usercollection.findOne({ email: req.body.email });
@@ -198,28 +205,17 @@ const login = async (req, res, next) => {
 };
 const googleCallback = async (req, res, next) => {
   try {
-    // console.log("Hello");
-    // console.log("User email:", req.user._json.email);
-
     const user = await usercollection.findOneAndUpdate(
       { email: req.user._json.email },
       { $set: { name: req.user.displayName } },
       { upsert: true, new: true }
     );
-    // console.log("User updated/created:", user);
-
     // const userId = await usercollection.findOne({
     //   email: req.user._json.email,
     // });
-    // console.log("User ID:", userId);
-
     req.session.email = req.user._json.email,
     
     req.session.loginSession = true;
-
-    // console.log("Session user:", req.session.user);
-    // console.log("Login session:", req.session.loginSession);
-
     return res.redirect("http://localhost:3000/");
   } catch (err) {
     console.error("Error in googleCallback:", err);
@@ -237,6 +233,8 @@ const blockedUser = async (req, res, next) => {
 };
 const about = async (req, res) => {
   let name = "";
+  let wishlistCount = 0;
+  let cartCount = 0
   if (req.session.loginSession || req.session.signupSession) {
     const userEmail = req.session.email;
     const userVer = await usercollection.findOne({ email: userEmail });
@@ -244,14 +242,18 @@ const about = async (req, res) => {
       return res.redirect("/blocked");
     } else {
       name = userVer.name;
-      return res.render("about", { name });
+      const wishlistCount = await wishlist.countDocuments({ userId: userVer._id })
+      cartCount = await cart.countDocuments({ userId: userVer._id })
+      return res.render("about", { name ,wishlistCount,cartCount});
     }
   } else {
-    return res.render("about", { name });
+    return res.render("about", { name ,wishlistCount});
   }
 };
 const contact = async (req, res) => {
   let name = "";
+  let wishlistCount = 0;
+  let cartCount = 0
   if (req.session.loginSession || req.session.signupSession) {
     const userEmail = req.session.email;
     const userVer = await usercollection.findOne({ email: userEmail });
@@ -259,12 +261,216 @@ const contact = async (req, res) => {
       return res.redirect("/blocked");
     } else {
       name = userVer.name;
-      return res.render("contact", { name });
+      const wishlistCount = await wishlist.countDocuments({ userId: userVer._id })
+      cartCount = await cart.countDocuments({ userId: userVer._id })
+      return res.render("contact", { name,wishlistCount,cartCount });
     }
   } else {
-    return res.render("contact", { name });
+    return res.render("contact", { name ,wishlistCount});
   }
 };
+
+const forgotPassword = async (req, res) => {
+  try {
+    // Clear any existing session data
+    req.session.forgotPasswordSession = null;
+    req.session.forgotEmail = null;
+    req.session.otpError = null;
+    
+    return res.render('forgot-pass');
+  } catch (error) {
+    console.log(error);
+    return res.status(500).render('error', { message: 'Server error' });
+  }
+};
+
+const forgotPasswordPost = async (req, res) => {
+  try {
+    const email = req.body.email;
+    const user = await usercollection.findOne({ email: email });
+    
+    if (!user) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "User not found with this email" 
+      });
+    }
+
+    // Generate and store OTP
+    const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    const hashedOtp = await securePassword(generatedOtp);
+
+    await otpCollection.updateOne(
+      { email: email },
+      { $set: { otp: hashedOtp } },
+      { upsert: true }
+    );
+
+    // Send OTP to email
+    await sendotp(generatedOtp, email, user.name);
+
+    // Set session variables
+    req.session.forgotPasswordSession = true;
+    req.session.forgotEmail = email;
+    req.session.otpStartTime = Date.now();
+    req.session.forgotOtpTime = 75; // 75 seconds for OTP expiry
+    req.session.otpError = null;
+
+    return res.status(200).json({ success: true });
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    return res.status(500).json({ 
+      success: false, 
+      message: "Server error" 
+    });
+  }
+};
+
+const verifyOtpGet = async (req, res) => {
+  try {
+    if (!req.session.forgotPasswordSession || !req.session.forgotEmail) {
+      return res.redirect('/forgotPassword');
+    }
+
+    // Calculate remaining time
+    const elapsedTime = Math.floor((Date.now() - req.session.otpStartTime) / 1000);
+    const remainingTime = Math.max(req.session.forgotOtpTime - elapsedTime, 0);
+    
+    return res.render("verifyOtp", {
+      otpError: req.session.otpError,
+      time: remainingTime,
+      email: req.session.forgotEmail
+    });
+  } catch (error) {
+    console.error("Verify OTP page error:", error);
+    return res.redirect('/forgotPassword');
+  }
+};
+
+const verifyOtppost = async (req, res) => {
+  try {
+    if (!req.session.forgotPasswordSession || !req.session.forgotEmail) {
+      return res.redirect('/forgotPassword');
+    }
+
+    const forgotEmail = req.session.forgotEmail;
+    const findOtp = await otpCollection.findOne({ email: forgotEmail });
+    
+    if (!findOtp || !findOtp.otp) {
+      req.session.otpError = "OTP expired. Please request a new one.";
+      return res.redirect('/verifyOtpGet');
+    }
+
+    // Verify OTP
+    if (await comparePassword(req.body.otp, findOtp.otp)) {
+      req.session.otpVerified = true;
+      return res.redirect('/resetPassword');
+    } else {
+      req.session.otpError = "Incorrect OTP";
+      return res.redirect('/verifyOtpGet');
+    }
+  } catch (error) {
+    console.error("Verify OTP error:", error);
+    req.session.otpError = "Error verifying OTP";
+    return res.redirect('/verifyOtpGet');
+  }
+};
+
+const resetPasswordPage = async (req, res) => {
+  try {
+    if (!req.session.forgotPasswordSession || 
+        !req.session.forgotEmail || 
+        !req.session.otpVerified) {
+      return res.redirect('/forgotPassword');
+    }
+
+    const elapsedTime = Math.floor((Date.now() - req.session.otpStartTime) / 1000);
+    const remainingTime = Math.max(req.session.forgotOtpTime - elapsedTime, 0);
+    
+    return res.render("reset-password", { 
+      email: req.session.forgotEmail,
+      time: remainingTime,
+      error: req.session.resetPassError 
+    });
+  } catch (error) {
+    console.error("Reset password page error:", error);
+    return res.redirect('/forgotPassword');
+  }
+};
+
+const resetPasswordPost = async (req, res) => {
+  try {
+    if (!req.session.forgotPasswordSession || 
+        !req.session.forgotEmail || 
+        !req.session.otpVerified) {
+      return res.redirect('/forgotPassword');
+    }
+
+    const { newPassword, confirmPassword } = req.body;
+    const email = req.session.forgotEmail;
+
+  
+    // Update password
+    const hashedPassword = await securePassword(newPassword);
+    console.log(hashedPassword);
+    await usercollection.updateOne(
+      { email },
+      { $set: { password: hashedPassword } }
+    );
+
+    // Clear session
+    req.session.forgotPasswordSession = null;
+    req.session.forgotEmail = null;
+    req.session.otpVerified = null;
+    req.session.resetPassError = null;
+    req.session.otpError = null;
+    
+    return res.status(200).json({ success: true });
+  } catch (error) {
+    req.session.resetPassError = "Something went wrong. Please try again.";
+    return res.redirect('/resetPassword');
+  }
+};
+
+const resendForgotOtp = async (req, res) => {
+  try {
+    const email = req.session.forgotEmail;
+    if (!email || !req.session.forgotPasswordSession) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Session expired" 
+      });
+    }
+
+    // Generate new OTP
+    const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    const hashedOtp = await securePassword(generatedOtp);
+
+    // Update OTP in database
+    await otpCollection.updateOne(
+      { email },
+      { $set: { otp: hashedOtp } }
+    );
+
+    // Send new OTP
+    const user = await usercollection.findOne({ email });
+    await sendotp(generatedOtp, email, user.name);
+
+    // Reset timer
+    req.session.otpStartTime = Date.now();
+    req.session.otpError = null;
+
+    return res.status(200).json({ success: true });
+  } catch (error) {
+    console.error("Resend OTP error:", error);
+    return res.status(500).json({ 
+      success: false, 
+      message: "Server error" 
+    });
+  }
+};
+
+
 const logout = async (req, res) => {
   req.session.loginSession = null;
   req.session.signupSession = null;
@@ -287,5 +493,12 @@ module.exports = {
   blockedUser,
   about,
   contact,
+  forgotPassword,
+  forgotPasswordPost,
+  verifyOtpGet,
+  verifyOtppost,
+  resetPasswordPage,
+  resetPasswordPost,
+  resendForgotOtp,
   logout,
 };

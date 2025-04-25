@@ -292,14 +292,12 @@
                             <div class="mb-3">
                                 <label for="parentCategory" class="form-label">Category</label>
                                 <select class="form-select" id="parentCategory" name="productCategoryId">
-                                    <option value="" disabled>Select a Category</option>
+                                    <option value="" disabled selected>Select a Category</option>
                                     <% categories.forEach(category=> { %>
-                                        <option value="<%= category._id %>"
-                                            <%=products.productCategoryId.toString()===category._id.toString()
-                                            ? 'selected' : '' %>>
+                                        <option value="<%= category._id %>">
                                             <%= category.categoryName %>
                                         </option>
-                                        <% }); %>
+                                    <% }); %>
                                 </select>
                             </div>
                         </div>

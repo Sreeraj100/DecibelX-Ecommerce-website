@@ -1,15 +1,26 @@
 const usercollection = require("../../models/userSchema");
 const product = require("../../models/productSchema");
 const category = require("../../models/categorySchema");
-
+const wishlist = require("../../models/wishlistSchema");
+const cart = require("../../models/cartSchema");
 const singleProductView = async (req, res, next) => {
   try {
     const userEmail = req.session.email;
     let name = "";
-    console.log(userEmail);
+    let isInWishlist = false;
+    let userId = null;
+    let wishlistCount=0
+    let cartCount=0
+    
+    // Get user info if logged in
     if (userEmail) {
       const userVer = await usercollection.findOne({ email: userEmail });
-      name = userVer.name;
+      if (userVer) {
+        name = userVer.name;
+        userId = userVer._id;
+        wishlistCount = await wishlist.countDocuments({ userId: userVer._id })
+        cartCount = await cart.countDocuments({ userId: userVer._id })
+      }
     }
 
     const productId = req.params.id;
@@ -22,6 +33,15 @@ const singleProductView = async (req, res, next) => {
       return res.status(404).render("error", { message: "Product not found" });
     }
 
+    // Check if product is in user's wishlist
+    if (userId) {
+      const wishlistItem = await wishlist.findOne({
+        userId: userId,
+        productId: productId
+      });
+      isInWishlist = !!wishlistItem;
+    }
+
     // Check stock status
     let stockStatus = "In Stock";
     if (productDetails.productStock <= 0) {
@@ -31,38 +51,43 @@ const singleProductView = async (req, res, next) => {
     }
 
     const categories = await category.find({ isListed: true });
-
-    // Get only the category IDs that are listed
     const listedCategoryIds = categories.map((cat) => cat._id);
 
-    // Fetch related products (same category, excluding current product)
+    // Fetch related products
     const relatedProducts = await product.find({
-        productCategoryId: productDetails.productCategoryId, // Same category as current product
+        productCategoryId: productDetails.productCategoryId,
         isListed: true,
         isDeleted: false,
-        _id: { $ne: productId }, // Exclude current product
+        _id: { $ne: productId },
       })
-      .sort({ createdAt: -1 }) // Sort by newest first
-      .limit(4) // Get only 4 related products
+      .sort({ createdAt: -1 })
+      .limit(5) 
       .populate({
         path: "productCategoryId",
         select: "categoryName isListed _id",
-        match: { isListed: true }, // Ensure populated category is listed
+        match: { isListed: true },
       });
 
     res.render("product", {
+      userId,
       name,
       product: productDetails,
       stockStatus,
-      relatedProducts, // Pass related products to the view
+      relatedProducts,
+      isInWishlist,// Pass wishlist status to the view
+      wishlistCount,
+      cartCount, 
       breadcrumbs: [
         { name: "Home", url: "/" },
         { name: "Shop", url: "/shop" },
         { name: productDetails.productName, url: `/product/${productId}` },
       ],
+      title: productDetails.productName // Add page title for SEO
     });
   } catch (error) {
     console.error("productpage error:", error);
+    res.status(500).render("error", { message: "Internal Server Error" });
   }
 };
+
 module.exports = { singleProductView };

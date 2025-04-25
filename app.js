@@ -22,7 +22,7 @@ app.use(session({
         maxAge:72*60*60*1000
     }
 })) 
-app.use(morgan('dev'))
+// app.use(morgan('dev'))
 app.use(passport.initialize())
 app.use(passport.session())
 

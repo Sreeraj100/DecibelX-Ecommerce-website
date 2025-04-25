@@ -1,6 +1,8 @@
 const usercollection = require("../../models/userSchema");
 const product = require("../../models/productSchema");
 const category = require("../../models/categorySchema");
+const wishlist = require("../../models/wishlistSchema");
+const cart = require("../../models/cartSchema");
 const mongoose = require('mongoose');
 const loadShopping = async (req, res, next) => {
     try {
@@ -8,6 +10,8 @@ const loadShopping = async (req, res, next) => {
         const page = parseInt(req.query.page) || 1;
         const limit = 8;
         const skip = (page - 1) * limit;
+        let wishlistCount = 0
+        let cartCount=0
 
         // First get all listed categories
         const listedCategories = await category.find({ isListed: true });
@@ -84,6 +88,8 @@ const loadShopping = async (req, res, next) => {
                     return res.redirect("/blocked");
                 } else {
                     name = userVer.name;
+                    wishlistCount = await wishlist.countDocuments({ userId: userVer._id })
+                    cartCount = await cart.countDocuments({ userId: userVer._id })
                 }
             }
         }
@@ -92,13 +98,14 @@ const loadShopping = async (req, res, next) => {
             name,
             products: products.filter(p => p.productCategoryId), // Filter out products with unlisted categories
             categories,
+            wishlistCount,
+            cartCount,
             currentPage: page,
             totalPages,
             req,
         });
     } catch (error) {
         console.log("shopPage error:", error);
-        next(error);
     }
 };
 

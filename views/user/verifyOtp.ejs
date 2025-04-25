@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Authentication</title>
+    <link rel="icon" href="img/icon.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Nunito Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login_wrap {
+            width: 100%;
+            max-width: 420px;
+            padding: 30px;
+            border-radius: 12px;
+            background: #fff;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .heading_s1 h3 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #6c757d;
+            margin-bottom: 30px;
+            font-size: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .form-control {
+            height: 50px;
+            padding: 10px 15px;
+            font-size: 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: #80bdff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        .otp-input-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .otp-timer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #f0f0f0, #ffffff);
+            box-shadow: 5px 5px 10px #d9d9d9, -5px -5px 10px #ffffff;
+            margin: 0 auto;
+        }
+
+        #timerValue {
+            font-size: 28px;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        #timerValue.expired {
+            font-size: 14px;
+            color: #dc3545;
+        }
+
+        .btn {
+            height: 50px;
+            font-weight: 600;
+            font-size: 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+            width: 100%;
+            margin-top: 10px;
+            box-shadow: 0 4px 6px rgba(0, 123, 255, 0.11);
+        }
+
+        .btn-primary:hover {
+            background-color: #0069d9;
+            box-shadow: 0 6px 8px rgba(0, 123, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            width: 100%;
+            background-color: #6c757d;
+            border: none;
+            margin-top: 15px;
+            box-shadow: 0 4px 6px rgba(108, 117, 125, 0.11);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background-color: #5a6268;
+            box-shadow: 0 6px 8px rgba(108, 117, 125, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary:disabled {
+            background-color: #adb5bd;
+            cursor: not-allowed;
+            opacity: 0.65;
+        }
+
+        .alert-danger {
+            margin-top: 15px;
+            text-align: center;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login_wrap">
+        <div class="padding_eight_all bg-white">
+            <div class="heading_s1">
+                <h3>Verify Your Email</h3>
+            </div>
+            <p class="subtitle">We've sent a 6-digit verification code to your email. Enter the code below to continue.</p>
+            
+            <form action="/verifyOtppost" method="POST">
+                <div class="form-group">
+                    <label for="otp">Enter Verification Code:</label>
+                    <div class="otp-input-container">
+                        <input type="text" id="otp" name="otp" class="form-control otp-input" required maxlength="6" pattern="\d*" autocomplete="off" />
+                    </div>
+                </div>
+                
+                <div class="timer-container">
+                    <div id="otpTimer" class="otp-timer">
+                        <span id="timerValue"><%= time %></span>
+                    </div>
+                </div>
+                
+                <div class="btn-container">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-check-circle"></i> Verify Code
+                    </button>
+                    
+                    <button id="resendOtpBtn" type="button" class="btn btn-secondary" disabled>
+                        <i class="fas fa-sync-alt"></i> Resend Code
+                    </button>
+                    <span class="resend-text text-center" id="resendText">You can request a new code in <span id="resendTimeText"><%= time %></span> seconds</span>
+                </div>
+                
+                <% if (otpError) { %>
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle"></i> <%= otpError %>
+                    </div>
+                <% } %>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let time = Number(document.getElementById('timerValue').innerText);  // Get initial time from server
+        const timerElement = document.getElementById('timerValue');
+        const resendButton = document.getElementById('resendOtpBtn');
+        const resendTimeText = document.getElementById('resendTimeText');
+
+        // Timer logic
+        const countdown = setInterval(() => {
+            if (time > 0) {
+                time--;
+                timerElement.textContent = time;
+                resendTimeText.textContent = time;
+
+                if (time <= 0) {
+                    clearInterval(countdown);
+                    timerElement.textContent = "Expired";
+                    timerElement.classList.add("expired");
+                    resendButton.disabled = false;
+                    resendButton.style.cursor = 'pointer';
+                    document.getElementById('resendText').innerHTML = "Code expired. <b>Request a new one</b>";
+                }
+            }
+        }, 1000);
+
+        // Resend button click event
+        resendButton.addEventListener('click', function () {
+            if (!resendButton.disabled) {
+                window.location.href = '/resendForgotOtp';  // Redirect to resend OTP endpoint
+            }
+        });
+    </script>
+</body>
+</html>

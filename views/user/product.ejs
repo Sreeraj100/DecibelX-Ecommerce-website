@@ -4,15 +4,16 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <!-- Add jQuery zoom plugin -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-zoom/1.7.21/jquery.zoom.min.js"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
     body {
       box-sizing: border-box;
       margin-top: 130px;
       padding: 0;
+      background-color: #f5f5f5;
     }
 
-    /* for loader */
+    /* Loader styles */
     #loader-wrapper {
       position: fixed;
       top: 0;
@@ -29,86 +30,65 @@
       transition: opacity 0.7s ease, visibility 0.7s ease;
     }
 
-    /* Custom futuristic loader */
-    .cyber-loader {
-      position: relative;
-      width: 120px;
-      height: 120px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    #loader-wrapper.fade-out {
+      opacity: 0;
+      visibility: hidden;
     }
 
-    .cyber-loader::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      box-shadow: 0 0 30px #00FFFB;
-      animation: pulse 2s infinite;
+    .cyber-loader {
+      position: relative;
+      width: 100px;
+      height: 100px;
     }
 
     .orbit {
       position: absolute;
       width: 100%;
       height: 100%;
+      border: 2px solid rgba(0, 217, 255, 0.5);
       border-radius: 50%;
-      border: 2px solid transparent;
-      border-top: 2px solid #00FFFB;
-      border-left: 2px solid #00FFFB;
-      animation: spin 1.5s linear infinite;
-    }
-
-    .orbit-inner {
-      position: absolute;
-      width: 70%;
-      height: 70%;
-      top: 15%;
-      left: 15%;
-      border-radius: 50%;
-      border: 2px solid transparent;
-      border-bottom: 2px solid #00FFFB;
-      border-right: 2px solid #00FFFB;
-      animation: spin-reverse 1.2s linear infinite;
+      animation: orbit 2s linear infinite;
     }
 
     .orbit-dot {
       position: absolute;
-      width: 20px;
-      height: 20px;
-      background-color: #00FFFB;
+      width: 10px;
+      height: 10px;
+      background-color: rgb(0, 217, 255);
       border-radius: 50%;
-      top: calc(50% - 10px);
-      right: -10px;
-      box-shadow: 0 0 15px #00FFFB, 0 0 30px #00FFFB;
-      animation: blink 1s infinite alternate;
+      top: -5px;
+      left: 45px;
     }
 
-    /* Added DecibelX text inside the circle */
+    .orbit-inner {
+      position: absolute;
+      width: 60%;
+      height: 60%;
+      top: 20%;
+      left: 20%;
+      border: 2px solid rgba(255, 77, 0, 0.5);
+      border-radius: 50%;
+      animation: orbit 1.5s linear infinite reverse;
+    }
+
     .logo-text {
-      position: relative;
-      color: #00FFFB;
-      font-size: 16px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
       font-weight: bold;
-      text-shadow: 0 0 10px #00FFFB;
-      letter-spacing: 1px;
-      z-index: 10;
-      animation: glow 2s infinite alternate;
+      font-size: 16px;
     }
 
     .loading-text {
-      margin-top: 30px;
-      color: #00FFFB;
-      font-size: 18px;
-      letter-spacing: 5px;
-      text-transform: uppercase;
-      animation: flicker 2s infinite alternate;
+      color: white;
+      margin-top: 20px;
+      letter-spacing: 2px;
+      animation: loadingDots 1.5s infinite;
     }
 
-    @keyframes spin {
+    @keyframes orbit {
       0% {
         transform: rotate(0deg);
       }
@@ -118,108 +98,97 @@
       }
     }
 
-    @keyframes spin-reverse {
-      0% {
-        transform: rotate(0deg);
-      }
-
-      100% {
-        transform: rotate(-360deg);
-      }
-    }
-
-    @keyframes pulse {
-      0% {
-        opacity: 0.4;
-        transform: scale(0.8);
-      }
-
-      50% {
-        opacity: 0.6;
-        transform: scale(1);
-      }
-
-      100% {
-        opacity: 0.4;
-        transform: scale(0.8);
-      }
-    }
-
-    @keyframes blink {
-      0% {
-        opacity: 0.7;
-      }
-
-      100% {
-        opacity: 1;
-      }
-    }
-
-    @keyframes glow {
-      0% {
-        opacity: 0.8;
-        text-shadow: 0 0 5px #00FFFB;
-      }
-
-      100% {
-        opacity: 1;
-        text-shadow: 0 0 15px #00FFFB, 0 0 30px #00FFFB;
-      }
-    }
-
-    @keyframes flicker {
+    @keyframes loadingDots {
 
       0%,
-      19%,
-      21%,
-      23%,
-      25%,
-      54%,
-      56%,
+      20% {
+        content: "Loading ▫️▫️▫️";
+      }
+
+      40% {
+        content: "Loading ▪️▫️▫️";
+      }
+
+      60% {
+        content: "Loading ▪️▪️▫️";
+      }
+
+      80%,
       100% {
-        opacity: 0.95;
-        text-shadow: 0 0 5px #00FFFB, 0 0 15px #00FFFB;
-      }
-
-      20%,
-      24%,
-      55% {
-        opacity: 0.5;
-        text-shadow: none;
+        content: "Loading ▪️▪️▪️";
       }
     }
 
-    /* Blurred main content */
-    .blur {
-      filter: blur(6px);
-      pointer-events: none;
-      user-select: none;
+    .main-content {
+      transition: filter 0.7s ease;
     }
 
-    /* Fade-out effect */
-    #loader-wrapper.fade-out {
-      opacity: 0;
-      visibility: hidden;
+    .main-content.blur {
+      filter: blur(5px);
     }
 
-    .header {
-      margin-bottom: 200px;
+    /* Breadcrumb styles */
+    .breadcrumb-container {
+      background-color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      margin-top: 20px;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      font-size: 14px;
+    }
+
+    .breadcrumb a {
+      color: #666;
+      text-decoration: none;
+      transition: color 0.2s;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .breadcrumb a:hover {
+      color: #0066cc;
+    }
+
+    .breadcrumb-separator {
+      margin: 0 8px;
+      color: #ccc;
+    }
+
+    .breadcrumb-current {
+      color: #333;
+      font-weight: 500;
     }
 
     /* Product Details Container */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
     .product-details {
       display: flex;
       flex-wrap: wrap;
       gap: 40px;
       margin-top: 30px;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     }
 
-    /* MODIFIED: Image Section with standardized sizes */
+    /* Image Section */
     .product-images {
       flex: 1;
       min-width: 300px;
       max-width: 500px;
-      /* Added max-width for standardization */
     }
 
     .main-image-container {
@@ -228,16 +197,13 @@
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       height: 400px;
-      /* Fixed height */
-      width: 80%;
+      background: #f8f8f8;
     }
 
     .main-image {
       display: flex;
       justify-content: center;
       align-items: center;
-      background-color: #f8f8f8;
-      border-radius: 8px;
       height: 100%;
       width: 100%;
     }
@@ -251,7 +217,6 @@
       height: auto;
     }
 
-    /* MODIFIED: jQuery zoom container */
     .zoom-container {
       cursor: crosshair;
       height: 100%;
@@ -291,12 +256,42 @@
     .product-info {
       flex: 1;
       min-width: 300px;
+      position: relative;
     }
 
     .product-info h1 {
       font-size: 28px;
       margin-bottom: 15px;
       color: #333;
+      padding-right: 40px;
+      /* Space for wishlist button */
+    }
+
+    /* Wishlist Button */
+    .wishlist-btn {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: none;
+      border: none;
+      font-size: 40px;
+      color: #ccc;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      outline: none !important
+    }
+
+    .wishlist-btn:hover {
+      color: red;
+      border: none;
+      outline: none;
+      transform: scale(1.1);
+    }
+
+    .wishlist-btn.active {
+      color: red;
+      border: none;
+      outline: none;
     }
 
     /* Ratings */
@@ -328,6 +323,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
+      flex-wrap: wrap;
     }
 
     .current-price {
@@ -351,6 +347,59 @@
       font-weight: bold;
     }
 
+    .toast-container {
+      position: fixed;
+      top: 50px;
+      right: 20px;
+      z-index: 9999;
+    }
+
+    .toast {
+      display: none;
+      background-color: #333;
+      color: white;
+      padding: 15px 25px;
+      border-radius: 12px;
+      font-size: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      opacity: 0;
+      transform: translateX(100%);
+      animation: slideInFromRight 0.8s ease-out forwards;
+    }
+
+    .toast.success {
+      background-color: #28a745;
+    }
+
+    .toast.error {
+      background-color: #dc3545;
+    }
+
+    @keyframes slideInFromRight {
+      0% {
+        opacity: 0;
+        transform: translateX(100%);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes slideOutToRight {
+      0% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateX(100%);
+      }
+    }
+
+
     /* Stock Status */
     .stock-status {
       font-weight: bold;
@@ -369,6 +418,73 @@
 
     .stock-status.out-of-stock {
       color: #e74c3c;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+      display: flex;
+      gap: 15px;
+      margin-top: 25px;
+      flex-wrap: wrap;
+    }
+
+    .quantity-control {
+      display: flex;
+      align-items: center;
+      margin-right: 15px;
+    }
+
+    .quantity-control button {
+      width: 40px;
+      height: 40px;
+      background: #f1f1f1;
+      border: 1px solid #ddd;
+      font-size: 18px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .quantity-control button:hover {
+      background: #e0e0e0;
+    }
+
+    .quantity-control input {
+      width: 60px;
+      height: 40px;
+      text-align: center;
+      border: 1px solid #ddd;
+      border-left: none;
+      border-right: none;
+      font-size: 16px;
+    }
+
+    .add-to-cart {
+      background-color: #0066cc;
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .add-to-cart i {
+      font-size: 18px;
+    }
+
+    .add-to-cart:hover:not(:disabled) {
+      background-color: #004d99;
+      transform: translateY(-2px);
+    }
+
+    .add-to-cart:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
     }
 
     /* Description */
@@ -529,75 +645,16 @@
     }
 
     /* Responsive adjustments */
-    @media (max-width: 768px) {
-      .related-products .products-grid {
-        grid-template-columns: repeat(2, 1fr);
+    @media (max-width: 992px) {
+      .product-details {
+        padding: 20px;
+      }
+
+      .main-image-container {
+        height: 350px;
       }
     }
 
-    @media (max-width: 480px) {
-      .related-products .products-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    /* Button */
-    .add-to-cart {
-      background-color: #0066cc;
-      color: white;
-      padding: 12px 25px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 16px;
-      font-weight: bold;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .add-to-cart i {
-      font-size: 18px;
-    }
-
-    .add-to-cart:hover:not(:disabled) {
-      background-color: #004d99;
-      transform: translateY(-2px);
-    }
-
-    .add-to-cart:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
-    }
-
-    /* Quantity Control */
-    .quantity-control {
-      display: flex;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .quantity-control button {
-      width: 40px;
-      height: 40px;
-      background: #f1f1f1;
-      border: 1px solid #ddd;
-      font-size: 18px;
-      cursor: pointer;
-    }
-
-    .quantity-control input {
-      width: 60px;
-      height: 40px;
-      text-align: center;
-      border: 1px solid #ddd;
-      border-left: none;
-      border-right: none;
-      font-size: 16px;
-    }
-
-    /* Responsive Styles */
     @media (max-width: 768px) {
       .product-details {
         flex-direction: column;
@@ -606,12 +663,10 @@
 
       .product-images {
         max-width: 100%;
-        /* Allow full width on mobile */
       }
 
       .main-image-container {
-        height: 350px;
-        /* Slightly smaller on mobile */
+        height: 300px;
       }
 
       .thumbnail {
@@ -626,6 +681,10 @@
       .product-info h1 {
         font-size: 24px;
       }
+
+      .related-products .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
     }
 
     @media (max-width: 480px) {
@@ -634,16 +693,29 @@
       }
 
       .main-image-container {
-        height: 300px;
-        /* Even smaller on very small screens */
+        height: 250px;
       }
 
       .thumbnail-images {
         justify-content: center;
       }
 
-      .price {
-        flex-wrap: wrap;
+      .action-buttons {
+        flex-direction: column;
+      }
+
+      .quantity-control {
+        margin-right: 0;
+        margin-bottom: 15px;
+      }
+
+      .add-to-cart {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .related-products .products-grid {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -658,8 +730,19 @@
     </div>
     <div class="loading-text">Loading ▫️▫️▫️</div>
   </div>
+  <div class="toast-container"></div>
+  <div class="container main-content blur">
+    <!-- Breadcrumb Navigation -->
+    <div class="breadcrumb-container">
+      <div class="breadcrumb">
+        <a href="/"><i class="fas fa-home"></i><span class="breadcrumb-separator">›</span></a>
+        <a href="/shop">Products<span class="breadcrumb-separator">›</span></a>
+        <span class="breadcrumb-current">
+          <%= product.productName %>
+        </span>
+      </div>
+    </div>
 
-  <div class="container">
     <!-- Product Details -->
     <div class="product-details">
       <!-- Product Images with jQuery Zoom -->
@@ -686,12 +769,17 @@
         <h1>
           <%= product.productName %>
         </h1>
-        <div class="ratings">
+        <button class="wishlist-btn <%= isInWishlist ? 'active' : '' %>" data-product-id="<%= product._id %>"
+          aria-label="<%= isInWishlist ? 'Remove from wishlist' : 'Add to wishlist' %>">
+          <i class="fas fa-heart"></i>
+        </button>
+
+        <!-- <div class="ratings">
           <% for(let i=1; i <=5; i++) { %>
             <i class="fas fa-star <%= i <= Math.round(product.productRating || 0) ? 'active' : '' %>"></i>
             <% } %>
               <span class="rating-count">(<%= product.productRating || '0' %> / 5)</span>
-        </div>
+        </div> -->
 
         <div class="price">
           <span class="current-price">₹<%= product.productOfferPrice || product.productPrice %></span>
@@ -710,28 +798,31 @@
           <%= stockStatus %>
         </div>
 
-        <% if (product.productStock> 0) { %>
-          <div class="quantity-control">
-            <button id="decrease-quantity">-</button>
-            <input type="number" id="quantity" value="1" min="1" max="<%= product.productStock %>">
-            <button id="increase-quantity">+</button>
-          </div>
-          <% } %>
-            <button class="add-to-cart" <%=product.productStock <=0 ? 'disabled' : '' %>>
-              <i class="fas fa-shopping-cart"></i>
-              <%= product.productStock <=0 ? 'Out of Stock' : 'Add to Cart' %>
-            </button>
-            <div class="description">
-              <h3>Product Description</h3>
-              <p>
-                <%= product.productDescription %>
-              </p>
+        <div class="action-buttons">
+          <% if (product.productStock> 0) { %>
+            <div class="quantity-control">
+              <button type="button" id="decrease-quantity">-</button>
+              <input type="number" id="quantity" value="1" min="1" max="<%= product.productStock %>">
+              <button type="button" id="increase-quantity">+</button>
             </div>
+            <button id="add-to-cart-btn" class="add-to-cart" data-product-id="<%= product._id %>">
+              <i class="fas fa-shopping-cart"></i> Add to Cart
+            </button>
+            <% } else { %>
+              <button class="add-to-cart" disabled>
+                <i class="fas fa-shopping-cart"></i> Out of Stock
+              </button>
+              <% } %>
+        </div>
 
-
+        <div class="description">
+          <h3>Product Description</h3>
+          <p>
+            <%= product.productDescription %>
+          </p>
+        </div>
       </div>
     </div>
-
 
     <!-- Related Products Section -->
     <div class="related-products">
@@ -750,7 +841,7 @@
                   </h3>
                   <div class="product-price">
                     <span class="current-price">₹<%= relatedProduct.productOfferPrice || relatedProduct.productPrice %>
-                        </span>
+                    </span>
                     <% if (relatedProduct.productOfferPrice) { %>
                       <span class="original-price">₹<%= relatedProduct.productPrice %></span>
                       <% } %>
@@ -767,94 +858,238 @@
                 <% } %>
       </div>
     </div>
-
-
-
   </div>
-
 
   <%- include("../../views/partials/user/footers") %>
 
-    <script>
-      $(document).ready(function () {
-        // Initialize jQuery zoom on the main image
-        $('.zoom-container').zoom({
-          magnify: 1.5, // Zoom magnification level
-          onZoomIn: function () {
-            $(this).css('cursor', 'zoom-out');
-          },
-          onZoomOut: function () {
-            $(this).css('cursor', 'zoom-in');
-          }
-        });
 
-        // Initialize active thumbnail
-        document.querySelector('.thumbnail').classList.add('active');
-      });
+   
+<script>
+  // Global toast function (available everywhere)
+  function showToast(message, type) {
+    const toastContainer = document.querySelector(".toast-container");
+    const toast = document.createElement("div");
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+    toastContainer.appendChild(toast);
 
-      // Change Image on Thumbnail Click with jQuery Zoom refresh
-      function changeImage(imageUrl, thumbnail) {
-        // Remove zoom first
-        $('.zoom-container').trigger('zoom.destroy');
-
-        // Change the image
-        $('#main-image').attr('src', imageUrl);
-
-        // Reinitialize zoom
-        $('.zoom-container').zoom({
-          magnify: 1.5
-        });
-
-        // Update active state on thumbnails
-        document.querySelectorAll('.thumbnail').forEach(thumb => {
-          thumb.classList.remove('active');
-        });
-        if (thumbnail) {
-          thumbnail.classList.add('active');
-        }
-      }
-
-      // Quantity Control
-      const decreaseBtn = document.getElementById('decrease-quantity');
-      const increaseBtn = document.getElementById('increase-quantity');
-      const quantityInput = document.getElementById('quantity');
-
-      if (decreaseBtn && increaseBtn && quantityInput) {
-        decreaseBtn.addEventListener('click', () => {
-          if (quantityInput.value > 1) {
-            quantityInput.value = parseInt(quantityInput.value) - 1;
-          }
-        });
-
-        increaseBtn.addEventListener('click', () => {
-          if (parseInt(quantityInput.value) < parseInt(quantityInput.max)) {
-            quantityInput.value = parseInt(quantityInput.value) + 1;
-          }
-        });
-
-        quantityInput.addEventListener('change', () => {
-          if (quantityInput.value < 1) {
-            quantityInput.value = 1;
-          }
-          if (parseInt(quantityInput.value) > parseInt(quantityInput.max)) {
-            quantityInput.value = quantityInput.max;
-          }
-        });
-      }
-
-      window.addEventListener("DOMContentLoaded", () => {
-        document.getElementById("main-content").classList.add("blur");
-      });
-
-      window.addEventListener("load", () => {
-        // Add a slight delay for a better visual effect
+    setTimeout(() => {
+      toast.style.display = "block";
+      setTimeout(() => {
+        toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
         setTimeout(() => {
-          const loader = document.getElementById("loader-wrapper");
-          const mainContent = document.getElementById("main-content");
+          toast.remove();
+        }, 800);
+      }, 3000);
+    }, 100);
+  }
 
-          loader.classList.add("fade-out");
-          mainContent.classList.remove("blur");
-        }, 1000);
+  // Single consolidated DOMContentLoaded listener
+  document.addEventListener('DOMContentLoaded', function() {
+    // Initialize jQuery zoom on the main image
+    $('.zoom-container').zoom({
+      magnify: 1.5,
+      onZoomIn: function() {
+        $(this).css('cursor', 'zoom-out');
+      },
+      onZoomOut: function() {
+        $(this).css('cursor', 'zoom-in');
+      }
+    });
+
+    // Initialize active thumbnail
+    document.querySelector('.thumbnail').classList.add('active');
+
+    // Quantity Control with Stock Validation
+    const decreaseBtn = document.getElementById('decrease-quantity');
+    const increaseBtn = document.getElementById('increase-quantity');
+    const quantityInput = document.getElementById('quantity');
+    const maxStock = <%= product.productStock %>;
+
+    if (decreaseBtn && increaseBtn && quantityInput) {
+      decreaseBtn.addEventListener('click', () => {
+        if (quantityInput.value > 1) {
+          quantityInput.value = parseInt(quantityInput.value) - 1;
+        }
       });
 
-    </script>
+      increaseBtn.addEventListener('click', () => {
+        const currentValue = parseInt(quantityInput.value);
+        if (currentValue < maxStock) {
+          quantityInput.value = currentValue + 1;
+        } else {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Stock Limit',
+            text: `Only ${maxStock} items available in stock!`,
+            timer: 2000
+          });
+        }
+      });
+
+      quantityInput.addEventListener('change', () => {
+        let value = parseInt(quantityInput.value);
+        if (isNaN(value) || value < 1) value = 1;
+        if (value > maxStock) {
+          value = maxStock;
+          Swal.fire({
+            icon: 'warning',
+            title: 'Stock Limit',
+            text: `Only ${maxStock} items available!`,
+            timer: 2000
+          });
+        }
+        quantityInput.value = value;
+      });
+    }
+
+    // Add to Cart with AJAX
+    const addToCartBtn = document.getElementById('add-to-cart-btn');
+    if (addToCartBtn) {
+      addToCartBtn.addEventListener('click', async function() {
+        const productId = this.dataset.productId;
+        const quantity = parseInt(quantityInput.value) || 1;
+
+        try {
+          const response = await fetch('/cartAdd', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              userId: '<%= userId %>',
+              productId: productId,
+              productQuantity: quantity
+            }),
+            credentials: 'include'
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            showToast('Added to cart successfully!', 'success');
+
+            // Update cart count in navbar if exists
+            const cartCount = document.querySelector('.cart-count');
+            if (cartCount) {
+              cartCount.textContent = parseInt(cartCount.textContent || 0) + 1;
+            }
+          } else {
+            showToast(result.message || 'Failed to add to cart', 'error');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          showToast('Please login to add items to cart', 'error');
+          setTimeout(() => {
+            window.location.href = "/login";
+          }, 1500);
+        }
+      });
+    }
+
+    // Handle wishlist buttons
+    document.querySelectorAll('.wishlist-btn').forEach(btn => {
+      btn.addEventListener('click', async function() {
+        const productId = this.dataset.productId;
+        const isActive = this.classList.contains('active');
+
+        try {
+          const response = await fetch('/wishlist', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              productId: productId,
+              wishlist: !isActive,
+              userId: '<%= userId %>'
+            }),
+            credentials: 'include'
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            this.classList.toggle('active');
+            const icon = this.querySelector('i');
+
+            // Animation for feedback
+            icon.style.transform = 'scale(1.3)';
+            setTimeout(() => {
+              icon.style.transform = 'scale(1)';
+            }, 300);
+
+            // Update aria-label
+            this.setAttribute('aria-label',
+              result.isInWishlist
+                ? 'Remove from wishlist'
+                : 'Add to wishlist');
+
+            // Show toast notification
+            showToast(
+              result.isInWishlist
+                ? 'Added to wishlist!'
+                : 'Removed from wishlist!',
+              'success'
+            );
+
+            // Update wishlist count in navbar if exists
+            const wishlistCount = document.querySelector('.wishlist-count');
+            if (wishlistCount) {
+              const currentCount = parseInt(wishlistCount.textContent) || 0;
+              wishlistCount.textContent = result.isInWishlist ? currentCount + 1 : Math.max(0, currentCount - 1);
+            }
+          } else {
+            showToast(result.message || 'Operation failed', 'error');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          showToast('Login to add', 'error');
+          setTimeout(() => {
+            window.location.href = "/login";
+          }, 1000);
+        }
+      });
+    });
+
+    // Change Image on Thumbnail Click with jQuery Zoom refresh
+    window.changeImage = function(imageUrl, thumbnail) {
+      // Remove zoom first
+      $('.zoom-container').trigger('zoom.destroy');
+
+      // Change the image
+      $('#main-image').attr('src', imageUrl);
+
+      // Reinitialize zoom
+      $('.zoom-container').zoom({
+        magnify: 1.5
+      });
+
+      // Update active state on thumbnails
+      document.querySelectorAll('.thumbnail').forEach(thumb => {
+        thumb.classList.remove('active');
+      });
+      if (thumbnail) {
+        thumbnail.classList.add('active');
+      }
+    };
+
+    // Page loader functionality
+    $(".main-content").addClass("blur");
+
+    // Remove loader and blur when everything is loaded
+    $(window).on("load", function() {
+      setTimeout(function() {
+        $("#loader-wrapper").addClass("fade-out");
+        $(".main-content").removeClass("blur");
+
+        // Remove loader from DOM after transition completes
+        setTimeout(function() {
+          $("#loader-wrapper").remove();
+        }, 700);
+      }, 1000);
+    });
+
+  
+  });
+</script>
