@@ -4,7 +4,7 @@ const category = require("../../models/categorySchema");
 const wishlist = require("../../models/wishlistSchema");
 const cart = require("../../models/cartSchema");
 
-const cartView = async (req, res, next) => {
+const cartView = async (req, res) => {
   try {
     const userEmail = req.session.email;
     const userVer = await usercollection.findOne({ email: userEmail });
@@ -35,7 +35,7 @@ const cartView = async (req, res, next) => {
       subtotal += item.productId.productOfferPrice * item.productQuantity;
     });
 
-    const taxRate = 0.18;
+    const taxRate = 0.05;
     const tax = subtotal * taxRate;
     const total = subtotal + tax;
 
@@ -54,7 +54,7 @@ const cartView = async (req, res, next) => {
   }
 };
 
-const addToCart = async (req, res, next) => {
+const addToCart = async (req, res) => {
   try {
     const { userId, productId } = req.body;
     const quantity = parseInt(req.body.productQuantity) || 1;
@@ -85,6 +85,12 @@ const addToCart = async (req, res, next) => {
         { _id: existingCartItem._id },
         { $set: { productQuantity: newQuantity } }
       );
+
+      await wishlist.deleteOne({
+        userId: userId,
+        productId: productId
+      });      
+
     } else {
       // Add new item to cart
       await cart.create({
@@ -92,6 +98,12 @@ const addToCart = async (req, res, next) => {
         productId,
         productQuantity: quantity
       });
+
+        await wishlist.deleteOne({
+          userId: userId,
+          productId: productId
+        });
+      
     }
 
     res.json({ 
@@ -100,11 +112,11 @@ const addToCart = async (req, res, next) => {
     });
   } catch (error) {
     console.log(error);
-    next(new AppError('Sorry...Something went wrong', 500));
+   
   }
 };
 
-const removeItem = async (req, res, next) => {
+const removeItem = async (req, res) => {
   try {
     const { id } = req.params;
     
@@ -130,7 +142,6 @@ const removeItem = async (req, res, next) => {
     });
   } catch (error) {
     console.log(error);
-    next(new AppError('Sorry...Something went wrong', 500));
   }
 };
 
@@ -183,7 +194,6 @@ const updateQuantity = async (req, res, next) => {
     });
   } catch (error) {
     console.log(error);
-    next(new AppError('Sorry...Something went wrong', 500));
   }
 };
 

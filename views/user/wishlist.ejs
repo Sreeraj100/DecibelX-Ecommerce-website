@@ -247,7 +247,7 @@
         line-height: 1.4;
         color: var(--text-dark);
         display: -webkit-box;
-        -webkit-line-clamp: 2;
+        /* -webkit-line-clamp: 2; */
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
@@ -430,7 +430,9 @@
         align-items: center;
         gap: 8px;
     }
-
+    a{
+        text-decoration: none !important;
+    }
     .add-all-btn:hover {
         background-color: var(--primary-dark);
         transform: translateY(-2px);
@@ -776,7 +778,7 @@
                 // Add to cart
                 async function addToCart(productId, userId) {
                     try {
-                        const response = await fetch('/addAlltocart', {
+                        const response = await fetch('/cartAdd', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -801,7 +803,7 @@
                 // Add all items to cart
                 async function addAllItems(userId) {
                     try {
-                        const response = await fetch('/addalltocart', {
+                        const response = await fetch('/addAlltocart', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ userId })

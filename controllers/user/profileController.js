@@ -67,7 +67,7 @@ const addressPage = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in addressPage:", error);
-    res.status(500).render("error", { message: "Server error" });
+    
   }
 };
 const getAddressById = async (req, res) => {

@@ -1,0 +1,593 @@
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: #2d3748;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        /* Checkout Header Styles */
+        .checkout-header {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .checkout-header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #303b5a;
+            letter-spacing: -0.5px;
+        }
+
+        /* Progress Bar */
+        .checkout-progress {
+            position: relative;
+            margin: 40px auto;
+            max-width: 600px;
+        }
+
+        .progress-bar {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            counter-reset: step;
+        }
+
+        .progress-bar::before {
+            content: "";
+            position: absolute;
+            top: 20px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: #e2e8f0;
+            z-index: 1;
+        }
+
+        .progress-bar::after {
+            content: "";
+            position: absolute;
+            top: 20px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: #00f2ea;
+            z-index: 1;
+            transition: width 0.3s ease;
+        }
+
+        .step {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            width: 40px;
+            height: 40px;
+        }
+
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e2e8f0;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .step.active .step-icon {
+            background-color: #00f2ea;
+            color: #fff;
+            box-shadow: 0 0 0 5px rgba(0, 242, 234, 0.2);
+        }
+
+        .step.completed .step-icon {
+            background-color: #10b981;
+            color: #fff;
+        }
+
+        .step-label {
+            position: absolute;
+            top: 45px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+            color: #94a3b8;
+        }
+
+        .step.active .step-label {
+            color: #334155;
+            font-weight: 600;
+        }
+
+        /* Checkout Content */
+        .checkout-content {
+            background-color: #fff;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            padding: 40px;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .checkout-content:hover {
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: #303b5a;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title svg {
+            margin-right: 10px;
+            color: #00f2ea;
+        }
+
+        /* Order Details */
+        .order-summary {
+            margin-bottom: 30px;
+        }
+
+        .order-section {
+            margin-bottom: 30px;
+        }
+
+        .order-section h3.section-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #475569;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Address Display Styles */
+        .address-display {
+            background-color: #f8fafc;
+            border-radius: 10px;
+            padding: 15px 20px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 20px;
+        }
+
+        .address-display p {
+            margin-bottom: 5px;
+            color: #475569;
+            font-size: 15px;
+        }
+
+        /* Payment Display */
+        .payment-display {
+            background-color: #f8fafc;
+            border-radius: 10px;
+            padding: 15px 20px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 20px;
+        }
+
+        .payment-display p {
+            margin-bottom: 5px;
+            color: #475569;
+            font-size: 15px;
+        }
+
+        .payment-method {
+            font-weight: 600;
+            color: #00f2ea;
+        }
+
+        /* Order Items */
+        .order-items {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .order-item {
+            display: flex;
+            padding: 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-image {
+            width: 60px;
+            height: 60px;
+            margin-right: 15px;
+            border-radius: 8px;
+            object-fit: cover;
+            background-color: #f1f5f9;
+        }
+
+        .item-details {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 5px;
+            font-size: 15px;
+        }
+
+        .item-price {
+            color: #00f2ea;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .item-quantity {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        /* Order Totals */
+        .order-totals {
+            background-color: #f8fafc;
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            color: #475569;
+            font-size: 15px;
+        }
+
+        .total-row:last-child {
+            margin-bottom: 0;
+            padding-top: 12px;
+            border-top: 1px solid #e2e8f0;
+            font-weight: 600;
+            font-size: 18px;
+            color: #303b5a;
+        }
+
+        /* Delivery Information */
+        .delivery-info {
+            background-color: #f0fdfa;
+            border-radius: 10px;
+            padding: 15px 20px;
+            border: 1px solid #ccfbf1;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .delivery-info::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background-color: #10b981;
+        }
+
+        .delivery-info p {
+            margin-bottom: 5px;
+            color: #0f766e;
+            font-size: 15px;
+        }
+
+        /* Action Buttons */
+        .checkout-actions {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            outline: none;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 150px;
+        }
+
+        .btn svg {
+            margin-right: 8px;
+        }
+
+        .btn-primary {
+            background-color: #00f2ea;
+            color: #0c4a47;
+            box-shadow: 0 4px 15px rgba(0, 242, 234, 0.2);
+        }
+
+        .btn-primary:hover {
+            background-color: #00dad3;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 242, 234, 0.25);
+        }
+
+        /* Toast custom styles */
+        .custom-toast {
+            background-color: #28a745;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+
+            .checkout-content {
+                padding: 25px;
+            }
+
+            .checkout-progress {
+                max-width: 100%;
+            }
+
+            .step-label {
+                font-size: 12px;
+            }
+
+            .checkout-actions {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .checkout-actions .btn {
+                width: 100%;
+            }
+        }
+    </style>
+
+
+<body>
+    <div class="container">
+        <div class="checkout-header">
+            <h1>Checkout</h1>
+
+            <div class="checkout-progress">
+                <div class="progress-bar">
+                    <div class="step completed">
+                        <div class="step-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                        </div>
+                        <div class="step-label">Shipping</div>
+                    </div>
+                    <div class="step completed">
+                        <div class="step-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                        </div>
+                        <div class="step-label">Payment</div>
+                    </div>
+                    <div class="step active">
+                        <div class="step-icon">3</div>
+                        <div class="step-label">Confirmation</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="checkout-content">
+            <h1 class="section-title">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="8" cy="21" r="1"></circle>
+                    <circle cx="19" cy="21" r="1"></circle>
+                    <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path>
+                </svg>
+                Order Details
+            </h1>
+
+            <!-- Order Summary Section -->
+            <div class="order-summary">
+                <!-- Delivery Information -->
+                <div class="order-section">
+                    <h3 class="section-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        Delivery Information
+                    </h3>
+                    
+                </div>
+
+                <!-- Shipping Address -->
+                <div class="order-section">
+                    <h3 class="section-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        Shipping Address
+                    </h3>
+                    <div class="address-display">
+                        <p><strong>Name:  <%= user.name %></strong> <%= address.phoneNumber %></p>
+                        <p><strong>Phone:  <%= user.phone %></strong> <%= address.phoneNumber %></p>
+                        <p><%= address.doorNo %>, <%= address.street %></p>
+                        <p><%= address.city %>, <%= address.district %></p>
+                        <p><%= address.pinCode %></p>
+                    </div>
+                </div>
+
+                <!-- Payment Method -->
+                <div class="order-section">
+                    <h3 class="section-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                            <line x1="1" y1="10" x2="23" y2="10"></line>
+                        </svg>
+                        Payment Method
+                    </h3>
+                    <div class="payment-display">
+                        <p class="payment-method"><%= paymentMethod %></p>
+                        <% if (paymentMethod === 'Cash on delivery') { %>
+                            <p>Pay with cash when your order is delivered to your doorstep.</p>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Order Items -->
+                <div class="order-section">
+                    <h3 class="section-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line>
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                            <polyline points="3.29 7 12 12 20.71 7"></polyline>
+                            <line x1="12" y1="22" x2="12" y2="12"></line>
+                        </svg>
+                        Order Items
+                    </h3>
+                    <div class="order-items">
+                        <% cartItems.forEach(item => { %>
+                            <div class="order-item">
+                                <img src="<%= item.productId.productImage1 %>" alt="<%= item.productId.productName %>" class="item-image">
+                                <div class="item-details">
+                                    <div class="item-name"><%= item.productId.productName %></div>
+                                    <div class="item-price">₹<%= item.productId.productOfferPrice || item.productId.productPrice %></div>
+                                    <div class="item-quantity">Quantity: <%= item.productQuantity %></div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                </div>
+
+                <!-- Order Total -->
+                <div class="order-section">
+                    <h3 class="section-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="1" x2="12" y2="23"></line>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                        Order Total
+                    </h3>
+                    <div class="order-totals">
+                        <div class="total-row">
+                            <span>Subtotal:</span>
+                            <span>₹<%= subtotal %></span>
+                        </div>
+                        <div class="total-row">
+                            <span>Tax (18%):</span>
+                            <span>₹<%= tax %></span>
+                        </div>
+                        <div class="total-row">
+                            <span>Total:</span>
+                            <span>₹<%= total %></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="checkout-actions">
+                <button id="confirmOrderBtn" class="btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Confirm Order
+                </button>
+            </div>
+        </div>
+    </div>
+    <%- include("../../views/partials/user/footers") %>
+    <!-- Toast Notification JS -->
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const confirmOrderBtn = document.getElementById('confirmOrderBtn');
+            
+            confirmOrderBtn.addEventListener('click', async function() {
+                try {
+                    const response = await fetch('/place-order', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        Toastify({
+                            text: "Order confirmed successfully!",
+                            duration: 3000,
+                            className: "custom-toast",
+                            close: true,
+                            gravity: "top",
+                            position: "right",
+                            style: {
+                                background: "#10b981",
+                            }
+                        }).showToast();
+                        
+                        // Redirect to home page or order success page after a short delay
+                        setTimeout(() => {
+                            window.location.href = '/order-confirmation';
+                        }, 1500);
+                    } else {
+                        const result = await response.json();
+                        throw new Error(result.message || 'Failed to confirm order');
+                    }
+                } catch (error) {
+                    Toastify({
+                        text: error.message,
+                        duration: 3000,
+                        className: "custom-toast",
+                        close: true,
+                        gravity: "top",
+                        position: "right",
+                        style: {
+                            background: "#ff5252",
+                        }
+                    }).showToast();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

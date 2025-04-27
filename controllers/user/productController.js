@@ -3,36 +3,54 @@ const product = require("../../models/productSchema");
 const category = require("../../models/categorySchema");
 const wishlist = require("../../models/wishlistSchema");
 const cart = require("../../models/cartSchema");
+
 const singleProductView = async (req, res, next) => {
   try {
     const userEmail = req.session.email;
     let name = "";
     let isInWishlist = false;
     let userId = null;
-    let wishlistCount=0
-    let cartCount=0
+    let wishlistCount = 0;
+    let cartCount = 0;
     
     // Get user info if logged in
     if (userEmail) {
       const userVer = await usercollection.findOne({ email: userEmail });
       if (userVer) {
+        if (userVer.isActive === false) {
+          req.session.block = true;
+          return res.redirect("/blocked");
+        }
         name = userVer.name;
         userId = userVer._id;
-        wishlistCount = await wishlist.countDocuments({ userId: userVer._id })
-        cartCount = await cart.countDocuments({ userId: userVer._id })
+        wishlistCount = await wishlist.countDocuments({ userId: userVer._id });
+        cartCount = await cart.countDocuments({ userId: userVer._id });
       }
     }
 
     const productId = req.params.id;
-    const productDetails = await product
-      .findById(productId)
-      .populate("productCategoryId", "categoryName _id")
-      .populate("productName productPrice productImage1");
+    
+    // First get all listed categories
+    const listedCategories = await category.find({ isListed: true });
+    const listedCategoryIds = listedCategories.map(cat => cat._id);
 
-    if (!productDetails) {
-      return res.status(404).render("error", { message: "Product not found" });
+    // Find product and ensure it's listed, not deleted, and from a listed category
+    const productDetails = await product.findOne({
+      _id: productId,
+      isListed: true,
+      isDeleted: false,
+      productCategoryId: { $in: listedCategoryIds }
+    })
+    .populate({
+      path: "productCategoryId",
+      select: "categoryName _id",
+      match: { isListed: true } // Ensure populated category is listed
+    });
+
+    if (!productDetails || !productDetails.productCategoryId) {
+      return res.status(404).render("error", { message: "Product not found or unavailable" });
     }
-
+   
     // Check if product is in user's wishlist
     if (userId) {
       const wishlistItem = await wishlist.findOne({
@@ -50,23 +68,22 @@ const singleProductView = async (req, res, next) => {
       stockStatus = "Low Stock";
     }
 
-    const categories = await category.find({ isListed: true });
-    const listedCategoryIds = categories.map((cat) => cat._id);
-
-    // Fetch related products
+    // Fetch related products (only listed, not deleted, from listed categories)
     const relatedProducts = await product.find({
-        productCategoryId: productDetails.productCategoryId,
-        isListed: true,
-        isDeleted: false,
-        _id: { $ne: productId },
-      })
-      .sort({ createdAt: -1 })
-      .limit(5) 
-      .populate({
-        path: "productCategoryId",
-        select: "categoryName isListed _id",
-        match: { isListed: true },
-      });
+      productCategoryId: productDetails.productCategoryId._id,
+      isListed: true,
+      isDeleted: false,
+      _id: { $ne: productId },
+      productCategoryId: { $in: listedCategoryIds }
+    })
+    .sort({ createdAt: -1 })
+    .limit(5)
+    .populate({
+      path: "productCategoryId",
+      select: "categoryName isListed _id",
+      match: { isListed: true }
+    })
+    .then(products => products.filter(p => p.productCategoryId)); // Filter out products with unlisted categories
 
     res.render("product", {
       userId,
@@ -74,7 +91,7 @@ const singleProductView = async (req, res, next) => {
       product: productDetails,
       stockStatus,
       relatedProducts,
-      isInWishlist,// Pass wishlist status to the view
+      isInWishlist,
       wishlistCount,
       cartCount, 
       breadcrumbs: [
@@ -82,7 +99,7 @@ const singleProductView = async (req, res, next) => {
         { name: "Shop", url: "/shop" },
         { name: productDetails.productName, url: `/product/${productId}` },
       ],
-      title: productDetails.productName // Add page title for SEO
+      title: productDetails.productName
     });
   } catch (error) {
     console.error("productpage error:", error);

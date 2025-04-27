@@ -121,7 +121,8 @@ const addAlltoCart = async (req, res) => {
       });
     }
 
-    const wishlistData = await wishlist.find({ userId: userId });
+    // Get wishlist items and populate product details (including stock)
+    const wishlistData = await wishlist.find({ userId: userId }).populate('productId');
     
     if (wishlistData.length === 0) {
       return res.json({ 
@@ -131,21 +132,36 @@ const addAlltoCart = async (req, res) => {
     }
 
     const results = [];
+    const outOfStockItems = [];
+    
     for (const item of wishlistData) {
       try {
+        // Check if product exists and has stock
+        if (!item.productId || item.productId.stock <= 0) {
+          outOfStockItems.push(item.productId._id);
+          results.push({ 
+            productId: item.productId._id, 
+            success: false, 
+            message: 'Product is out of stock' 
+          });
+          continue;
+        }
+
+        // Add to cart only if product has stock
         await cart.updateOne(
-          { userId: item.userId, productId: item.productId },
+          { userId: item.userId, productId: item.productId._id },
           { $setOnInsert: { 
             userId: item.userId, 
-            productId: item.productId,
+            productId: item.productId._id,
             productQuantity: 1 
           }},
           { upsert: true }
         );
-        results.push({ productId: item.productId, success: true });
+        
+        results.push({ productId: item.productId._id, success: true });
       } catch (error) {
         results.push({ 
-          productId: item.productId, 
+          productId: item.productId._id, 
           success: false, 
           error: error.message 
         });
@@ -161,13 +177,29 @@ const addAlltoCart = async (req, res) => {
       });
     }
 
+    // Prepare response
     const failedItems = results.filter(r => !r.success);
+    const allFailedDueToStock = failedItems.length > 0 && 
+                               failedItems.length === wishlistData.length &&
+                               outOfStockItems.length === failedItems.length;
+
+    if (allFailedDueToStock) {
+      return res.json({ 
+        success: false, 
+        message: 'All products are out of stock',
+        outOfStockItems 
+      });
+    }
+
     if (failedItems.length > 0) {
       console.error('Failed items:', failedItems);
       return res.json({ 
-        success: false, 
-        message: 'Some items could not be added to cart',
-        failedItems 
+        success: failedItems.length !== wishlistData.length, // partial success
+        message: failedItems.length === wishlistData.length 
+          ? 'No products could be added to cart' 
+          : 'Some items could not be added to cart',
+        failedItems,
+        outOfStockItems
       });
     }
 

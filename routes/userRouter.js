@@ -8,7 +8,7 @@ const shopController = require('../controllers/user/shopController')
 const profileController = require("../controllers/user/profileController");
 const wishlistController = require("../controllers/user/wishlistController");
 const cartController = require("../controllers/user/cartController");
-
+const checkoutController = require("../controllers/user/checkoutController");
 
 router.get("/", userController.loadHome);
 
@@ -55,15 +55,22 @@ router.patch('/address/:id/default', userAuth, profileController.setDefaultAddre
 router.get('/wishlist', userAuth,wishlistController.wishlistPage)
 router.post('/wishlist', userAuth, wishlistController.editWishlist);
 router.delete('/removeWishlist',userAuth,wishlistController.deleteProduct)
-router.post('/addAlltocart', userAuth, wishlistController.addAlltoCart)
 
 // cart 
+router.post('/addAlltocart', userAuth, wishlistController.addAlltoCart)
 router.get('/cart', userAuth,cartController.cartView);
 router.post('/cartAdd', userAuth,cartController.addToCart);
 router.delete('/cartRemove/:id', userAuth,cartController.removeItem);
 router.put('/cartUpdate/:id', userAuth,cartController.updateQuantity);
 
-
+//checkout
+router.get('/checkout', checkoutController.checkoutPageOne); // Step 1
+router.post('/checkout', checkoutController.checkoutOnePost); // Process address
+router.get('/payment', checkoutController.paymentPage); // Step 2
+router.post('/payment', checkoutController.paymentMethod); // Process payment method
+router.get('/review', checkoutController.finalReview); // Step 3
+router.post('/place-order', checkoutController.placeOrder); // Process order
+router.get('/order-confirmation', checkoutController.confirmPage); // Confirmation
 
 
 

@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Order Confirmation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .checkout-header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .checkout-header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .checkout-steps {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        
+        .step {
+            display: flex;
+            align-items: center;
+            margin: 0 15px;
+        }
+        
+        .step-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #ddd;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: 600;
+        }
+        
+        .step.active .step-number {
+            background-color: #4a6cf7;
+        }
+        
+        .step.completed .step-number {
+            background-color: #4caf50;
+        }
+        
+        .step-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #777;
+        }
+        
+        .step.active .step-title, .step.completed .step-title {
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .checkout-content {
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .summary-section {
+            margin-bottom: 25px;
+        }
+        
+        .summary-box {
+            background-color: #f8faff;
+            border: 1px solid #e1e7ff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .summary-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .summary-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .summary-badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            background-color: #f0f2f5;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .change-link {
+            color: #4a6cf7;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .change-link:hover {
+            text-decoration: underline;
+        }
+        
+        .summary-details {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        .payment-icon {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-right: 10px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .cod-icon {
+            background-color: #ffefd5;
+            color: #ff9800;
+        }
+        
+        .cart-items {
+            margin-top: 10px;
+        }
+        
+        .cart-item {
+            display: flex;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+        
+        .item-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-right: 15px;
+            background-color: #f5f5f5;
+        }
+        
+        .item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .item-details {
+            flex: 1;
+        }
+        
+        .item-name {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        
+        .item-variant {
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        .item-price {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .item-quantity {
+            color: #777;
+            font-size: 14px;
+            margin-left: 5px;
+        }
+        
+        .item-total {
+            text-align: right;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .order-summary {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .summary-row.total {
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            outline: none;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        
+        .btn-lg {
+            padding: 14px 28px;
+            font-size: 18px;
+        }
+        
+        .btn-primary {
+            background-color: #4a6cf7;
+            color: #fff;
+        }
+        
+        .btn-primary:hover {
+            background-color: #3a5ce5;
+            box-shadow: 0 4px 12px rgba(74, 108, 247, 0.2);
+        }
+        
+        .btn-success {
+            background-color: #4caf50;
+            color: #fff;
+        }
+        
+        .btn-success:hover {
+            background-color: #3d9140;
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid #ddd;
+            color: #666;
+        }
+        
+        .btn-outline:hover {
+            border-color: #4a6cf7;
+            color: #4a6cf7;
+        }
+        
+        .checkout-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+        }
+        
+        .place-order-container {
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .checkout-steps {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .step {
+                margin-bottom: 10px;
+            }
+            
+            .cart-item {
+                flex-direction: column;
+            }
+            
+            .item-image {
+                width: 100%;
+                height: 200px;
+                margin-bottom: 15px;
+                margin-right: 0;
+            }
+            
+            .item-total {
+                text-align: left;
+                margin-top: 10px;
+            }
+            
+            .checkout-actions {
+                flex-direction: column;
+            }
+            
+            .checkout-actions .btn {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="checkout-header">
+            <h1>Checkout</h1>
+            <div class="checkout-steps">
+                <div class="step completed">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Shipping Address</div>
+                </div>
+                <div class="step completed">
+                    <div class="step-number">2</div>
+                    <div class="step-title">Payment Method</div>
+                </div>
+                <div class="step active">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Order Confirmation</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="checkout-content">
+            <h2 class="section-title">Order Summary</h2>
+            
+            <!-- Shipping Address Summary -->
+            <div class="summary-section">
+                <div class="summary-box">
+                    <div class="summary-header">
+                        <div>
+                            <span class="summary-title">Shipping Address</span>
+                            <span class="summary-badge">Home</span>
+                        </div>
+                        <a href="shipping-address.html" class="change-link">Change</a>
+                    </div>
+                    <div class="summary-details">
+                        <strong>John Doe</strong><br>
+                        +1 (555) 123-4567<br>
+                        123 Main Street, Apt 4B<br>
+                        New York, Manhattan<br>
+                        NY 10001
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Payment Method Summary -->
+            <div class="summary-section">
+                <div class="summary-box">
+                    <div class="summary-header">
+                        <div>
+                            <span class="summary-title">Payment Method</span>
+                        </div>
+                        <a href="payment-method.html" class="change-link">Change</a>
+                    </div>
+                    <div class="summary-details">
+                        <span class="payment-icon cod-icon">₹</span>
+                        Cash on Delivery
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Cart Items -->
+            <div class="summary-section">
+                <h3 class="section-title">Items in Your Cart</h3>
+                
+                <div class="cart-items">
+                    <!-- Item 1 -->
+                    <div class="cart-item">
+                        <div class="item-image">
+                            <img src="/api/placeholder/80/80" alt="Product Image">
+                        </div>
+                        <div class="item-details">
+                            <div class="item-name">Premium Wireless Headphones</div>
+                            <div class="item-variant">Color: Black | Size: Standard</div>
+                            <div class="item-price">₹2,999.00 <span class="item-quantity">x 1</span></div>
+                        </div>
+                        <div class="item-total">₹2,999.00</div>
+                    </div>
+                    
+                    <!-- Item 2 -->
+                    <div class="cart-item">
+                        <div class="item-image">
+                            <img src="/api/placeholder/80/80" alt="Product Image">
+                        </div>
+                        <div class="item-details">
+                            <div class="item-name">Smart Fitness Tracker</div>
+                            <div class="item-variant">Color: Blue | Size: M</div>
+                            <div class="item-price">₹1,499.00 <span class="item-quantity">x 1</span></div>
+                        </div>
+                        <div class="item-total">₹1,499.00</div>
+                    </div>
+                    
+                    <!-- Item 3 -->
+                    <div class="cart-item">
+                        <div class="item-image">
+                            <img src="/api/placeholder/80/80" alt="Product Image">
+                        </div>
+                        <div class="item-details">
+                            <div class="item-name">Organic Cotton T-Shirt</div>
+                            <div class="item-variant">Color: White | Size: L</div>
+                            <div class="item-price">₹599.00 <span class="item-quantity">x 2</span></div>
+                        </div>
+                        <div class="item-total">₹1,198.00</div>
+                    </div>
+                </div>
+                
+                <!-- Order Totals -->
+                <div class="order-summary">
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <span>₹5,696.00</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Shipping</span>
+                        <span>₹49.00</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Tax</span>
+                        <span>₹342.00</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Order Total</span>
+                        <span>₹6,087.00</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="checkout-actions">
+                <a href="payment-method.html" class="btn btn-outline">Back to Payment</a>
+            </div>
+            
+            <!-- Place Order Button -->
+            <div class="place-order-container">
+                <button class="btn btn-success btn-lg" onclick="placeOrder()">Place Order</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Place order functionality (just for demonstration)
+        function placeOrder() {
+            // In a real application, this would send the order to the server
+            // Here we'll just show a success message
+            alert("Thank you for your order! Your order has been placed successfully.");
+            
+            // Redirect to order success page or home page
+            // window.location.href = "order-success.html";
+        }
+    </script>
+</body>
+</html>

@@ -12,7 +12,7 @@
         border-radius: 15px;
         box-shadow: 0 10px 30px rgba(0,0,0,0.08);
         padding: 40px;
-        margin-top: 40px;
+        margin-top: 115px;
         margin-bottom: 60px;
     }
     
@@ -114,6 +114,9 @@
     
     .quantity-input:focus {
         outline: none;
+    }
+    a{
+        text-decoration: none !important;
     }
     
     .remove-btn {
@@ -249,7 +252,7 @@
         <div class="cart-container">
             <div class="cart-header">
                 <h2>Your Shopping Cart</h2>
-                <a href="/products" class="continue-shopping">Continue Shopping</a>
+                <a href="/shop" class="continue-shopping">Continue Shopping</a>
             </div>
             
             <% if (cartItems && cartItems.length > 0) { %>
