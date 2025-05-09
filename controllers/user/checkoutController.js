@@ -23,7 +23,11 @@ function generateOrderID() {
       const userEmail = req.session.email;
       const userVer = await usercollection.findOne({ email: userEmail });
       const addressCollection = await address.find({ userId: userVer._id });
-      
+          
+      const cartItems = await cart.find({ userId: userVer._id });
+      if (!cartItems || cartItems.length === 0) {
+          return res.redirect('/cart'); 
+      }
       return res.render('checkout_1', { 
         userVer, 
         addresses: addressCollection 
@@ -76,6 +80,10 @@ function generateOrderID() {
       const userEmail = req.session.email;
       const userVer = await usercollection.findOne({ email: userEmail });
       const selectedAddress = await address.findById(req.session.addressId);
+      const cartItems = await cart.find({ userId: userVer._id });
+      if (!cartItems || cartItems.length === 0) {
+          return res.redirect('/cart'); 
+      }
       return res.render('checkout_2', { 
         user: userVer,
         address: selectedAddress,
@@ -104,6 +112,10 @@ function generateOrderID() {
       const userVer = await usercollection.findOne({ email: userEmail });
       const selectedAddress = await address.findById(req.session.addressId);
       const cartItems = await cart.find({ userId: userVer._id }).populate('productId');
+      
+      if (!cartItems || cartItems.length === 0) {
+          return res.redirect('/cart'); 
+      }
       
       // Calculate totals
       let subtotal = 0;
@@ -171,10 +183,11 @@ function generateOrderID() {
         products,
         priceDetails: {
           subtotal,
-          tax,
+          tax, 
           total
         },
-        status: req.session.paymentMethod === 'Cash on delivery' ? 'Placed' : 'Pending'
+        status:"Ordered"
+        
       });
       
       // Save order and clear cart

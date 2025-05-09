@@ -12,7 +12,7 @@ const loadShopping = async (req, res, next) => {
         const skip = (page - 1) * limit;
         let wishlistCount = 0
         let cartCount=0
-
+        let userId=0
         // First get all listed categories
         const listedCategories = await category.find({ isListed: true });
         const listedCategoryIds = listedCategories.map(cat => cat._id);
@@ -65,7 +65,7 @@ const loadShopping = async (req, res, next) => {
 
         const totalProducts = await product.countDocuments(query);
         const totalPages = Math.ceil(totalProducts / limit);
-
+        
         const products = await product.find(query)
             .populate({
                 path: "productCategoryId",
@@ -88,6 +88,7 @@ const loadShopping = async (req, res, next) => {
                     return res.redirect("/blocked");
                 } else {
                     name = userVer.name;
+                    userId = userVer._id
                     wishlistCount = await wishlist.countDocuments({ userId: userVer._id })
                     cartCount = await cart.countDocuments({ userId: userVer._id })
                 }
@@ -96,6 +97,7 @@ const loadShopping = async (req, res, next) => {
 
         res.render("shop", {
             name,
+            userId,
             products: products.filter(p => p.productCategoryId), // Filter out products with unlisted categories
             categories,
             wishlistCount,

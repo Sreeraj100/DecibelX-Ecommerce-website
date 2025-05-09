@@ -646,6 +646,15 @@
       transform: scale(1.1);
     }
 
+    .add-to-cart:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    .add-to-cart:disabled:hover {
+      transform: none;
+      border-color: red;
+    }
+
     /* No Products Message */
     .no-products {
       grid-column: 1 / -1;
@@ -723,34 +732,58 @@
       color: #666;
     }
 
-    /* Toast Notifications */
-    .toast {
+    .toast-container {
       position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: #333;
-      color: white;
-      padding: 12px 24px;
-      border-radius: 4px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      top: 20px;
+      right: 20px;
       z-index: 9999;
-      opacity: 0;
-      transition: opacity 0.3s ease;
     }
 
-    .toast.show {
-      opacity: 1;
+    .toast {
+      display: none;
+      background-color: #333;
+      color: white;
+      padding: 15px 25px;
+      border-radius: 12px;
+      font-size: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      margin-bottom: 10px;
+      opacity: 0;
+      transform: translateX(100%);
+      animation: slideInFromRight 0.8s ease-out forwards;
     }
 
     .toast.success {
-      background-color: #2ecc71;
+      background-color: #28a745;
     }
 
     .toast.error {
-      background-color: #e74c3c;
+      background-color: #dc3545;
     }
 
+    @keyframes slideInFromRight {
+      0% {
+        opacity: 0;
+        transform: translateX(100%);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes slideOutToRight {
+      0% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateX(100%);
+      }
+    }
 
     /* Responsive styles */
     @media (max-width: 1200px) {
@@ -902,6 +935,7 @@
   </style>
 
   <body>
+    <div class="toast-container"></div>
     <!-- Loader -->
     <div id="loader-wrapper">
       <div class="cyber-loader">
@@ -1029,9 +1063,20 @@
                       </div>
                     </div>
                   </a>
-                  <button class="add-to-cart" data-product-id="<%= product._id %>">
+                  <!-- <button class="add-to-cart" id="add-to-cart-btn" data-product-id="<%= product._id %>">
                     <i class="fas fa-shopping-cart"></i>
                   </button>
+       -->
+                  <% if (product.productStock> 0) { %>
+                    <button id="add-to-cart-btn" class="add-to-cart" data-product-id="<%= product._id %>">
+                      <i class="fas fa-shopping-cart"></i>
+                    </button>
+                    <% } else { %>
+                      <button class="add-to-cart" disabled>
+                        <i class="fas fa-shopping-cart"></i>
+                      </button>
+                      <% } %>
+
                 </div>
                 <% }); %>
                   <% } else { %>
@@ -1100,6 +1145,24 @@
 
   <%- include("../../views/partials/user/footers") %>
     <script>
+
+      function showToast(message, type) {
+        const toastContainer = document.querySelector(".toast-container");
+        const toast = document.createElement("div");
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        toastContainer.appendChild(toast);
+
+        setTimeout(() => {
+          toast.style.display = "block";
+          setTimeout(() => {
+            toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+            setTimeout(() => {
+              toast.remove();
+            }, 800);
+          }, 1000);
+        }, 100);
+      }
       window.addEventListener("DOMContentLoaded", () => {
         document.getElementById("main-content").classList.add("blur");
       });
@@ -1278,40 +1341,6 @@
       });
 
 
-
-      // Add to cart functionality with animation
-      document.querySelectorAll('.add-to-cart').forEach(button => {
-        button.addEventListener('click', function (e) {
-          e.preventDefault();
-          e.stopPropagation();
-
-          const productId = this.getAttribute('data-product-id');
-
-          // Add visual feedback
-          this.classList.add('adding');
-          const icon = this.querySelector('i');
-          icon.classList.remove('fa-shopping-cart');
-          icon.classList.add('fa-spinner', 'fa-spin');
-
-          // Simulate API call
-          setTimeout(() => {
-            icon.classList.remove('fa-spinner', 'fa-spin');
-            icon.classList.add('fa-check');
-
-            // Reset after feedback
-            setTimeout(() => {
-              icon.classList.remove('fa-check');
-              icon.classList.add('fa-shopping-cart');
-              this.classList.remove('adding');
-            }, 1000);
-
-            // console.log(`Adding product ${productId} to cart`);
-            // Here you would add your actual cart API call
-            // fetch('/api/cart/add', { method: 'POST', body: JSON.stringify({ productId }) })
-          }, 600);
-        });
-      });
-
       // View switching (grid/list)
       const gridViewBtn = document.querySelector('.grid-view');
       const listViewBtn = document.querySelector('.list-view');
@@ -1335,15 +1364,64 @@
         localStorage.setItem('shopViewPreference', 'list');
       });
 
-      // Load saved view preference
-      document.addEventListener('DOMContentLoaded', function () {
-        const savedView = localStorage.getItem('shopViewPreference');
-        if (savedView === 'list') {
-          listViewBtn.click();
-        }
+
+      // Add to Cart with AJAX
+      document.querySelectorAll('.add-to-cart').forEach(button => {
+        button.addEventListener('click', async function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+
+          const productId = this.dataset.productId;
+          const quantity = 1;
+
+          // Add visual feedback
+          this.classList.add('adding');
+          const icon = this.querySelector('i');
+          icon.classList.remove('fa-shopping-cart');
+          icon.classList.add('fa-spinner', 'fa-spin');
+
+          try {
+            const response = await fetch('/cartAdd', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                userId: '<%= userId %>',
+                productId: productId,
+                productQuantity: quantity
+              }),
+              credentials: 'include'
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+              showToast('Added to cart successfully!', 'success');
+
+              // Update cart count in navbar if exists
+              const cartCount = document.querySelector('.cart-count');
+              if (cartCount) {
+                cartCount.textContent = parseInt(cartCount.textContent || 0) + 1;
+              }
+            } else {
+              showToast(result.message || 'Failed to add to cart', 'error');
+            }
+          } catch (error) {
+            console.error('Error:', error);
+            showToast('Please login to add items to cart', 'error');
+            setTimeout(() => {
+              window.location.href = "/login";
+            }, 1500);
+          } finally {
+            // Reset button state
+            icon.classList.remove('fa-spinner', 'fa-spin');
+            icon.classList.add('fa-shopping-cart');
+            this.classList.remove('adding');
+          }
+        });
       });
 
 
 
-      
     </script>

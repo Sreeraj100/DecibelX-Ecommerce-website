@@ -4,6 +4,8 @@ const customerController=require("../controllers/admin/customerController");
 const adminAuth = require ("../middlewares/adminAuth")
 const categoryController = require("../controllers/admin/categoryController")
 const productController=require("../controllers/admin/productController");
+const orderController=require("../controllers/admin/orderController");
+
 // const multer = require('multer')
 const upload = require('../helpers/multer')
 const router = express.Router();
@@ -38,6 +40,15 @@ router.post("/products/delete/:id", adminAuth, productController.deleteProduct);
 router.post("/product/list/:id",productController.listProduct)
 router.post("/product/unlist/:id",productController.unListProduct)
 router.get("/products/search", adminAuth, productController.searchProducts);
+
+
+// orders
+router.get('/orders', adminAuth, orderController.orders)
+router.get('/orderView/:id', adminAuth, orderController.orderView)
+
+
+
+
 
 
 module.exports = router;

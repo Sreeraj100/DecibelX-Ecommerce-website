@@ -1,4 +1,11 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DecibelX</title>
+   <link rel="icon" href="/img/icon.png" type="image/png" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <style>
         * {
@@ -383,7 +390,7 @@
             }
         }
     </style>
-
+</head>
 
 <body>
     <div class="container">
@@ -450,8 +457,8 @@
                         Shipping Address
                     </h3>
                     <div class="address-display">
-                        <p><strong>Name:  <%= user.name %></strong> <%= address.phoneNumber %></p>
-                        <p><strong>Phone:  <%= user.phone %></strong> <%= address.phoneNumber %></p>
+                        <p><strong>Name:  <%= user.name %></strong> </p>
+                        <p><strong>Phone:  <%= user.phone %></strong></p>
                         <p><%= address.doorNo %>, <%= address.street %></p>
                         <p><%= address.city %>, <%= address.district %></p>
                         <p><%= address.pinCode %></p>
@@ -512,15 +519,15 @@
                     <div class="order-totals">
                         <div class="total-row">
                             <span>Subtotal:</span>
-                            <span>₹<%= subtotal %></span>
+                            <span>₹<%= subtotal.toFixed(2) %></span>
                         </div>
                         <div class="total-row">
                             <span>Tax (18%):</span>
-                            <span>₹<%= tax %></span>
+                            <span>₹<%= tax.toFixed(2) %></span>
                         </div>
                         <div class="total-row">
                             <span>Total:</span>
-                            <span>₹<%= total %></span>
+                            <span>₹<%= total.toFixed(2) %></span>
                         </div>
                     </div>
                 </div>
@@ -540,6 +547,23 @@
     <!-- Toast Notification JS -->
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script>
+
+
+
+document.addEventListener("DOMContentLoaded", function () {
+          const checkoutBtn = document.getElementById('confirmOrderBtn');
+          
+          // Parse cartItems from server-side data
+          const cartItems = JSON.parse('<%- JSON.stringify(cartItems) %>');
+      
+          if (cartItems.length === 0) {
+            checkoutBtn.disabled = true;
+            checkoutBtn.style.opacity = "0.5"; // Optional: Make it visually disabled
+            checkoutBtn.style.cursor = "not-allowed";
+          }
+        });
+
+
         document.addEventListener('DOMContentLoaded', function() {
             const confirmOrderBtn = document.getElementById('confirmOrderBtn');
             

@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout - Shipping Address</title>
+    <title>DecibelX</title>
+    <link rel="icon" href="/img/icon.png" type="image/png" />
     <!-- Toast Notification CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <style>
@@ -861,8 +862,6 @@
             const cancelAddressBtn = document.getElementById("cancelAddress");
 
             // // Form elements in modal
-            // const modalNameInput = document.getElementById('modalName');
-            // const modalPhoneInput = document.getElementById('modalPhone');
             const doorNoInput = document.getElementById('doorNo');
             const streetInput = document.getElementById('street');
             const cityInput = document.getElementById('city');
@@ -995,23 +994,6 @@
                 }
             });
 
-            // Modal form validation
-            // modalNameInput.addEventListener('blur', function() {
-            //     if (!validateName(this.value)) {
-            //         showError(this, document.getElementById('modalNameError'), 'Please enter a valid name (at least 3 characters, letters only)');
-            //     } else {
-            //         hideError(this, document.getElementById('modalNameError'));
-            //     }
-            // });
-
-            // modalPhoneInput.addEventListener('blur', function () {
-            //     if (!validatePhone(this.value)) {
-            //         showError(this, document.getElementById('modalPhoneError'), 'Please enter a valid 10-digit phone number');
-            //     } else {
-            //         hideError(this, document.getElementById('modalPhoneError'));
-            //     }
-            // });
-
             doorNoInput.addEventListener('blur', function () {
                 if (!validateDoorNo(this.value)) {
                     showError(this, document.getElementById('doorNoError'), 'Please enter a valid door number');
@@ -1059,15 +1041,7 @@
                 // Validate all fields before submission
                 let isValid = true;
 
-                // if (!validateName(modalNameInput.value)) {
-                //     showError(modalNameInput, document.getElementById('modalNameError'), 'Please enter a valid name (at least 3 characters, letters only)');
-                //     isValid = false;
-                // }
-
-                // if (!validatePhone(modalPhoneInput.value)) {
-                //     showError(modalPhoneInput, document.getElementById('modalPhoneError'), 'Please enter a valid 10-digit phone number');
-                //     isValid = false;
-                // }
+            
 
                 if (!validateDoorNo(doorNoInput.value)) {
                     showError(doorNoInput, document.getElementById('doorNoError'), 'Please enter a valid door number');
