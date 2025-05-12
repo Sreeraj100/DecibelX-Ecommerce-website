@@ -1,7 +1,7 @@
 const usercollection = require("../../models/userSchema");
 const wishlist = require("../../models/wishlistSchema");
 const cart = require("../../models/cartSchema");
-const wishlistPage = async (req, res) => {
+const wishlistPage = async (req, res,next) => {
   try {
     const userEmail = req.session.email;
     const userVer = await usercollection.findOne({ email: userEmail });
@@ -39,11 +39,12 @@ const wishlistPage = async (req, res) => {
     });
   } catch (error) {
     console.error('Error in wishlistPage:', error);
-    res.status(500).render('error', { message: 'Internal Server Error' });
+     next(new AppError('Sorry...Something went wrong', 500));
+
   }
 };
 
-const editWishlist = async (req, res) => {
+const editWishlist = async (req, res,next) => {
   try {
     const userId = req.session.userId || req.body.userId; // Get from session if not in body
     if (!userId || !req.body.productId) {
@@ -78,12 +79,13 @@ const editWishlist = async (req, res) => {
     }
   } catch (error) {
     console.error('Error in editWishlist:', error);
-    return res.status(500).json({ success: false, message: 'Server error' });
+         next(new AppError('Sorry...Something went wrong', 500));
+
   }
 };
 
 // Update the route path in your router from '/romoveWishlist' to '/removeWishlist'
-const deleteProduct = async (req, res) => {
+const deleteProduct = async (req, res,next) => {
   try {
     const userId = req.session.userId || req.body.userId;
     if (!userId || !req.body.productId) {
@@ -104,14 +106,12 @@ const deleteProduct = async (req, res) => {
     });
   } catch (error) {
     console.error('Error in deleteProduct:', error);
-    return res.status(500).json({ 
-      success: false, 
-      message: 'Server error' 
-    });
+        next(new AppError('Sorry...Something went wrong', 500));
+
   }
 };
 
-const addAlltoCart = async (req, res) => {
+const addAlltoCart = async (req, res,next) => {
   try {
     const userId = req.session.userId || req.body.userId;
     if (!userId) {
@@ -209,10 +209,8 @@ const addAlltoCart = async (req, res) => {
     });
   } catch (error) {
     console.error('Error in addAlltoCart:', error);
-    return res.status(500).json({ 
-      success: false, 
-      message: 'Server error' 
-    });
+         next(new AppError('Sorry...Something went wrong', 500));
+
   }
 };
 module.exports = { 

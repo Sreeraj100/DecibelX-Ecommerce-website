@@ -296,7 +296,7 @@
                                     <td>
                                         <% if (order.status === "Ordered") { %>
                                             <span class="status-badge status-pending"><i class="fas fa-clock me-1"></i> <%= order.status %></span>
-                                        <% } else if (order.status === "Shipping") { %>
+                                        <% } else if (order.status === "Shipped") { %>
                                             <span class="status-badge status-shipping"><i class="fas fa-truck me-1"></i> <%= order.status %></span>
                                         <% } else if (order.status === "Delivered") { %>
                                             <span class="status-badge status-delivered"><i class="fas fa-check-circle me-1"></i> <%= order.status %></span>
@@ -309,7 +309,7 @@
                                         <% } %>
                                     </td>
                                     <td class="text-center">
-                                        <% if (order.status === "Ordered"||order.status === "Shipping"||order.status=="Return processing") { %>
+                                        <% if (order.status === "Ordered"||order.status === "Shipped"||order.status=="Return processing") { %>
                                             <button class="btn btn-sm btn-outline-warning btn-action" onclick='editPage("<%= order._id %>")'>
                                                 <i class="fas fa-edit me-1"></i> Edit
                                             </button>
@@ -420,7 +420,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>   
     <script>
         function editPage(id){
-            const link = "/editorder/" + id
+            const link = "/admin/editOrder/" + id
             window.location.href = link;
         }
     </script>

@@ -1,8 +1,12 @@
 const usercollection = require("../../models/userSchema");
 const address = require("../../models/addressSchema");
 const wishlist = require("../../models/wishlistSchema");
+const AppError = require("../../middlewares/errorHandling");
 const cart = require("../../models/cartSchema");
 const bcrypt = require("bcrypt");
+const sendotp = require("../../helpers/sendOtp");
+const passport = require("passport");
+
 async function securePassword(password) {
   const saltRounds = 10;
   const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -28,10 +32,11 @@ const profile = async (req, res, next) => {
     }
   } catch (error) {
     console.log("profilePage error:", error);
+    next(new AppError('Sorry...Something went wrong', 500));
   }
 };
 
-const editProfile = async (req, res) => {
+const editProfile = async (req, res,next) => {
   try {
     if (!req.body.name || !req.body.phone) {
       return res.json({ success: false, message: "Name or Phone is empty" });
@@ -43,9 +48,10 @@ const editProfile = async (req, res) => {
     return res.json({ success: true, message: "Pofile Updated!" });
   } catch (error) {
     console.log(error);
+    next(new AppError('Sorry...Something went wrong', 500));
   }
 };
-const addressPage = async (req, res) => {
+const addressPage = async (req, res,next) => {
   try {
     const userEmail = req.session.email;
     const userVer = await usercollection.findOne({ email: userEmail });
@@ -67,10 +73,10 @@ const addressPage = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in addressPage:", error);
-    
+    next(new AppError('Sorry...Something went wrong', 500));
   }
 };
-const getAddressById = async (req, res) => {
+const getAddressById = async (req, res,next) => {
   try {
     const addressId = req.params.id;
     const userEmail = req.session.email;
@@ -101,14 +107,101 @@ const getAddressById = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in getAddressById:", error);
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
+    next(new AppError('Sorry...Something went wrong', 500));
   }
 };
 
-const addAddressPost = async (req, res) => {
+
+const editEmail = async (req, res,next) => {
+  try {
+  
+    return res.render('editEmail');
+  } catch (error) {
+    console.log(error);
+next(new AppError('Sorry...Something went wrong', 500));
+  }
+};
+const verifyEmailOtp = async (req, res,next) => {
+  try {
+    return res.render('verifyEmailOtp');
+  } catch (error) {
+    console.log(error);
+next(new AppError('Sorry...Something went wrong', 500));
+  }
+};
+
+// Send OTP to new email
+const  sendEmailOTP = async (req, res,next) => {
+    try {
+        const { newEmail } = req.body;
+        
+        // Validate email
+        if (!validator.isEmail(newEmail)) {
+            return res.status(400).json({ success: false, message: 'Invalid email format' });
+        }
+        
+        // Check if email is already in use
+        const existingUser = await User.findOne({ email: newEmail });
+        if (existingUser) {
+            return res.status(400).json({ success: false, message: 'Email is already in use' });
+        }
+        
+        // Generate OTP
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        
+        // Save OTP to session
+        req.session.emailOTP = otp;
+        req.session.newEmail = newEmail;
+        req.session.otpExpires = Date.now() + 15 * 60 * 1000; // 15 minutes
+        
+        // Send OTP to email (implement your email sending logic here)
+        await sendEmailOTP(newEmail, otp);
+        
+        res.json({ success: true, message: 'OTP sent to your new email address' });
+    } catch (error) {
+        console.error('Error sending email OTP:', error);
+        next(new AppError('Sorry...Something went wrong', 500));
+    }
+};
+
+// Verify OTP and update email
+const verifyEmailOTP = async (req, res,next) => {
+    try {
+        const { otp } = req.body;
+        
+        // Check if OTP exists in session
+        if (!req.session.emailOTP || !req.session.newEmail) {
+            return res.status(400).json({ success: false, message: 'OTP session expired' });
+        }
+        
+        // Check if OTP is expired
+        if (Date.now() > req.session.otpExpires) {
+            return res.status(400).json({ success: false, message: 'OTP has expired' });
+        }
+        
+        // Verify OTP
+        if (otp !== req.session.emailOTP) {
+            return res.status(400).json({ success: false, message: 'Invalid OTP' });
+        }
+        
+        // Update user's email
+        const user = await user.findById(req.user._id);
+        user.email = req.session.newEmail;
+        await user.save();
+        
+        // Clear session
+        req.session.emailOTP = null;
+        req.session.newEmail = null;
+        req.session.otpExpires = null;
+        
+        res.json({ success: true, message: 'Email updated successfully' });
+    } catch (error) {
+        console.error('Error verifying email OTP:', error);
+        next(new AppError('Sorry...Something went wrong', 500));
+    }
+};
+
+const addAddressPost = async (req, res,next) => {
   try {
     const {
       userId,
@@ -174,13 +267,10 @@ const addAddressPost = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in addAddressPost:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
+    next(new AppError('Sorry...Something went wrong', 500));
   }
 };
-const editAddressPut = async (req, res) => {
+const editAddressPut = async (req, res,next) => {
   try {
     const addressId = req.params.id; // Get ID from URL parameter
     const { doorNo, street, city, district, postcode, type, isDefault } =
@@ -248,14 +338,11 @@ const editAddressPut = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in editAddressPut:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
+    next(new AppError('Sorry...Something went wrong', 500));
   }
 };
 
-const deleteAddress = async (req, res) => {
+const deleteAddress = async (req, res,next) => {
   try {
     const addressId = req.params.id;
     const userEmail = req.session.email;
@@ -314,14 +401,11 @@ const deleteAddress = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in deleteAddress:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
+    next(new AppError('Sorry...Something went wrong', 500));
   }
 };
 
-const setDefaultAddress = async (req, res) => {
+const setDefaultAddress = async (req, res,next) => {
   try {
     const addressId = req.params.id;
     const userEmail = req.session.email;
@@ -364,14 +448,11 @@ const setDefaultAddress = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in setDefaultAddress:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
+   next(new AppError('Sorry...Something went wrong', 500));
   }
 };
 
-const changePassword = async (req, res) => {
+const changePassword = async (req, res,next) => {
   try {
     const userE = req.session.email;
     const user = await usercollection.findOne({ email: userE });
@@ -419,4 +500,8 @@ module.exports = {
   setDefaultAddress,
   deleteAddress,
   changePassword,
+  editEmail,
+sendEmailOTP,
+  verifyEmailOTP ,
+  verifyEmailOtp,
 };

@@ -3,7 +3,9 @@ const product = require("../../models/productSchema");
 const category = require("../../models/categorySchema");
 const wishlist = require("../../models/wishlistSchema");
 const cart = require("../../models/cartSchema");
-const cartView = async (req, res) => {
+const AppError = require('../../middlewares/errorHandling')
+
+const cartView = async (req, res,next) => {
   try {
     const userEmail = req.session.email;
     const userVer = await usercollection.findOne({ email: userEmail });
@@ -57,7 +59,7 @@ const cartView = async (req, res) => {
       subtotal += item.productId.productOfferPrice * item.productQuantity;
     });
 
-    const taxRate = 0.05;
+    const taxRate = 0.18;
     const tax = subtotal * taxRate;
     const total = subtotal + tax;
 
@@ -73,14 +75,14 @@ const cartView = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.status(500).render('error', { error: "Something went wrong" });
+   next(new AppError('Sorry...Something went wrong', 500))
   }
 };
-
-const addToCart = async (req, res) => {
+const addToCart = async (req, res,next) => {
   try {
     const { userId, productId } = req.body;
     const quantity = parseInt(req.body.productQuantity) || 1;
+    const MAX_ALLOWED_QUANTITY = 10; // Maximum allowed quantity per product
 
     // Validate input
     if (!userId || !productId || quantity <= 0) {
@@ -130,6 +132,16 @@ const addToCart = async (req, res) => {
         });
       }
 
+      // Check if new quantity exceeds maximum allowed
+      if (newQuantity > MAX_ALLOWED_QUANTITY) {
+        return res.status(400).json({ 
+          success: false, 
+          message: `Maximum ${MAX_ALLOWED_QUANTITY} items allowed per product. You already have ${existingCartItem.productQuantity} in your cart.`,
+          currentQuantity: existingCartItem.productQuantity,
+          maxAllowed: MAX_ALLOWED_QUANTITY
+        });
+      }
+
       // Update quantity if valid
       await cart.updateOne(
         { _id: existingCartItem._id },
@@ -142,6 +154,15 @@ const addToCart = async (req, res) => {
         productId: productId
       });      
     } else {
+      // Check if quantity exceeds maximum allowed for new items
+      if (quantity > MAX_ALLOWED_QUANTITY) {
+        return res.status(400).json({ 
+          success: false, 
+          message: `Maximum ${MAX_ALLOWED_QUANTITY} items allowed per product.`,
+          maxAllowed: MAX_ALLOWED_QUANTITY
+        });
+      }
+
       // Add new item to cart
       await cart.create({
         userId,
@@ -166,13 +187,10 @@ const addToCart = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Internal server error' 
-    });
+   next(new AppError('Sorry...Something went wrong', 500))
   }
 };
-const removeItem = async (req, res) => {
+const removeItem = async (req, res,next) => {
   try {
     const { id } = req.params;
     
@@ -198,12 +216,14 @@ const removeItem = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
+    next(new AppError('Sorry...Something went wrong', 500))
   }
 };
 const updateQuantity = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { quantity } = req.body;
+    const MAX_ALLOWED_QUANTITY = 10;
 
     if (!id || id.length !== 24) {
       return res.status(400).json({ 
@@ -220,7 +240,7 @@ const updateQuantity = async (req, res, next) => {
       });
     }
 
-    // Check product stock
+    // Check product stock and quantity limits
     const cartItem = await cart.findById(id).populate('productId');
     if (!cartItem) {
       return res.status(404).json({ 
@@ -229,11 +249,19 @@ const updateQuantity = async (req, res, next) => {
       });
     }
 
-    const maxQuantity = cartItem.productId.productStock;
+    const maxQuantity = Math.min(cartItem.productId.productStock, MAX_ALLOWED_QUANTITY);
+    
     if (numericQuantity > maxQuantity) {
+      let message = '';
+      if (cartItem.productId.productStock <= MAX_ALLOWED_QUANTITY) {
+        message = `Only ${cartItem.productId.productStock} items available in stock`;
+      } else {
+        message = `Maximum ${MAX_ALLOWED_QUANTITY} items allowed per order`;
+      }
+      
       return res.status(400).json({ 
         success: false, 
-        message: `Only ${maxQuantity} items available in stock`,
+        message: message,
         maxQuantity: maxQuantity
       });
     }
@@ -254,7 +282,7 @@ const updateQuantity = async (req, res, next) => {
       subtotal += item.productId.productOfferPrice * item.productQuantity;
     });
 
-    const taxRate = 0.05;
+    const taxRate = 0.18;
     const tax = subtotal * taxRate;
     const total = subtotal + tax;
 
@@ -268,10 +296,7 @@ const updateQuantity = async (req, res, next) => {
     });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Internal server error' 
-    });
+   next(new AppError('Sorry...Something went wrong', 500))
   }
 };
 

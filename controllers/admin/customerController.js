@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const userCollection = require("../../models/userSchema");
+const AppError = require('../../middlewares/errorHandling')
 
 
 
@@ -9,7 +10,7 @@ const customerInfo = async(req,res,next)=>{
       return res.render("customers",{users})
   } catch (error) {
       console.log("customerInfo",error)
-  
+   next(new AppError('Sorry...Something went wrong', 500))
   }
 }
 const unListUser = async (req, res, next) => {

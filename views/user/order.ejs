@@ -536,7 +536,7 @@ a{
                                     <tr>
                                         <td><%= ((pagination.page - 1) * pagination.limit) + index + 1 %></td>
                                         <td>#<%= order.orderId %></td>
-                                        <td><%= order.createdAt.toISOString().split('T')[0]; %></td>
+                                        <td><%= order.createdAt.toLocaleDateString() %></td>
                                         <td><%= order.products.length %></td>
                                         
                                         <td>

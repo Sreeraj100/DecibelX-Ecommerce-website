@@ -2,78 +2,167 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Error Page</title>
-    <link rel="icon" href="img/icon.png" type="image/png">
+    <title>Oops! Page Not Found</title>
+    <link rel="icon" href="/img/icon.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
-            text-align: center;
-            padding: 20px;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+        :root {
+            --primary-color: #00FFFB;
+            --secondary-color: #121212;
+            --gradient-start: #00FFFB;
+            --gradient-end: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            height: 100%;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+        }
+
+        .error-container {
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+            height: 100%;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            perspective: 1000px;
         }
 
-        h1 {
-            color: #e74c3c;
-            margin-bottom: 10px;
+        .error-content {
+            text-align: center;
+            color: var(--secondary-color);
+            max-width: 600px;
+            padding: 40px;
+            background: #ffffffc9;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: rgba(0, 0, 0, 0.17) 0px -23px 25px 0px inset, rgba(0, 0, 0, 0.15) 0px -36px 30px 0px inset, rgba(0, 0, 0, 0.1) 0px -79px 40px 0px inset, rgba(0, 0, 0, 0.06) 0px 2px 1px, rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px, rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
+            transform: rotateX(10deg);
+            transition: all 0.5s ease;
         }
 
-        p {
-            color: #666;
-            margin-bottom: 20px;
-            font-size: 1.1em;
+        .error-content:hover {
+            transform: rotateX(0deg) scale(1.05);
+           /* box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset; */
         }
 
-        button {
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            font-size: 1em;
+        .error-number {
+            font-size: 200px;
+            font-weight: 700;
+            line-height: 1;
+            text-shadow: 5px 5px 10px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(45deg, var(--secondary-color), var(--primary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        button:hover {
-            background-color: #0056b3;
+        .error-message {
+            font-size: 24px;
+            margin: 20px 0;
+            font-weight: 500;
         }
 
-        button:focus {
-            outline: none;
-            box-shadow: 0 0 3px 2px rgba(0, 123, 255, 0.5);
+        .error-description {
+            font-size: 16px;
+            color: rgba(18, 18, 18, 0.7);
+            margin-bottom: 30px;
         }
 
-        @media (max-width: 600px) {
-            body {
-                padding: 10px;
+        .home-button {
+            display: inline-block;
+            text-decoration: none;
+            padding: 15px 30px;
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+            border-radius: 50px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            border: 2px solid var(--secondary-color);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .home-button:hover {
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .floating-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float-animation 10s infinite alternate;
+        }
+
+        @keyframes float-animation {
+            0% {
+                transform: translateY(0) rotate(0deg);
             }
-
-            button {
-                width: 100%;
-                padding: 15px;
-                font-size: 1.2em;
+            100% {
+                transform: translateY(-50px) rotate(360deg);
             }
+        }
+
+        @media (max-width: 768px) {
+            .error-number {
+                font-size: 120px;
+            }
+            .error-message {
+                font-size: 20px;
+            }
+            .error-content {
+                padding: 20px;
+                margin: 0 20px;
+            }
+        }
+        img{
+            width: 300px;
+
         }
     </style>
 </head>
 <body>
-    <h1>Error Page</h1>
-    <p>An error occurred. Please try again later.</p>
-    <button onclick="goToHomePage()">Go to Home Page</button>
-
-    <script>
-        function goToHomePage() {
-            window.location.href = "/";
-        }
-    </script>
+    
+           
+    <div class="error-container">
+        
+        <div class="floating-elements">
+           
+            <div class="floating-circle" style="width: 200px; height: 200px; top: 10%; left: 10%; animation-delay: -2s;"></div>
+            <div class="floating-circle" style="width: 300px; height: 300px; bottom: 20%; right: 15%; animation-delay: -5s;"></div>
+            <div class="floating-circle" style="width: 150px; height: 150px; top: 70%; right: 5%; animation-delay: -7s;"></div>
+        </div>
+        <div class="error-content">
+              <img id="logo" src="/img/footer-logo.png" alt="Logo">
+            <div class="error-number">404</div>
+            <h1 class="error-message">Oops! Page Not Found</h1>
+            <p class="error-description">
+                Sorry, the page you are looking for doesn't exist or has been moved. 
+                Check the URL or return to the homepage.
+            </p>
+            <a href="/" class="home-button">Back to Home</a>
+        </div>
+    </div>
 </body>
 </html>
-

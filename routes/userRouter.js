@@ -10,6 +10,8 @@ const wishlistController = require("../controllers/user/wishlistController");
 const cartController = require("../controllers/user/cartController");
 const checkoutController = require("../controllers/user/checkoutController");
 const orderController = require("../controllers/user/orderController");
+const walletController = require("../controllers/user/walletController");
+
 
 
 // Public Routes 
@@ -39,6 +41,12 @@ router.get("/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "http://localhost:3000/login" }),
   userController.googleCallback
 );
+
+// email
+router.get('/edit-email', userAuth,profileController.editEmail );
+router.post('/send-email-otp', userAuth,profileController.sendEmailOTP);
+router.post('/verify-email-otp', userAuth,profileController.verifyEmailOTP);
+router.get('/verify-email-otp',userAuth,profileController.verifyEmailOtp);
 
 // Password 
 router.get("/forgotPassword", userController.forgotPassword);
@@ -90,7 +98,12 @@ router.get('/order-confirmation', userAuth, checkoutController.confirmPage);
 router.get('/orders', userAuth, orderController.orders)
 router.get('/orderview/:id', userAuth, orderController.userOrderView)
 router.get('/download-invoice/:id', userAuth, orderController.downloadInvoice)
+router.post('/cancelOrder/:id', userAuth, orderController.cancelOrder)
+router.post('/returnOrder/:id', userAuth, orderController.returnOrder)
 
+
+// wallet
+router.get('/wallet', userAuth, walletController.walletPage)
 
 
 module.exports = router;

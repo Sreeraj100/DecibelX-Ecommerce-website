@@ -2,6 +2,7 @@ const usercollection = require("../../models/userSchema");
 const product = require("../../models/productSchema");
 const category = require("../../models/categorySchema");
 const wishlist = require("../../models/wishlistSchema");
+const AppError = require("../../middlewares/errorHandling");
 const cart = require("../../models/cartSchema");
 const mongoose = require('mongoose');
 const loadShopping = async (req, res, next) => {
@@ -108,6 +109,7 @@ const loadShopping = async (req, res, next) => {
         });
     } catch (error) {
         console.log("shopPage error:", error);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 };
 

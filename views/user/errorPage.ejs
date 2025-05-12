@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic Error</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            cursor: none;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(45deg, #000428, #004e92);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+        
+        @keyframes gradientBG {
+            0% {background-position: 0% 50%;}
+            50% {background-position: 100% 50%;}
+            100% {background-position: 0% 50%;}
+        }
+        
+        .universe {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .star {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            animation: twinkle 2s infinite alternate;
+        }
+        
+        @keyframes twinkle {
+            0% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+        
+        .error-container {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 3rem;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            transform: rotateX(15deg) rotateY(-15deg);
+            transition: all 0.5s ease;
+        }
+        
+        .error-container:hover {
+            transform: rotateX(0) rotateY(0) scale(1.05);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        }
+        
+        .error-code {
+            font-size: 10rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+            margin-bottom: 1rem;
+            text-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+        
+        .error-message {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .home-link {
+            display: inline-block;
+            text-decoration: none;
+            color: #fff;
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .home-link:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: all 0.5s ease;
+        }
+        
+        .home-link:hover:before {
+            left: 100%;
+        }
+        
+        .home-link:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+        
+        .meteor {
+            position: fixed;
+            background: linear-gradient(to right, rgba(255,255,255,0.8), transparent);
+            height: 2px;
+            width: 200px;
+            transform: rotate(45deg);
+            opacity: 0.7;
+        }
+        
+        @keyframes meteorFall {
+            0% {
+                transform: translateX(-100vw) translateY(-100vh) rotate(45deg);
+            }
+            100% {
+                transform: translateX(100vw) translateY(100vh) rotate(45deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="universe" id="universe"></div>
+    
+    <div class="error-container">
+        <h1 class="error-code"><%= statusCode %></h1>
+        <p class="error-message"><%= errorMessage || "Houston, we have a problem. The page you're looking for seems to have drifted into space." %></p>
+        <a href="/" class="home-link">Return to Mission Control</a>
+    </div>
+
+    <script>
+        // Create stars
+        const universe = document.getElementById('universe');
+        const numStars = 250;
+
+        function createStar() {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            
+            // Random positioning
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.top = `${Math.random() * 100}%`;
+            
+            // Random sizes
+            const size = Math.random() * 3;
+            star.style.width = `${size}px`;
+            star.style.height = `${size}px`;
+            
+            // Random twinkle delay
+            star.style.animationDelay = `${Math.random() * 2}s`;
+            
+            universe.appendChild(star);
+        }
+
+        // Create meteors
+        function createMeteor() {
+            const meteor = document.createElement('div');
+            meteor.classList.add('meteor');
+            
+            // Random positioning
+            meteor.style.left = `${Math.random() * 100}%`;
+            meteor.style.top = `${-Math.random() * 200}%`;
+            
+            // Random animation duration
+            const duration = Math.random() * 5 + 3;
+            meteor.style.animationDuration = `${duration}s`;
+            meteor.style.animation = `meteorFall ${duration}s linear infinite`;
+            
+            // Random width
+            const width = Math.random() * 150 + 50;
+            meteor.style.width = `${width}px`;
+            
+            universe.appendChild(meteor);
+        }
+
+        // Generate stars and meteors
+        for (let i = 0; i < numStars; i++) {
+            createStar();
+        }
+
+        for (let i = 0; i < 5; i++) {
+            createMeteor();
+        }
+
+        // Parallax effect
+        document.addEventListener('mousemove', (e) => {
+            const { clientX, clientY } = e;
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            
+            const rotateX = (centerY - clientY) / 40;
+            const rotateY = (clientX - centerX) / 40;
+            
+            const errorContainer = document.querySelector('.error-container');
+            errorContainer.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1)`;
+        });
+    </script>
+</body>
+</html>

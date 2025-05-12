@@ -1,9 +1,8 @@
+const AppError = require('../../middlewares/errorHandling')
 const bcrypt = require("bcrypt");
 require("dotenv").config(); 
 
-const pageerror = async (req, res) => {
-  res.render("admin-error");
-};
+
 
 const loadLogin = (req, res) => {
   if (req.session.admin) {
@@ -12,7 +11,7 @@ const loadLogin = (req, res) => {
   res.render("admin-login", { message: null });
 };
 
-const login = async (req, res) => {
+const login = async (req, res,next) => {
   try {
     const { email, password } = req.body;
 
@@ -32,8 +31,8 @@ const login = async (req, res) => {
     req.session.admin = true;
     return res.redirect("/admin/dashboard");
   } catch (error) {
-    console.log("Login error:", error);
-    return res.redirect("/pageerror");
+    console.log(" Admiin Login error:", error);
+     next(new AppError('Sorry...Something went wrong', 500))
   }
 };
 
@@ -53,14 +52,14 @@ const loadDashboard = async (req, res) => {
 
 
 
-const logout = (req, res) => {
+const logout = (req, res,next) => {
   try {
       req.session.admin = false;
       res.redirect("/admin/login");
     }
    catch (error) {
     console.log("Logout error:", error);
-    res.redirect("/pageerror");
+    next(new AppError('Sorry...Something went wrong', 500))
   }
 };
 
@@ -68,6 +67,5 @@ module.exports = {
   loadLogin,
   login,
   loadDashboard,
-  pageerror,
   logout,
 };

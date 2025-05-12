@@ -341,6 +341,7 @@
                 opacity: 0;
                 transform: translateX(100%);
             }
+
             100% {
                 opacity: 1;
                 transform: translateX(0);
@@ -352,6 +353,7 @@
                 opacity: 1;
                 transform: translateX(0);
             }
+
             100% {
                 opacity: 0;
                 transform: translateX(100%);
@@ -406,329 +408,371 @@
         }
     </style>
 
-<body>
-    
-    
-    <div class="toast-container"></div>
+    <body>
 
-    <div class="page-content">
-        <div class="Pcontainer">
-            <div class="sidebar">
-                <div class="user">
-                    <div class="user-avatar">
-                        <%= userVer.name.charAt(0).toUpperCase() %>
-                    </div>
-                    <div class="user-info">
-                        <div class="user-name"><%= userVer.name %></div>
-                        <div class="user-email"><%= userVer.email %></div>
-                    </div>
-                </div>
 
-                <div class="menu-section">
-                    <a href="/profile" class="menu-item active">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 10px;">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
-                        </svg>
-                        Personal Info
-                    </a>
-                    <a href="/address" class="menu-item">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 10px;">
-                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                            <circle cx="12" cy="10" r="3"></circle>
-                        </svg>
-                        Addresses
-                    </a>
-                    <a href="/wishlist" class="menu-item">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 10px;">
-                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"></path>
-                        </svg>
-                        Wishlist
-                    </a>
-                    <a href="/wallet" class="menu-item">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 10px;">
-                            <rect x="2" y="5" width="20" height="14" rx="2"></rect>
-                            <line x1="16" y1="12" x2="16" y2="12"></line>
-                        </svg>
-                        Wallet
-                    </a>
-                    <a href="/orders" class="menu-item">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 10px;">
-                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                            <line x1="3" y1="6" x2="21" y2="6"></line>
-                            <path d="M16 10a4 4 0 0 1-8 0"></path>
-                        </svg>
-                        Orders
-                    </a>
+        <div class="toast-container"></div>
 
-                    <a href="#" class="menu-item logout-item" onclick="document.getElementById('logoutForm').submit(); return false;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 10px;">
-                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                            <polyline points="16 17 21 12 16 7"></polyline>
-                            <line x1="21" y1="12" x2="9" y2="12"></line>
-                        </svg>
-                        Log out
-                    </a>
-                </div>
-
-                <form id="logoutForm" action="/logout" method="post" style="display: none"></form>
-            </div>
-
-            <div class="main-content">
-                <div class="form-section">
-                    <div class="form-section-header">
-                        <h2>Personal Information</h2>
-                    </div>
-
-                    <form id="profileForm" method="POST">
-                        <div class="form-row">
-                            <div class="form-field">
-                                <label for="name">Full Name</label>
-                                <input type="text" id="name" name="name" value="<%= userVer.name %>" required />
+        <div class="page-content">
+            <div class="Pcontainer">
+                <div class="sidebar">
+                    <div class="user">
+                        <div class="user-avatar">
+                            <%= userVer.name.charAt(0).toUpperCase() %>
+                        </div>
+                        <div class="user-info">
+                            <div class="user-name">
+                                <%= userVer.name %>
                             </div>
-                            <% if(userVer.phone) { %>
-                                <div class="form-field">
-                                    <label for="phone">Phone Number</label>
-                                    <input type="text" id="phone" name="phone" value="<%= userVer.phone %>" maxlength="10" required />
-                                </div>
-                            <% } %>
+                            <div class="user-email">
+                                <%= userVer.email %>
+                            </div>
                         </div>
+                    </div>
 
-                        <div class="form-field">
-                            <label for="email">Email Address</label>
-                            <input type="email" id="email" name="email" value="<%= userVer.email %>" disabled />
-                        </div>
+                    <div class="menu-section">
+                        <a href="/profile" class="menu-item active">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" style="margin-right: 10px;">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            Personal Info
+                        </a>
+                        <a href="/address" class="menu-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" style="margin-right: 10px;">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                            Addresses
+                        </a>
+                        <a href="/wishlist" class="menu-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" style="margin-right: 10px;">
+                                <path
+                                    d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z">
+                                </path>
+                            </svg>
+                            Wishlist
+                        </a>
+                        <a href="/wallet" class="menu-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" style="margin-right: 10px;">
+                                <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                                <line x1="16" y1="12" x2="16" y2="12"></line>
+                            </svg>
+                            Wallet
+                        </a>
+                        <a href="/orders" class="menu-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" style="margin-right: 10px;">
+                                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                                <line x1="3" y1="6" x2="21" y2="6"></line>
+                                <path d="M16 10a4 4 0 0 1-8 0"></path>
+                            </svg>
+                            Orders
+                        </a>
 
-                        <div style="margin-top: 25px; display: flex; flex-wrap: wrap;">
-                            <button type="submit" class="button primary-button">Save Changes</button>
-                            <button type="button" class="button secondary-button" onclick="window.location.href='/'">Cancel</button>
-                        </div>
-                    </form>
+                        <a href="#" class="menu-item logout-item"
+                            onclick="document.getElementById('logoutForm').submit(); return false;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" style="margin-right: 10px;">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                <polyline points="16 17 21 12 16 7"></polyline>
+                                <line x1="21" y1="12" x2="9" y2="12"></line>
+                            </svg>
+                            Log out
+                        </a>
+                    </div>
+
+                    <form id="logoutForm" action="/logout" method="post" style="display: none"></form>
                 </div>
 
-                <% if(userVer.password) { %>
+                <div class="main-content">
                     <div class="form-section">
-                        <div class="password-section">
-                            <div class="password-info">
-                                <h2 style="margin: 0;">Password</h2>
-                                <div class="password-dots">••••••••</div>
-                            </div>
-                            <button type="button" class="edit-button" id="editPasswordBtn">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                                </svg>
-                                Change Password
-                            </button>
+                        <div class="form-section-header">
+                            <h2>Personal Information</h2>
                         </div>
 
-                        <div id="passwordChangeForm" class="password-change-form">
-                            <form id="changePasswordForm">
+                        <form id="profileForm" method="POST">
+                            <div class="form-row">
                                 <div class="form-field">
-                                    <label for="currentPassword">Current Password</label>
-                                    <input type="password" id="currentPassword" name="currentPassword">
-                                    <div class="error-message" id="old-password-error"></div>
+                                    <label for="name">Full Name</label>
+                                    <input type="text" id="name" name="name" value="<%= userVer.name %>" required />
                                 </div>
-
-                                <div class="form-row">
+                                <% if(userVer.phone) { %>
                                     <div class="form-field">
-                                        <label for="newPassword">New Password</label>
-                                        <input type="password" id="newPassword" name="newPassword">
-                                        <div class="error-message" id="passwordError"></div>
+                                        <label for="phone">Phone Number</label>
+                                        <input type="text" id="phone" name="phone" value="<%= userVer.phone %>"
+                                            maxlength="10" required />
                                     </div>
+                                    <% } %>
+                            </div>
 
-                                    <div class="form-field">
-                                        <label for="confirmPassword">Confirm Password</label>
-                                        <input type="password" id="confirmPassword" name="confirmPassword">
-                                        <div class="error-message" id="confirmError"></div>
-                                    </div>
+                            <div class="form-field">
+                                <label for="email">Email Address</label>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <input type="email" id="email" name="email" value="<%= userVer.email %>" disabled />
+                                    <button type="button" class="edit-button" id="editEmailBtn" style="margin: 0;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                        </svg>
+                                        Change Email
+                                    </button>
                                 </div>
+                            </div>
 
-                                <div style="margin-top: 25px; display: flex; flex-wrap: wrap;">
-                                    <button type="submit" class="button primary-button" id="updateBtn">Update Password</button>
-                                    <button type="button" class="button secondary-button" id="cancelPasswordBtn">Cancel</button>
-                                </div>
-                            </form>
-                        </div>
+                            <div style="margin-top: 25px; display: flex; flex-wrap: wrap;">
+                                <button type="submit" class="button primary-button">Save Changes</button>
+                                <button type="button" class="button secondary-button"
+                                    onclick="window.location.href='/'">Cancel</button>
+                            </div>
+                        </form>
                     </div>
-                <% } %>
+
+                    <% if(userVer.password) { %>
+                        <div class="form-section">
+                            <div class="password-section">
+                                <div class="password-info">
+                                    <h2 style="margin: 0;">Password</h2>
+                                    <div class="password-dots">••••••••</div>
+                                </div>
+                                <button type="button" class="edit-button" id="editPasswordBtn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                    </svg>
+                                    Change Password
+                                </button>
+                            </div>
+
+                            <div id="passwordChangeForm" class="password-change-form">
+                                <form id="changePasswordForm">
+                                    <div class="form-field">
+                                        <label for="currentPassword">Current Password</label>
+                                        <input type="password" id="currentPassword" name="currentPassword">
+                                        <div class="error-message" id="old-password-error"></div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-field">
+                                            <label for="newPassword">New Password</label>
+                                            <input type="password" id="newPassword" name="newPassword">
+                                            <div class="error-message" id="passwordError"></div>
+                                        </div>
+
+                                        <div class="form-field">
+                                            <label for="confirmPassword">Confirm Password</label>
+                                            <input type="password" id="confirmPassword" name="confirmPassword">
+                                            <div class="error-message" id="confirmError"></div>
+                                        </div>
+                                    </div>
+
+                                    <div style="margin-top: 25px; display: flex; flex-wrap: wrap;">
+                                        <button type="submit" class="button primary-button" id="updateBtn">Update
+                                            Password</button>
+                                        <button type="button" class="button secondary-button"
+                                            id="cancelPasswordBtn">Cancel</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <% } %>
+                </div>
             </div>
         </div>
-    </div>
 
-    <%- include("../../views/partials/user/footers") %>
+        <%- include("../../views/partials/user/footers") %>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Profile form submission
-            const profileForm = document.getElementById('profileForm');
-            profileForm.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                
-                try {
-                    const formData = new FormData(profileForm);
-                    const response = await fetch('/editProfile', {
-                        method: 'PATCH',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            name: formData.get('name'),
-                            phone: formData.get('phone')
-                        })
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+
+                    const editEmailBtn = document.getElementById('editEmailBtn');
+                    editEmailBtn.addEventListener('click', function () {
+                        window.location.href = '/edit-email';
                     });
-                    
-                    const result = await response.json();
-                    showToast(result.message, result.success ? 'success' : 'error');
-                    
-                    if (result.success) {
-                        // Update the displayed name if successful
-                        document.querySelector('.user-name').textContent = formData.get('name');
-                        document.querySelector('.user-avatar').textContent = formData.get('name').charAt(0).toUpperCase();
-                        window.location.reload();
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    showToast('An error occurred while updating profile', 'error');
-                }
-            });
+                    // Profile form submission
+                    const profileForm = document.getElementById('profileForm');
+                    profileForm.addEventListener('submit', async function (e) {
+                        e.preventDefault();
 
-            // Password edit functionality
-            const editPasswordBtn = document.getElementById('editPasswordBtn');
-            const passwordChangeForm = document.getElementById('passwordChangeForm');
-            const cancelPasswordBtn = document.getElementById('cancelPasswordBtn');
-            const updateBtn = document.getElementById('updateBtn');
-            const oldPasswordError = document.getElementById("old-password-error");
-            const passwordError = document.getElementById("passwordError");
-            const confirmError = document.getElementById("confirmError");
+                        try {
+                            const formData = new FormData(profileForm);
+                            const response = await fetch('/editProfile', {
+                                method: 'PATCH',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    name: formData.get('name'),
+                                    phone: formData.get('phone')
+                                })
+                            });
 
-            editPasswordBtn.addEventListener('click', function () {
-                passwordChangeForm.style.display = 'block';
-                editPasswordBtn.style.display = 'none';
-            });
+                            const result = await response.json();
+                            showToast(result.message, result.success ? 'success' : 'error');
 
-            cancelPasswordBtn.addEventListener('click', function () {
-                passwordChangeForm.style.display = 'none';
-                editPasswordBtn.style.display = 'block';
-
-                // Clear form fields
-                document.getElementById('currentPassword').value = '';
-                document.getElementById('newPassword').value = '';
-                document.getElementById('confirmPassword').value = '';
-                oldPasswordError.style.display = 'none';
-                passwordError.style.display = 'none';
-                confirmError.style.display = 'none';
-            });
-
-            const passwordForm = document.getElementById("changePasswordForm");
-            const oldPasswordInput = document.getElementById("currentPassword");
-            const newPasswordInput = document.getElementById("newPassword");
-            const confirmPasswordInput = document.getElementById("confirmPassword");
-
-            const validateOldPassword = () => {
-                if (!oldPasswordInput.value.trim()) {
-                    oldPasswordError.textContent = "Current password is required";
-                    oldPasswordError.style.display = "block";
-                    return false;
-                } else {
-                    oldPasswordError.style.display = "none";
-                    return true;
-                }
-            };
-
-            const validateNewPassword = () => {
-                const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
-                if (!newPasswordInput.value.trim()) {
-                    passwordError.textContent = "New password is required";
-                    passwordError.style.display = "block";
-                    return false;
-                } else if (!passwordRegex.test(newPasswordInput.value)) {
-                    passwordError.textContent = "Password must be at least 8 characters with at least one digit, one uppercase and one lowercase letter";
-                    passwordError.style.display = "block";
-                    return false;
-                } else {
-                    passwordError.style.display = "none";
-                    return true;
-                }
-            };
-
-            const validateConfirmPassword = () => {
-                if (!confirmPasswordInput.value.trim()) {
-                    confirmError.textContent = "Please confirm your password";
-                    confirmError.style.display = "block";
-                    return false;
-                } else if (confirmPasswordInput.value !== newPasswordInput.value) {
-                    confirmError.textContent = "Passwords do not match";
-                    confirmError.style.display = "block";
-                    return false;
-                } else {
-                    confirmError.style.display = "none";
-                    return true;
-                }
-            };
-
-            oldPasswordInput.addEventListener("blur", validateOldPassword);
-            newPasswordInput.addEventListener("blur", validateNewPassword);
-            confirmPasswordInput.addEventListener("blur", validateConfirmPassword);
-
-            // Show toast notification
-            function showToast(message, type) {
-                const toastContainer = document.querySelector(".toast-container");
-                const toast = document.createElement("div");
-                toast.className = `toast ${type}`;
-                toast.textContent = message;
-                toastContainer.appendChild(toast);
-
-                setTimeout(() => {
-                    toast.style.display = "block";
-                    setTimeout(() => {
-                        toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
-                        setTimeout(() => {
-                            toast.remove();
-                        }, 800);
-                    }, 3000);
-                }, 100);
-            }
-
-            passwordForm.addEventListener("submit", async (e) => {
-                e.preventDefault();
-
-                // Validate all fields
-                const isOldValid = validateOldPassword();
-                const isNewValid = validateNewPassword();
-                const isConfirmValid = validateConfirmPassword();
-
-                if (isOldValid && isNewValid && isConfirmValid) {
-                    try {
-                        const response = await fetch('/changePassword', {
-                            method: 'PATCH',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({
-                                currentPassword: oldPasswordInput.value,
-                                newPassword: newPasswordInput.value,
-                                confirmPassword: confirmPasswordInput.value
-                            })
-                        });
-
-                        const result = await response.json();
-
-                        if (result.success) {
-                            showToast(result.message, "success");
-                            passwordForm.reset();
-                            passwordChangeForm.style.display = 'none';
-                            editPasswordBtn.style.display = 'block';
-                        } else {
-                            showToast(result.message, "error");
+                            if (result.success) {
+                                // Update the displayed name if successful
+                                document.querySelector('.user-name').textContent = formData.get('name');
+                                document.querySelector('.user-avatar').textContent = formData.get('name').charAt(0).toUpperCase();
+                                window.location.reload();
+                            }
+                        } catch (error) {
+                            console.error('Error:', error);
+                            showToast('An error occurred while updating profile', 'error');
                         }
-                    } catch (error) {
-                        console.error("Error:", error);
-                        showToast("An error occurred. Please try again.", "error");
+                    });
+
+                    // Password edit functionality
+                    const editPasswordBtn = document.getElementById('editPasswordBtn');
+                    const passwordChangeForm = document.getElementById('passwordChangeForm');
+                    const cancelPasswordBtn = document.getElementById('cancelPasswordBtn');
+                    const updateBtn = document.getElementById('updateBtn');
+                    const oldPasswordError = document.getElementById("old-password-error");
+                    const passwordError = document.getElementById("passwordError");
+                    const confirmError = document.getElementById("confirmError");
+
+                    editPasswordBtn.addEventListener('click', function () {
+                        passwordChangeForm.style.display = 'block';
+                        editPasswordBtn.style.display = 'none';
+                    });
+
+                    cancelPasswordBtn.addEventListener('click', function () {
+                        passwordChangeForm.style.display = 'none';
+                        editPasswordBtn.style.display = 'block';
+
+                        // Clear form fields
+                        document.getElementById('currentPassword').value = '';
+                        document.getElementById('newPassword').value = '';
+                        document.getElementById('confirmPassword').value = '';
+                        oldPasswordError.style.display = 'none';
+                        passwordError.style.display = 'none';
+                        confirmError.style.display = 'none';
+                    });
+
+                    const passwordForm = document.getElementById("changePasswordForm");
+                    const oldPasswordInput = document.getElementById("currentPassword");
+                    const newPasswordInput = document.getElementById("newPassword");
+                    const confirmPasswordInput = document.getElementById("confirmPassword");
+
+                    const validateOldPassword = () => {
+                        if (!oldPasswordInput.value.trim()) {
+                            oldPasswordError.textContent = "Current password is required";
+                            oldPasswordError.style.display = "block";
+                            return false;
+                        } else {
+                            oldPasswordError.style.display = "none";
+                            return true;
+                        }
+                    };
+
+                    const validateNewPassword = () => {
+                        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+                        if (!newPasswordInput.value.trim()) {
+                            passwordError.textContent = "New password is required";
+                            passwordError.style.display = "block";
+                            return false;
+                        } else if (!passwordRegex.test(newPasswordInput.value)) {
+                            passwordError.textContent = "Password must be at least 8 characters with at least one digit, one uppercase and one lowercase letter";
+                            passwordError.style.display = "block";
+                            return false;
+                        } else {
+                            passwordError.style.display = "none";
+                            return true;
+                        }
+                    };
+
+                    const validateConfirmPassword = () => {
+                        if (!confirmPasswordInput.value.trim()) {
+                            confirmError.textContent = "Please confirm your password";
+                            confirmError.style.display = "block";
+                            return false;
+                        } else if (confirmPasswordInput.value !== newPasswordInput.value) {
+                            confirmError.textContent = "Passwords do not match";
+                            confirmError.style.display = "block";
+                            return false;
+                        } else {
+                            confirmError.style.display = "none";
+                            return true;
+                        }
+                    };
+
+                    oldPasswordInput.addEventListener("blur", validateOldPassword);
+                    newPasswordInput.addEventListener("blur", validateNewPassword);
+                    confirmPasswordInput.addEventListener("blur", validateConfirmPassword);
+
+                    // Show toast notification
+                    function showToast(message, type) {
+                        const toastContainer = document.querySelector(".toast-container");
+                        const toast = document.createElement("div");
+                        toast.className = `toast ${type}`;
+                        toast.textContent = message;
+                        toastContainer.appendChild(toast);
+
+                        setTimeout(() => {
+                            toast.style.display = "block";
+                            setTimeout(() => {
+                                toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+                                setTimeout(() => {
+                                    toast.remove();
+                                }, 800);
+                            }, 3000);
+                        }, 100);
                     }
-                }
-            });
-        });
-    </script>
-</body>
-</html>
+
+                    passwordForm.addEventListener("submit", async (e) => {
+                        e.preventDefault();
+
+                        // Validate all fields
+                        const isOldValid = validateOldPassword();
+                        const isNewValid = validateNewPassword();
+                        const isConfirmValid = validateConfirmPassword();
+
+                        if (isOldValid && isNewValid && isConfirmValid) {
+                            try {
+                                const response = await fetch('/changePassword', {
+                                    method: 'PATCH',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify({
+                                        currentPassword: oldPasswordInput.value,
+                                        newPassword: newPasswordInput.value,
+                                        confirmPassword: confirmPasswordInput.value
+                                    })
+                                });
+
+                                const result = await response.json();
+
+                                if (result.success) {
+                                    showToast(result.message, "success");
+                                    passwordForm.reset();
+                                    passwordChangeForm.style.display = 'none';
+                                    editPasswordBtn.style.display = 'block';
+                                } else {
+                                    showToast(result.message, "error");
+                                }
+                            } catch (error) {
+                                console.error("Error:", error);
+                                showToast("An error occurred. Please try again.", "error");
+                            }
+                        }
+                    });
+                });
+            </script>
+    </body>
+
+    </html>

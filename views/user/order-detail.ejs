@@ -247,7 +247,6 @@
             transition: all 0.2s ease;
             border: none;
             box-shadow: rgba(13, 13, 21, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
-
         }
 
         .button svg {
@@ -288,112 +287,8 @@
             border-color: var(--text-light);
         }
 
-        .modal-backdrop {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .modal {
-            background-color: var(--bg-white);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: 30px;
-            width: 100%;
-            max-width: 500px;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .modal-title {
-            font-size: 20px;
-            font-weight: 600;
-        }
-
-        .close-button {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: var(--text-light);
-        }
-
         a {
             text-decoration: none !important;
-        }
-
-        .modal-body {
-            margin-bottom: 25px;
-        }
-
-        .modal-footer {
-            display: flex;
-            justify-content: flex-end;
-            gap: 15px;
-        }
-
-        .toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-        }
-
-        .toast {
-            display: none;
-            background-color: #333;
-            color: white;
-            padding: 15px 25px;
-            border-radius: var(--radius);
-            font-size: 16px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-            opacity: 0;
-            transform: translateX(100%);
-            animation: slideInFromRight 0.8s ease-out forwards;
-        }
-
-        .toast.success {
-            background-color: #28a745;
-        }
-
-        .toast.error {
-            background-color: #dc3545;
-        }
-
-        @keyframes slideInFromRight {
-            0% {
-                opacity: 0;
-                transform: translateX(100%);
-            }
-
-            100% {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes slideOutToRight {
-            0% {
-                opacity: 1;
-                transform: translateX(0);
-            }
-
-            100% {
-                opacity: 0;
-                transform: translateX(100%);
-            }
         }
 
         /* Responsive styles */
@@ -420,27 +315,10 @@
         }
     </style>
 
+    <!-- Add SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <body>
-
-
-        <div class="toast-container"></div>
-
-        <div class="modal-backdrop" id="cancelModal">
-            <div class="modal">
-                <div class="modal-header">
-                    <h3 class="modal-title">Cancel Order</h3>
-                    <button class="close-button" id="closeModal">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <p>Are you sure you want to cancel this order? This action cannot be undone.</p>
-                </div>
-                <div class="modal-footer">
-                    <button class="button outline-button" id="cancelModalBtn">No, Keep Order</button>
-                    <button class="button danger-button" id="confirmCancelBtn">Yes, Cancel Order</button>
-                </div>
-            </div>
-        </div>
-
         <div class="page-content">
             <a href="/orders" class="back-button">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
@@ -503,16 +381,15 @@
                         </h3>
                         <div class="info-content">
                             <p>
-                                DoorNo:  <%= orderData.address.doorNo %>
+                                DoorNo: <%= orderData.address.doorNo %>
                             </p>
                             <p>
-                                Street:  <%= orderData.address.street %> ,City:  <%= orderData.address.city %>
+                                Street: <%= orderData.address.street %> ,City: <%= orderData.address.city %>
                             </p>
                             <p>
-                                 District: <%= orderData.address.district %>
-                                 , Pincode: <%= orderData.address.pinCode %>
+                                District: <%= orderData.address.district %>
+                                    , Pincode: <%= orderData.address.pinCode %>
                             </p>
-                            
                         </div>
                     </div>
 
@@ -531,13 +408,17 @@
                                 <%= orderData.paymentMethod %>
                             </p>
                             <p><strong>Payment Status:</strong>
-                                <% if(orderData.status==='Paid' ) { %>
+                                <% if(orderData.status==='Delivered' || orderData.status==='Return processing') { %>
                                     <span style="color: var(--success-color);">Paid</span>
-                                    <% } else if(orderData.status==='Pending' ) { %>
+                                    <% } else if(orderData.status==='Ordered' ) { %>
                                         <span style="color: var(--warning-dark);">Pending</span>
-                                        <% } else { %>
-                                            <span style="color: var(--danger-color);">Failed</span>
-                                            <% } %>
+                                        <% } else if(orderData.status==='Shipped' ) { %>
+                                            <span style="color: var(--warning-dark);">Pending</span>
+                                            <% } else if(orderData.status==='Returned' ) { %>
+                                                    <span style="color: var(--warning-dark);">Refunded</span>
+                                            <% } else { %>
+                                                <span style="color: var(--danger-color);">Failed</span>
+                                                <% } %>
                             </p>
                             <p><strong>Transaction ID:</strong>
                                 <%= orderData.transactionId || 'N/A' %>
@@ -552,7 +433,6 @@
                     <table class="product-table">
                         <thead>
                             <tr>
-
                                 <th>Product Name</th>
                                 <th>Price</th>
                                 <th>Quantity</th>
@@ -563,7 +443,6 @@
                         <tbody>
                             <% orderData.products.forEach(item=> { %>
                                 <tr>
-
                                     <td class="product-name">
                                         <%= item.productName %>
                                     </td>
@@ -629,8 +508,8 @@
                         </svg>
                         Download Invoice
                     </a>
-                    <% if(orderData.status !=='Delivered' && orderData.status !=='Cancelled' ) { %>
-                        <button class="button danger-button" id="openCancelModal">
+                    <% if(orderData.status !=='Delivered' && orderData.status !=='Cancelled' && orderData.status !=='Return processing' && orderData.status !=='Returned') { %>
+                        <button class="button danger-button" id="cancelOrderBtn">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                 stroke-linejoin="round">
@@ -641,6 +520,12 @@
                             Cancel Order
                         </button>
                         <% } %>
+                            <% if(orderData.status=='Delivered' ) { %>
+                                <button class="button danger-button" id="returnOrderBtn">
+
+                                    Return Order
+                                </button>
+                                <% } %>
                 </div>
             </div>
         </div>
@@ -649,81 +534,119 @@
 
             <script>
                 document.addEventListener('DOMContentLoaded', function () {
-                    // Cancel order modal functionality
-                    const openCancelModal = document.getElementById('openCancelModal');
-                    const cancelModal = document.getElementById('cancelModal');
-                    const closeModal = document.getElementById('closeModal');
-                    const cancelModalBtn = document.getElementById('cancelModalBtn');
-                    const confirmCancelBtn = document.getElementById('confirmCancelBtn');
-
-                    if (openCancelModal) {
-                        openCancelModal.addEventListener('click', function () {
-                            cancelModal.style.display = 'flex';
-                        });
-                    }
-
-                    closeModal.addEventListener('click', function () {
-                        cancelModal.style.display = 'none';
-                    });
-
-                    cancelModalBtn.addEventListener('click', function () {
-                        cancelModal.style.display = 'none';
-                    });
-
-                    confirmCancelBtn.addEventListener('click', async function () {
-                        try {
-                            const response = await fetch('/cancel-order/<%= orderData._id %>', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                }
+                    const cancelOrderBtn = document.getElementById('cancelOrderBtn');
+                    const returnOrderBtn = document.getElementById('returnOrderBtn');
+                    if (cancelOrderBtn) {
+                        cancelOrderBtn.addEventListener('click', async function () {
+                            const result = await Swal.fire({
+                                title: 'Are you sure?',
+                                text: "You won't be able to revert this!",
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#d33',
+                                cancelButtonColor: '#3085d6',
+                                confirmButtonText: 'Yes, cancel it!',
+                                cancelButtonText: 'No, keep it'
                             });
 
-                            const result = await response.json();
+                            if (result.isConfirmed) {
+                                try {
+                                    const response = await fetch('/cancelOrder/<%= orderData._id %>', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        }
+                                    });
 
-                            if (result.success) {
-                                showToast('Order cancelled successfully', 'success');
-                                setTimeout(() => {
-                                    window.location.reload();
-                                }, 2000);
-                            } else {
-                                showToast(result.message || 'Failed to cancel order', 'error');
+                                    const data = await response.json();
+
+                                    if (data.success) {
+                                        await Swal.fire(
+                                            'Cancelled!',
+                                            'Your order has been cancelled.',
+                                            'success'
+                                        );
+                                        window.location.reload();
+                                    } else {
+                                        Swal.fire(
+                                            'Error!',
+                                            data.message || 'Failed to cancel order',
+                                            'error'
+                                        );
+                                    }
+                                } catch (error) {
+                                    console.error('Error:', error);
+                                    Swal.fire(
+                                        'Error!',
+                                        'An error occurred while cancelling order',
+                                        'error'
+                                    );
+                                }
                             }
-
-                            cancelModal.style.display = 'none';
-                        } catch (error) {
-                            console.error('Error:', error);
-                            showToast('An error occurred while cancelling order', 'error');
-                            cancelModal.style.display = 'none';
-                        }
-                    });
-
-                    // Close modal when clicking outside
-                    window.addEventListener('click', function (event) {
-                        if (event.target === cancelModal) {
-                            cancelModal.style.display = 'none';
-                        }
-                    });
-
-                    // Show toast notification
-                    function showToast(message, type) {
-                        const toastContainer = document.querySelector(".toast-container");
-                        const toast = document.createElement("div");
-                        toast.className = `toast ${type}`;
-                        toast.textContent = message;
-                        toastContainer.appendChild(toast);
-
-                        setTimeout(() => {
-                            toast.style.display = "block";
-                            setTimeout(() => {
-                                toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
-                                setTimeout(() => {
-                                    toast.remove();
-                                }, 800);
-                            }, 3000);
-                        }, 100);
+                        });
                     }
                 });
+
+
+                if (returnOrderBtn) {
+                    returnOrderBtn.addEventListener('click', async function () {
+                        const { value: returnReason } = await Swal.fire({
+                            title: 'Return Order',
+                            input: 'textarea',
+                            inputLabel: 'Reason for return',
+                            inputPlaceholder: 'Please explain why you want to return this order...',
+                            inputAttributes: {
+                                'aria-label': 'Type your reason here'
+                            },
+                            showCancelButton: true,
+                            confirmButtonColor: '#d33',
+                            cancelButtonColor: '#3085d6',
+                            confirmButtonText: 'Submit Return',
+                            cancelButtonText: 'Cancel',
+                            inputValidator: (value) => {
+                                if (!value) {
+                                    return 'You need to provide a reason for return!';
+                                }
+                            }
+                        });
+
+                        if (returnReason) {
+                            try {
+                                const response = await fetch('/returnOrder/<%= orderData._id %>', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({ value: returnReason })
+                                });
+
+                                const data = await response.json();
+
+                                if (data.success) {
+                                    await Swal.fire(
+                                        'Return Requested!',
+                                        'Your return request has been submitted successfully.',
+                                        'success'
+                                    );
+                                    window.location.reload();
+                                } else {
+                                    Swal.fire(
+                                        'Error!',
+                                        data.message || 'Failed to process return request',
+                                        'error'
+                                    );
+                                }
+                            } catch (error) {
+                                console.error('Error:', error);
+                                Swal.fire(
+                                    'Error!',
+                                    'An error occurred while processing your return request',
+                                    'error'
+                                );
+                            }
+                        }
+                    });
+                }
             </script>
     </body>
 

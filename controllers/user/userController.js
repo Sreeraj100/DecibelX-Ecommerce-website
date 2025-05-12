@@ -3,6 +3,7 @@ const usercollection = require("../../models/userSchema");
 const product = require("../../models/productSchema");
 const category = require("../../models/categorySchema");
 const wishlist = require("../../models/wishlistSchema");
+const AppError = require("../../middlewares/errorHandling");
 const cart = require("../../models/cartSchema");
 const otpCollection = require("../../models/otp");
 const sendotp = require("../../helpers/sendOtp");
@@ -59,7 +60,7 @@ const loadHome = async (req, res, next) => {
     }
   } catch (error) {
     console.log("Homepage error:", error);
-  
+  next(new AppError('Sorry...Something went wrong', 500));
   }
 };
 
@@ -73,6 +74,7 @@ const loadLogin = async (req, res, next) => {
     }
   } catch (error) {
     console.log("loginpage error:", error);
+    next(new AppError('Sorry...Something went wrong', 500));
   }
 };
 
@@ -86,6 +88,7 @@ const loadSignup = async (req, res, next) => {
     }
   } catch (error) {
     console.log("signuppage error:", error);
+    next(new AppError('Sorry...Something went wrong', 500));
   }
 };
 
@@ -150,7 +153,7 @@ const otpPost = async (req, res, next) => {
   }
 };
 
-const signup = async (req, res) => {
+const signup = async (req, res,next) => {
   try {
     const userExists = await usercollection.findOne({
       email: req.body.emailval,
@@ -177,11 +180,12 @@ const signup = async (req, res) => {
     }
   } catch (error) {
     console.error("Signup error:", error);
+    next(new AppError('Sorry...Something went wrong', 500));
 
   }
 };
 
-const login = async (req, res) => {
+const login = async (req, res,next) => {
   try {
     // console.log(req.body);
     const userData = await usercollection.findOne({ email: req.body.email });
@@ -201,6 +205,7 @@ const login = async (req, res) => {
     }
   } catch (error) {
     console.log(error);
+    next(new AppError('Sorry...Something went wrong', 500));
   }
 };
 const googleCallback = async (req, res, next) => {
@@ -219,7 +224,7 @@ const googleCallback = async (req, res, next) => {
     return res.redirect("http://localhost:3000/");
   } catch (err) {
     console.error("Error in googleCallback:", err);
-  
+  next(new AppError('Sorry...Something went wrong', 500));
   }
 };
 
@@ -270,7 +275,7 @@ const contact = async (req, res) => {
   }
 };
 
-const forgotPassword = async (req, res) => {
+const forgotPassword = async (req, res,next) => {
   try {
     // Clear any existing session data
     req.session.forgotPasswordSession = null;
@@ -280,11 +285,11 @@ const forgotPassword = async (req, res) => {
     return res.render('forgot-pass');
   } catch (error) {
     console.log(error);
-    return res.status(500).render('error', { message: 'Server error' });
+    next(new AppError('Sorry...Something went wrong', 500));
   }
 };
 
-const forgotPasswordPost = async (req, res) => {
+const forgotPasswordPost = async (req, res,next) => {
   try {
     const email = req.body.email;
     const user = await usercollection.findOne({ email: email });
@@ -319,14 +324,11 @@ const forgotPasswordPost = async (req, res) => {
     return res.status(200).json({ success: true });
   } catch (error) {
     console.error("Forgot password error:", error);
-    return res.status(500).json({ 
-      success: false, 
-      message: "Server error" 
-    });
+   next(new AppError('Sorry...Something went wrong', 500));
   }
 };
 
-const verifyOtpGet = async (req, res) => {
+const verifyOtpGet = async (req, res,next) => {
   try {
     if (!req.session.forgotPasswordSession || !req.session.forgotEmail) {
       return res.redirect('/forgotPassword');
@@ -432,7 +434,7 @@ const resetPasswordPost = async (req, res) => {
   }
 };
 
-const resendForgotOtp = async (req, res) => {
+const resendForgotOtp = async (req, res,next) => {
   try {
     const email = req.session.forgotEmail;
     if (!email || !req.session.forgotPasswordSession) {
@@ -463,10 +465,7 @@ const resendForgotOtp = async (req, res) => {
     return res.status(200).json({ success: true });
   } catch (error) {
     console.error("Resend OTP error:", error);
-    return res.status(500).json({ 
-      success: false, 
-      message: "Server error" 
-    });
+   next(new AppError('Sorry...Something went wrong', 500));
   }
 };
 

@@ -1,5 +1,6 @@
 const product = require("../../models/productSchema");
 const category = require("../../models/categorySchema");
+const AppError = require('../../middlewares/errorHandling');
 const path = require('path');
 const fs = require('fs');
 
@@ -49,6 +50,7 @@ const productPage = async (req, res, next) => {
         });
     } catch (error) {
         console.log("productPage error", error);
+      next(new AppError("Sorry...Something went wrong", 500));
 
     }
 };
@@ -61,6 +63,8 @@ const addProduct = async(req,res,next)=>{
         res.render("add-product",{categories})
     } catch (error) {
         console.log("addProduct error:",error)
+            next(new AppError("Sorry...Something went wrong", 500));
+        
     }
 }
 
@@ -113,7 +117,8 @@ const addProductPost = async (req,res,next) => {
         }        
     } catch (error) {
         console.log('Error adding product:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+           next(new AppError("Sorry...Something went wrong", 500));
+
     }
 };
 
@@ -133,7 +138,8 @@ const productEdit = async(req,res,next)=>{
         
     } catch (error) {
         console.log('Error adding product:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+            next(new AppError("Sorry...Something went wrong", 500));
+
     }
 }
 
@@ -181,6 +187,8 @@ const productEditPost = async(req,res,next)=>{
         }
     } catch(error){
         console.log("productEditPost error:",error)
+            next(new AppError("Sorry...Something went wrong", 500));
+        
     }
 }
 
@@ -231,7 +239,8 @@ const deleteProduct = async (req, res, next) => {
         });
     } catch (error) {
         console.log("deleteProduct error:", error);
-        res.status(500).json({ success: false, message: "Internal Server Error" });
+            next(new AppError("Sorry...Something went wrong", 500));
+
     }
 };
 
@@ -246,57 +255,11 @@ const searchProducts = async (req, res, next) => {
         res.render("products", { products });
     } catch (error) {
         console.error("Search error:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+            next(new AppError("Sorry...Something went wrong", 500));
+
     }
 };
 
 
-
-
-// const searchProducts = async (req, res, next) => {
-//     try {
-//         const searchQuery = req.query.q || "";
-//         const page = parseInt(req.query.page) || 1;
-//         const itemsPerPage = 10;
-//         const skip = (page - 1) * itemsPerPage;
-        
-//         if (!searchQuery) {
-//             return res.redirect('/admin/products');
-//         }
-        
-//         const filter = {
-//             isDeleted: false,
-//             $or: [
-//                 { productName: { $regex: searchQuery, $options: 'i' } },
-//                 { productDescription: { $regex: searchQuery, $options: 'i' } }
-//                 // Add any other fields you want to search
-//             ]
-//         };
-        
-//         const totalProducts = await product.countDocuments(filter);
-//         const totalPages = Math.ceil(totalProducts / itemsPerPage);
-        
-//         const products = await product.find(filter)
-//             .populate({
-//                 path: "productCategoryId",
-//                 select: "categoryName -_id"
-//             })
-//             .sort({ createdAt: -1 })
-//             .skip(skip)
-//             .limit(itemsPerPage);
-        
-//         return res.render("products", { 
-//             products,
-//             currentPage: page,
-//             totalPages,
-//             totalProducts,
-//             itemsPerPage,
-//             searchQuery
-//         });
-//     } catch (error) {
-//         console.log("searchProducts error", error);
-//         res.status(500).json({ error: "Internal Server Error" });
-//     }
-// };
 
 module.exports = {productPage,addProduct,addProductPost,productEdit,productEditPost,unListProduct,listProduct,deleteProduct,searchProducts}

@@ -1,6 +1,7 @@
 const usercollection = require("../../models/userSchema");
 const product = require("../../models/productSchema");
 const category = require("../../models/categorySchema");
+const AppError = require("../../middlewares/errorHandling");
 const wishlist = require("../../models/wishlistSchema");
 const cart = require("../../models/cartSchema");
 
@@ -103,7 +104,7 @@ const singleProductView = async (req, res, next) => {
     });
   } catch (error) {
     console.error("productpage error:", error);
-    res.status(500).render("error", { message: "Internal Server Error" });
+     next(new AppError('Sorry...Something went wrong', 500));
   }
 };
 

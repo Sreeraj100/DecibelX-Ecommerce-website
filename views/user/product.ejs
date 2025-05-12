@@ -776,48 +776,62 @@
     // Initialize active thumbnail
     document.querySelector('.thumbnail').classList.add('active');
 
-    // Quantity Control with Stock Validation
-    const decreaseBtn = document.getElementById('decrease-quantity');
-    const increaseBtn = document.getElementById('increase-quantity');
-    const quantityInput = document.getElementById('quantity');
-    const maxStock = <%= product.productStock %>;
+   const decreaseBtn = document.getElementById('decrease-quantity');
+const increaseBtn = document.getElementById('increase-quantity');
+const quantityInput = document.getElementById('quantity');
+const maxStock = <%= product.productStock %>;
+const maxAllowed = 10; // Maximum allowed quantity per order
 
-    if (decreaseBtn && increaseBtn && quantityInput) {
-      decreaseBtn.addEventListener('click', () => {
+if (decreaseBtn && increaseBtn && quantityInput) {
+    decreaseBtn.addEventListener('click', () => {
         if (quantityInput.value > 1) {
-          quantityInput.value = parseInt(quantityInput.value) - 1;
+            quantityInput.value = parseInt(quantityInput.value) - 1;
         }
-      });
+    });
 
-      increaseBtn.addEventListener('click', () => {
+    increaseBtn.addEventListener('click', () => {
         const currentValue = parseInt(quantityInput.value);
-        if (currentValue < maxStock) {
-          quantityInput.value = currentValue + 1;
+        if (currentValue < Math.min(maxStock, maxAllowed)) {
+            quantityInput.value = currentValue + 1;
         } else {
-          Swal.fire({
-            icon: 'warning',
-            title: 'Stock Limit',
-            text: `Only ${maxStock} items available in stock!`,
-            timer: 2000
-          });
+            let message = '';
+            if (maxStock <= maxAllowed) {
+                message = `Only ${maxStock} items available in stock!`;
+            } else {
+                message = `Maximum ${maxAllowed} items allowed per order!`;
+            }
+            Swal.fire({
+                icon: 'warning',
+                title: 'Quantity Limit',
+                text: message,
+                timer: 2000
+            });
         }
-      });
+    });
 
-      quantityInput.addEventListener('change', () => {
+    quantityInput.addEventListener('change', () => {
         let value = parseInt(quantityInput.value);
         if (isNaN(value) || value < 1) value = 1;
-        if (value > maxStock) {
-          value = maxStock;
-          Swal.fire({
-            icon: 'warning',
-            title: 'Stock Limit',
-            text: `Only ${maxStock} items available!`,
-            timer: 2000
-          });
+        
+        const upperLimit = Math.min(maxStock, maxAllowed);
+        if (value > upperLimit) {
+            value = upperLimit;
+            let message = '';
+            if (maxStock <= maxAllowed) {
+                message = `Only ${maxStock} items available!`;
+            } else {
+                message = `Maximum ${maxAllowed} items allowed per order!`;
+            }
+            Swal.fire({
+                icon: 'warning',
+                title: 'Quantity Limit',
+                text: message,
+                timer: 2000
+            });
         }
         quantityInput.value = value;
-      });
-    }
+    });
+}
 
     // Add to Cart with AJAX
     const addToCartBtn = document.getElementById('add-to-cart-btn');

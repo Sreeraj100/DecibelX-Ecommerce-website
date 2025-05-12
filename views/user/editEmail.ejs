@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <style>
+        .auth-container {
+            max-width: 500px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .auth-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+
+        .auth-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+
+        .auth-subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-field {
+            margin-bottom: 20px;
+        }
+
+        .form-field label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #444;
+        }
+
+        .form-field input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+
+        .form-field input:focus {
+            border-color: #4a90e2;
+            outline: none;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .button {
+            padding: 12px 20px;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            border: none;
+            width: 100%;
+        }
+
+        .primary-button {
+            background-color: #4a90e2;
+            color: white;
+        }
+
+        .primary-button:hover {
+            background-color: #3a7bc8;
+        }
+
+        .resend-otp {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .resend-otp a {
+            color: #4a90e2;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .resend-otp a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="toast-container"></div>
+    
+    <div class="page-content">
+        <div class="auth-container">
+            <div class="auth-card">
+                <h1 class="auth-title">Change Email Address</h1>
+                
+                <form id="emailForm">
+                    <div class="form-field">
+                        <label for="newEmail">New Email Address</label>
+                        <input type="email" id="newEmail" name="newEmail" required>
+                        <div class="error-message" id="emailError"></div>
+                    </div>
+                    
+                    <div style="margin-top: 25px;">
+                        <button type="submit" class="button primary-button">Send Verification Code</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const emailForm = document.getElementById('emailForm');
+            const emailError = document.getElementById('emailError');
+            
+            function validateEmail() {
+                const email = document.getElementById('newEmail').value.trim();
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                
+                if (!email) {
+                    emailError.textContent = 'Email is required';
+                    emailError.style.display = 'block';
+                    return false;
+                } else if (!emailRegex.test(email)) {
+                    emailError.textContent = 'Please enter a valid email address';
+                    emailError.style.display = 'block';
+                    return false;
+                } else {
+                    emailError.style.display = 'none';
+                    return true;
+                }
+            }
+            
+            document.getElementById('newEmail').addEventListener('blur', validateEmail);
+            
+            emailForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                if (validateEmail()) {
+                    try {
+                        const response = await fetch('/send-email-otp', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                newEmail: document.getElementById('newEmail').value.trim()
+                            })
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            window.location.href = '/verify-email-otp';
+                        } else {
+                            showToast(result.message, 'error');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        showToast('An error occurred. Please try again.', 'error');
+                    }
+                }
+            });
+            
+            function showToast(message, type) {
+                const toastContainer = document.querySelector(".toast-container");
+                const toast = document.createElement("div");
+                toast.className = `toast ${type}`;
+                toast.textContent = message;
+                toastContainer.appendChild(toast);
+
+                setTimeout(() => {
+                    toast.style.display = "block";
+                    setTimeout(() => {
+                        toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+                        setTimeout(() => {
+                            toast.remove();
+                        }, 800);
+                    }, 3000);
+                }, 100);
+            }
+        });
+    </script>
+</body>
+</html>
