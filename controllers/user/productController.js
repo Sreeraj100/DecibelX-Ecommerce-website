@@ -4,7 +4,7 @@ const category = require("../../models/categorySchema");
 const AppError = require("../../middlewares/errorHandling");
 const wishlist = require("../../models/wishlistSchema");
 const cart = require("../../models/cartSchema");
-
+const offer = require("../../models/offerSchema");
 const singleProductView = async (req, res, next) => {
   try {
     const userEmail = req.session.email;
@@ -13,6 +13,7 @@ const singleProductView = async (req, res, next) => {
     let userId = null;
     let wishlistCount = 0;
     let cartCount = 0;
+    const currentDate = new Date();
     
     // Get user info if logged in
     if (userEmail) {
@@ -61,13 +62,39 @@ const singleProductView = async (req, res, next) => {
       isInWishlist = !!wishlistItem;
     }
 
-    // Check stock status
-    let stockStatus = "In Stock";
-    if (productDetails.productStock <= 0) {
-      stockStatus = "Out of Stock";
-    } else if (productDetails.productStock < 10) {
-      stockStatus = "Low Stock";
-    }
+    // Get active offers for the product's category
+    const activeOffers = await offer.find({
+      startDate: { $lte: currentDate },
+      expiryDate: { $gte: currentDate },
+      categoryId: productDetails.productCategoryId._id
+    });
+
+    // Function to calculate final price
+    const calculateFinalPrice = (product) => {
+      const prices = [product.productPrice];
+
+      // Add product offer if exists
+      if (product.productOfferPrice > 0) {
+        prices.push(product.productOfferPrice);
+      }
+
+      // Add category offer if exists
+      const categoryOffer = activeOffers.find(
+        offer => offer.categoryId && 
+        offer.categoryId.toString() === product.productCategoryId._id.toString()
+      );
+
+      if (categoryOffer) {
+        const discountedPrice = 
+          product.productPrice * (1 - categoryOffer.offerPercentage / 100);
+        prices.push(Number(discountedPrice.toFixed(2)));
+      }
+
+      return Math.min(...prices);
+    };
+
+    // Calculate final price for main product
+    productDetails.productOfferPrice = calculateFinalPrice(productDetails);
 
     // Fetch related products (only listed, not deleted, from listed categories)
     const relatedProducts = await product.find({
@@ -85,6 +112,19 @@ const singleProductView = async (req, res, next) => {
       match: { isListed: true }
     })
     .then(products => products.filter(p => p.productCategoryId)); // Filter out products with unlisted categories
+
+    // Calculate final prices for related products
+    relatedProducts.forEach(product => {
+      product.finalPrice = calculateFinalPrice(product);
+    });
+
+    // Check stock status
+    let stockStatus = "In Stock";
+    if (productDetails.productStock <= 0) {
+      stockStatus = "Out of Stock";
+    } else if (productDetails.productStock < 10) {
+      stockStatus = "Low Stock";
+    }
 
     res.render("product", {
       userId,

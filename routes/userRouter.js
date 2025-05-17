@@ -92,7 +92,8 @@ router.post('/payment', userAuth, checkoutController.paymentMethod);
 router.get('/review', userAuth, checkoutController.finalReview);
 router.post('/place-order', userAuth, checkoutController.placeOrder);
 router.get('/order-confirmation', userAuth, checkoutController.confirmPage);
-
+router.post('/apply-coupon', userAuth, checkoutController.applyCoupon);
+router.post('/remove-coupon', userAuth, checkoutController.removeCoupon);
 
 // orders
 router.get('/orders', userAuth, orderController.orders)

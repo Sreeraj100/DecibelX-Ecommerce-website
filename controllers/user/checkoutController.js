@@ -5,8 +5,10 @@ const product = require("../../models/productSchema");
 const AppError = require('../../middlewares/errorHandling');
 const order = require("../../models/orderSchema");
 const fs = require("fs");
+const category = require("../../models/categorySchema");
+const offer = require("../../models/offerSchema");
+const Coupon = require("../../models/couponSchema");
 
-// Helper function to generate order ID
 function generateOrderID() {
   let randomLetters = "";
   for (let i = 0; i < 3; i++) {
@@ -17,7 +19,64 @@ function generateOrderID() {
   return `${randomLetters}-${datePart}-${randomPart}`;
 }
 
-// Checkout Step 1 - GET (Shipping Address)
+async function calculatePricesWithOffers(cartItems, coupon = null) {
+  const currentDate = new Date();
+  
+
+  const listedCategories = await category.find({ isListed: true });
+  const listedCategoryIds = listedCategories.map(cat => cat._id);
+  const activeOffers = await offer.find({
+    startDate: { $lte: currentDate },
+    expiryDate: { $gte: currentDate },
+    categoryId: { $in: listedCategoryIds }
+  });
+
+  let subtotal = 0;
+  
+  for (const item of cartItems) {
+    const product = item.productId;
+    const prices = [product.productPrice];
+    
+    if (product.productOfferPrice > 0) {
+      prices.push(product.productOfferPrice);
+    }
+
+    const categoryOffer = activeOffers.find(offer => 
+      offer.categoryId && 
+      offer.categoryId.toString() === product.productCategoryId.toString()
+    );
+
+    if (categoryOffer) {
+      const discountedPrice = product.productPrice * (1 - categoryOffer.offerPercentage / 100);
+      prices.push(Number(discountedPrice.toFixed(2)));
+    }
+
+    product.productOfferPrice = Math.min(...prices);
+    
+    subtotal += product.productOfferPrice * item.productQuantity;
+  }
+
+  const taxRate = 0.18;
+  const tax = subtotal * taxRate;
+  
+
+  let couponDiscount = 0;
+  if (coupon) {
+    couponDiscount = subtotal * coupon.percentage / 100;
+    couponDiscount = Math.min(couponDiscount, subtotal);
+  }
+  
+  const total = subtotal + tax - couponDiscount;
+
+  return { 
+    subtotal: parseFloat(subtotal.toFixed(2)),
+    tax: parseFloat(tax.toFixed(2)),
+    couponDiscount: parseFloat(couponDiscount.toFixed(2)),
+    total: parseFloat(total.toFixed(2))
+  };
+}
+
+
 const checkoutPageOne = async (req, res, next) => {
   try {
     const userEmail = req.session.email;
@@ -34,14 +93,13 @@ const checkoutPageOne = async (req, res, next) => {
     });
   } catch (error) {
     console.log(error);
-    next(new AppError('Sorry...Something went wrong', 500))
+    next(new AppError('Sorry...Something went wrong', 500));
   }
 };
 
-// Checkout Step 1 - POST (Process Address Selection)
+
 const checkoutOnePost = async (req, res, next) => {
   try {
-   
     req.session.addressId = req.body.address;
     req.session.name = req.body.name;
     req.session.phone = req.body.phone;
@@ -49,18 +107,17 @@ const checkoutOnePost = async (req, res, next) => {
     return res.redirect("/payment");
   } catch (error) {
     console.log(error);
-    next(new AppError('Sorry...Something went wrong', 500))
+    next(new AppError('Sorry...Something went wrong', 500));
   }
 };
 
-// Checkout Step 2 - GET (Payment Method)
-const paymentPage = async (req, res,next) => {
+
+const paymentPage = async (req, res, next) => {
   try {
     const userEmail = req.session.email;
     const userVer = await usercollection.findOne({ email: userEmail });
     const selectedAddress = await address.findById(req.session.addressId);
 
-    // Add .populate('productId') to get product details
     const cartItems = await cart
       .find({ userId: userVer._id })
       .populate("productId");
@@ -69,15 +126,9 @@ const paymentPage = async (req, res,next) => {
       return res.redirect("/cart");
     }
 
-    // Calculate total amount
-    let subtotal = 0;
-    cartItems.forEach((item) => {
-      // Now item.productId will be the full product document
-      subtotal += item.productId.productOfferPrice * item.productQuantity;
-    });
-
-    const tax = subtotal * 0.18;
-    const total = subtotal + tax;
+  
+    const couponDetails = req.session.couponDetails || null;
+    const { total } = await calculatePricesWithOffers(cartItems, couponDetails);
     req.session.cartTotal = total;
 
     return res.render("checkout_2", {
@@ -88,16 +139,15 @@ const paymentPage = async (req, res,next) => {
     });
   } catch (error) {
     console.log(error);
-    next(new AppError('Sorry...Something went wrong', 500))
+    next(new AppError('Sorry...Something went wrong', 500));
   }
 };
 
 // Checkout Step 2 - POST (Process Payment Method)
-const paymentMethod = async (req, res,next) => {
+const paymentMethod = async (req, res, next) => {
   try {
     const { payment } = req.body;
 
-    // Check if COD is selected for order > ₹10,000
     if (payment === "Cash on delivery" && req.session.cartTotal > 10000) {
       return res.status(400).json({
         success: false,
@@ -109,7 +159,111 @@ const paymentMethod = async (req, res,next) => {
     return res.json({ success: true });
   } catch (error) {
     console.log(error);
-    next(new AppError('Sorry...Something went wrong', 500))
+    next(new AppError('Sorry...Something went wrong', 500));
+  }
+};
+
+// Apply coupon to order
+const applyCoupon = async (req, res, next) => {
+  try {
+    const { couponCode } = req.body;
+    const userEmail = req.session.email;
+    const userVer = await usercollection.findOne({ email: userEmail });
+    const cartItems = await cart.find({ userId: userVer._id }).populate("productId");
+
+    if (!cartItems || cartItems.length === 0) {
+      return res.status(400).json({ success: false, message: "Cart is empty" });
+    }
+
+    // Calculate subtotal with offers
+    const { subtotal, tax } = await calculatePricesWithOffers(cartItems);
+
+    // Find valid coupon
+    const coupon = await Coupon.findOne({
+      code: couponCode.toUpperCase(),
+      isActive: true,
+      startDate: { $lte: new Date() },
+      expiryDate: { $gte: new Date() },
+      $or: [
+        { usedBy: { $ne: userVer._id } },
+        { usedBy: { $exists: false } }
+      ]
+    });
+
+    if (!coupon) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Invalid or expired coupon" 
+      });
+    }
+
+    // Check minimum purchase requirement
+    if (coupon.minPurchase && subtotal < coupon.minPurchase) {
+      return res.status(400).json({ 
+        success: false, 
+        message: `Minimum purchase of ₹${coupon.minPurchase} required for this coupon` 
+      });
+    }
+
+    // Calculate discount
+    const discountAmount = (subtotal * coupon.percentage / 100).toFixed(2);
+    const total = (subtotal + tax - discountAmount).toFixed(2);
+
+    // Store coupon details in session
+    req.session.couponDetails = {
+      code: coupon.code,
+      percentage: coupon.percentage,
+      discountAmount: parseFloat(discountAmount),
+      couponId: coupon._id
+    };
+
+    return res.json({
+      success: true,
+      coupon: req.session.couponDetails,
+      priceDetails: {
+        subtotal,
+        tax,
+        couponDiscount: parseFloat(discountAmount),
+        total: parseFloat(total)
+      }
+    });
+
+  } catch (error) {
+    console.log(error);
+    next(new AppError('Sorry...Something went wrong', 500));
+  }
+};
+
+// Remove coupon from order
+const removeCoupon = async (req, res, next) => {
+  try {
+    const userEmail = req.session.email;
+    const userVer = await usercollection.findOne({ email: userEmail });
+    const cartItems = await cart.find({ userId: userVer._id }).populate("productId");
+
+    if (!cartItems || cartItems.length === 0) {
+      return res.status(400).json({ success: false, message: "Cart is empty" });
+    }
+
+    // Calculate totals without coupon
+    const { subtotal, tax, total } = await calculatePricesWithOffers(cartItems);
+
+    // Remove coupon from session
+    delete req.session.couponDetails;
+
+    return res.json({
+      success: true,
+      priceDetails: {
+        subtotal,
+        tax,
+        couponDiscount: 0,
+        total
+      }
+    });
+
+  } catch (error) {
+    console.log(error);
+    next(new AppError('Sorry...Something went wrong', 500));
   }
 };
 
@@ -127,26 +281,21 @@ const finalReview = async (req, res, next) => {
       return res.redirect("/cart");
     }
 
-    // Calculate totals
-    let subtotal = 0;
-    cartItems.forEach((item) => {
-      subtotal += item.productId.productOfferPrice * item.productQuantity;
-    });
-    const tax = subtotal * 0.18;
-    const total = subtotal + tax;
+    // Calculate totals with offers and coupon
+    const couponDetails = req.session.couponDetails || null;
+    const priceDetails = await calculatePricesWithOffers(cartItems, couponDetails);
 
     return res.render("checkout_3", {
       user: userVer,
       address: selectedAddress,
       paymentMethod: req.session.paymentMethod,
       cartItems,
-      subtotal,
-      tax,
-      total,
+      coupon: couponDetails,
+      priceDetails,
     });
   } catch (error) {
     console.log(error);
-    next(new AppError('Sorry...Something went wrong', 500))
+    next(new AppError('Sorry...Something went wrong', 500));
   }
 };
 
@@ -160,22 +309,18 @@ const placeOrder = async (req, res, next) => {
       .find({ userId: userVer._id })
       .populate("productId");
 
+    // Calculate totals with offers and coupon
+    const couponDetails = req.session.couponDetails || null;
+    const priceDetails = await calculatePricesWithOffers(cartItems, couponDetails);
+
     // Prepare order details
     const orderId = generateOrderID();
     const products = cartItems.map((item) => ({
       productId: item.productId._id,
       productName: item.productId.productName,
-      productPrice: item.productId.productOfferPrice,
+      productPrice: item.productId.productOfferPrice, 
       quantity: item.productQuantity,
     }));
-
-    // Calculate totals
-    let subtotal = 0;
-    cartItems.forEach((item) => {
-      subtotal += item.productId.productOfferPrice * item.productQuantity;
-    });
-    const tax = subtotal * 0.18;
-    const total = subtotal + tax;
 
     // Create new order
     const newOrder = new order({
@@ -193,10 +338,17 @@ const placeOrder = async (req, res, next) => {
       },
       paymentMethod: req.session.paymentMethod,
       products,
+      couponApplied: couponDetails ? {
+        code: couponDetails.code,
+        percentage: couponDetails.percentage,
+        discountAmount: couponDetails.discountAmount,
+        couponId: couponDetails.couponId
+      } : null,
       priceDetails: {
-        subtotal,
-        tax,
-        total,
+        subtotal: priceDetails.subtotal,
+        tax: priceDetails.tax,
+        couponDiscount: priceDetails.couponDiscount,
+        total: priceDetails.total,
       },
       status: "Ordered",
     });
@@ -212,15 +364,28 @@ const placeOrder = async (req, res, next) => {
       });
     }
 
+    // Update coupon usage if applied
+    if (couponDetails) {
+      await Coupon.findByIdAndUpdate(
+        couponDetails.couponId,
+        {
+          $inc: { usedCount: 1, totalDiscount: couponDetails.discountAmount },
+          $addToSet: { usedBy: userVer._id }
+        }
+      );
+    }
+
     // Clear session data
     req.session.orderId = newOrder.orderId;
     req.session.addressId = null;
     req.session.paymentMethod = null;
+    delete req.session.couponDetails;
+    delete req.session.cartTotal;
 
     return res.json({ success: true, orderId: newOrder.orderId });
   } catch (error) {
     console.log(error);
-    next(new AppError('Sorry...Something went wrong', 500))
+    next(new AppError('Sorry...Something went wrong', 500));
   }
 };
 
@@ -244,7 +409,7 @@ const confirmPage = async (req, res, next) => {
     }
   } catch (error) {
     console.log(error);
-    next(new AppError('Sorry...Something went wrong', 500))
+    next(new AppError('Sorry...Something went wrong', 500));
   }
 };
 
@@ -253,6 +418,8 @@ module.exports = {
   checkoutOnePost,
   paymentPage,
   paymentMethod,
+  applyCoupon,
+  removeCoupon,
   finalReview,
   placeOrder,
   confirmPage,

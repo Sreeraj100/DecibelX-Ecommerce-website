@@ -1,197 +1,529 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DecibelX - Forgot Password</title>
+    <link rel="icon" href="img/icon.png" type="image/png">
+    <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
-        .auth-container {
-            max-width: 500px;
-            margin: 40px auto;
-            padding: 0 20px;
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
-        .auth-card {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 30px;
+        body {
+            background: #f6f5f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            font-family: 'Montserrat', sans-serif;
+            height: 100vh;
         }
 
-        .auth-title {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: #333;
-            text-align: center;
+        .container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 14px 28px rgba(0, 0, 0, 0.15), 0 10px 10px rgba(0, 0, 0, 0.12);
+            position: relative;
+            overflow: hidden;
+            width: 800px;
+            max-width: 100%;
+            min-height: 550px;
         }
 
-        .auth-subtitle {
-            color: #666;
-            text-align: center;
-            margin-bottom: 30px;
+        .form-container {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            width: 50%;
         }
 
-        .form-field {
-            margin-bottom: 20px;
+        .forgot-password-container {
+            left: 0;
+            z-index: 2;
         }
 
-        .form-field label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #444;
+        .overlay-container {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 50%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 100;
         }
 
-        .form-field input {
+        .overlay {
+            background: #3498db;
+            background: linear-gradient(to right, rgba(52, 152, 219, 0.7), rgba(41, 128, 185, 0.7));
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: 0 0;
+            color: #FFFFFF;
+            position: relative;
+            height: 100%;
             width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-            transition: border 0.3s;
         }
 
-        .form-field input:focus {
-            border-color: #4a90e2;
+        .overlay-panel {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 0 40px;
+            text-align: center;
+            top: 0;
+            height: 100%;
+            width: 100%;
+            background-image: url(img/Signup_image.jpg);
+        }
+
+        .overlay-panel img {
+            width: 395px;
+            height: auto;
+        }
+
+        h1 {
+            font-weight: bold;
+            margin: 0;
+            margin-bottom: 15px;
+        }
+
+        p {
+            font-size: 14px;
+            line-height: 20px;
+            letter-spacing: 0.5px;
+            margin: 20px 0 30px;
+        }
+
+        button {
+            border-radius: 20px;
+            border: 1px solid #3498db;
+            background-color: #3498db;
+            color: #FFFFFF;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 12px 45px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: transform 80ms ease-in, background-color 0.3s;
+            cursor: pointer;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        button:focus {
             outline: none;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        form {
+            background-color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 20px 50px;
+            height: 100%;
+            text-align: center;
+            overflow-y: hidden;
+        }
+
+        input {
+            background-color: #eee;
+            border: none;
+            border-radius: 4px;
+            padding: 12px 15px;
+            margin: 4px 0 0 0;
+            width: 100%;
+        }
+
+        input:focus {
+            outline: 2px solid #00FFFB;
+        }
+
+        .form-group {
+            width: 100%;
+            text-align: left;
+            margin-bottom: 6px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 2px;
+            font-size: 13px;
+            color: #333;
         }
 
         .error-message {
             color: #e74c3c;
-            font-size: 14px;
-            margin-top: 5px;
+            font-size: 11px;
+            margin-top: 2px;
+            margin-bottom: 2px;
+            text-align: left;
             display: none;
         }
 
-        .button {
-            padding: 12px 20px;
-            border-radius: 4px;
-            font-weight: 500;
-            cursor: pointer;
-            font-size: 16px;
-            transition: all 0.3s;
-            border: none;
-            width: 100%;
+        input.error {
+            border: 1px solid #e74c3c;
         }
 
-        .primary-button {
-            background-color: #4a90e2;
-            color: white;
+        .login-link {
+            margin-top: 20px;
+            color: #777;
+            font-size: 14px;
         }
 
-        .primary-button:hover {
-            background-color: #3a7bc8;
-        }
-
-        .resend-otp {
-            text-align: center;
-            margin-top: 15px;
-        }
-
-        .resend-otp a {
-            color: #4a90e2;
+        .login-link a {
+            color: #3498db;
             text-decoration: none;
-            cursor: pointer;
+            font-weight: bold;
         }
 
-        .resend-otp a:hover {
+        .login-link a:hover {
             text-decoration: underline;
+        }
+
+        #forgot-email-form button[type="submit"] {
+            margin-top: 30px;
+            margin-bottom: 10px;
+        }
+
+        .instructions {
+            color: #555;
+            font-size: 13px;
+            margin-bottom: 20px;
+            text-align: center;
+            max-width: 90%;
+        }
+
+        .mobile-logo {
+            display: none;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .mobile-logo img {
+            width: 250px;
+            height: auto;
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .toast {
+            display: none;
+            background-color: #ff6600;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateX(100%);
+            animation: slideInFromRight 0.8s ease-out forwards;
+        }
+
+        @keyframes slideInFromRight {
+            0% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOutToRight {
+            0% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+
+        /* Media Queries for Responsiveness */
+        @media (max-width: 768px) {
+            .container {
+                width: 90%;
+                min-height: auto;
+                flex-direction: column;
+            }
+
+            .form-container,
+            .overlay-container {
+                width: 100%;
+                height: auto;
+                position: static;
+            }
+
+            .overlay-container {
+                display: none;
+            }
+
+            .form-container.forgot-password-container {
+                padding: 20px;
+            }
+
+            .overlay-panel {
+                padding: 20px;
+            }
+
+            .overlay-panel img {
+                width: 200px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            p {
+                font-size: 12px;
+            }
+
+            button {
+                padding: 10px 30px;
+                font-size: 10px;
+            }
+
+            input {
+                padding: 10px;
+            }
+
+            .form-group label {
+                font-size: 12px;
+            }
+
+            .error-message {
+                font-size: 10px;
+            }
+
+            .login-link {
+                font-size: 12px;
+            }
+
+            .instructions {
+                font-size: 12px;
+            }
+
+            .mobile-logo {
+                display: block;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                width: 100%;
+                border-radius: 0;
+            }
+
+            .form-container.forgot-password-container {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            p {
+                font-size: 10px;
+            }
+
+            button {
+                padding: 8px 20px;
+                font-size: 9px;
+            }
+
+            input {
+                padding: 8px;
+            }
+
+            .form-group label {
+                font-size: 11px;
+            }
+
+            .error-message {
+                font-size: 9px;
+            }
+
+            .login-link {
+                font-size: 11px;
+            }
+
+            .instructions {
+                font-size: 11px;
+            }
+
+            .mobile-logo {
+                display: block;
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="toast-container"></div>
-    
-    <div class="page-content">
-        <div class="auth-container">
-            <div class="auth-card">
-                <h1 class="auth-title">Change Email Address</h1>
+    <div class="container" id="container">
+        
+        <!-- Forgot Password Form Section -->
+        <div class="form-container forgot-password-container">
+            <div class="mobile-logo">
+                <img src="img/footer-logo.png" alt="DecibelX">
+            </div>
+            <form id="forgot-email-form">
+                <h1>Change Email</h1>
                 
-                <form id="emailForm">
-                    <div class="form-field">
-                        <label for="newEmail">New Email Address</label>
-                        <input type="email" id="newEmail" name="newEmail" required>
-                        <div class="error-message" id="emailError"></div>
-                    </div>
-                    
-                    <div style="margin-top: 25px;">
-                        <button type="submit" class="button primary-button">Send Verification Code</button>
-                    </div>
-                </form>
+                <p class="instructions">Enter your new email address below, and we'll send you an OTP to change your Email.</p>
+
+                <!-- Email Field -->
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="Enter your email" name="email">
+                    <p class="error-message" id="email-error"></p>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit">Send OTP</button>
+
+                
+            </form>
+        </div>
+
+        <!-- Overlay Section (Hidden on Small Screens) -->
+        <div class="overlay-container">
+            <div class="overlay">
+                <div class="overlay-panel">
+                    <h1>Change Email</h1>
+                    <p>Enter your new email to receive a one-time OTP to change your Email</p>
+                    <img src="img/footer-logo.png" alt="DecibelX">
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const emailForm = document.getElementById('emailForm');
-            const emailError = document.getElementById('emailError');
-            
-            function validateEmail() {
-                const email = document.getElementById('newEmail').value.trim();
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                
-                if (!email) {
-                    emailError.textContent = 'Email is required';
-                    emailError.style.display = 'block';
-                    return false;
-                } else if (!emailRegex.test(email)) {
-                    emailError.textContent = 'Please enter a valid email address';
-                    emailError.style.display = 'block';
-                    return false;
-                } else {
-                    emailError.style.display = 'none';
-                    return true;
-                }
-            }
-            
-            document.getElementById('newEmail').addEventListener('blur', validateEmail);
-            
-            emailForm.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                
-                if (validateEmail()) {
-                    try {
-                        const response = await fetch('/send-email-otp', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                newEmail: document.getElementById('newEmail').value.trim()
-                            })
-                        });
-                        
-                        const result = await response.json();
-                        
-                        if (result.success) {
-                            window.location.href = '/verify-email-otp';
-                        } else {
-                            showToast(result.message, 'error');
-                        }
-                    } catch (error) {
-                        console.error('Error:', error);
-                        showToast('An error occurred. Please try again.', 'error');
-                    }
-                }
-            });
-            
-            function showToast(message, type) {
-                const toastContainer = document.querySelector(".toast-container");
-                const toast = document.createElement("div");
-                toast.className = `toast ${type}`;
-                toast.textContent = message;
-                toastContainer.appendChild(toast);
+        // Form validation utilities
+        function showError(input, message) {
+            const formGroup = input.parentElement;
+            const errorElement = formGroup.querySelector('.error-message');
 
-                setTimeout(() => {
-                    toast.style.display = "block";
-                    setTimeout(() => {
-                        toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
-                        setTimeout(() => {
-                            toast.remove();
-                        }, 800);
-                    }, 3000);
-                }, 100);
+            input.classList.add('error');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+
+            return false;
+        }
+
+        function clearError(input) {
+            const formGroup = input.parentElement;
+            const errorElement = formGroup.querySelector('.error-message');
+
+            input.classList.remove('error');
+            errorElement.textContent = '';
+            errorElement.style.display = 'none';
+        }
+
+        function validateEmail(email) {
+            const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            return re.test(String(email).toLowerCase());
+        }
+
+        // Show toast message
+        function showToast(message, isSuccess) {
+            const toastContainer = document.querySelector(".toast-container");
+            const toast = document.createElement("div");
+            toast.className = "toast";
+            toast.textContent = message;
+            toast.style.backgroundColor = isSuccess ? "#28a745" : "#dc3545";
+            
+            toastContainer.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.display = "block";
+            }, 100);
+
+            setTimeout(() => {
+                toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+            }, 3000);
+
+            setTimeout(() => {
+                toast.style.display = "none";
+                toast.remove();
+            }, 3800);
+        }
+
+        // Forgot email form submission
+        document.getElementById('forgot-email-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const emailInput = document.getElementById('email');
+            const email = emailInput.value.trim();
+            let isValid = true;
+
+            // Validate email
+            if (email === '') {
+                isValid = showError(emailInput, 'Email is required');
+            } else if (!validateEmail(email)) {
+                isValid = showError(emailInput, 'Please enter a valid email');
             }
+
+            if (!isValid) return;
+
+            try {
+                // Send request to server
+                const response = await fetch('/send-email-otp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast("OTP sent successfully! Please check your email.", true);
+                    // Redirect to OTP verification page after delay
+                    setTimeout(() => {
+                        window.location.href = `/verify-email-otp`;
+                    }, 2000);
+                } else {
+                    showToast(data.message || "Email already exsits!", false);
+                }
+            } catch (error) {
+                console.log(error)
+                showToast("Error sending OTP. Please try again.", false);
+            }
+        });
+
+        // Clear error when typing
+        document.getElementById('email').addEventListener('input', function() {
+            clearError(this);
         });
     </script>
 </body>

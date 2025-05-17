@@ -133,15 +133,15 @@ next(new AppError('Sorry...Something went wrong', 500));
 // Send OTP to new email
 const  sendEmailOTP = async (req, res,next) => {
     try {
-        const { newEmail } = req.body;
-        
-        // Validate email
-        if (!validator.isEmail(newEmail)) {
-            return res.status(400).json({ success: false, message: 'Invalid email format' });
-        }
-        
+      
+        const newEmail  = req.body.email;
+        const email=req.session.email
+        const userVer = await usercollection.findOne({ email: email });
+        const name = userVer.name
+       console.log(newEmail)
+       console.log(name);
         // Check if email is already in use
-        const existingUser = await User.findOne({ email: newEmail });
+        const existingUser = await usercollection.findOne({ email: newEmail });
         if (existingUser) {
             return res.status(400).json({ success: false, message: 'Email is already in use' });
         }
@@ -154,8 +154,7 @@ const  sendEmailOTP = async (req, res,next) => {
         req.session.newEmail = newEmail;
         req.session.otpExpires = Date.now() + 15 * 60 * 1000; // 15 minutes
         
-        // Send OTP to email (implement your email sending logic here)
-        await sendEmailOTP(newEmail, otp);
+        await sendotp(otp,newEmail,name);
         
         res.json({ success: true, message: 'OTP sent to your new email address' });
     } catch (error) {
@@ -184,10 +183,13 @@ const verifyEmailOTP = async (req, res,next) => {
             return res.status(400).json({ success: false, message: 'Invalid OTP' });
         }
         
-        // Update user's email
-        const user = await user.findById(req.user._id);
-        user.email = req.session.newEmail;
-        await user.save();
+      
+         await usercollection.updateOne(
+                { email: req.session.email },
+                { $set: { email: req.session.newEmail } }
+            );
+
+            req.session.email = req.session.newEmail
         
         // Clear session
         req.session.emailOTP = null;
@@ -501,7 +503,7 @@ module.exports = {
   deleteAddress,
   changePassword,
   editEmail,
-sendEmailOTP,
+  sendEmailOTP,
   verifyEmailOTP ,
   verifyEmailOtp,
 };
