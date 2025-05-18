@@ -5,10 +5,12 @@ const product = require("../../models/productSchema");
 const AppError = require('../../middlewares/errorHandling');
 const order = require("../../models/orderSchema");
 const fs = require("fs");
+const env= require('dotenv').config();
 const category = require("../../models/categorySchema");
 const offer = require("../../models/offerSchema");
 const Coupon = require("../../models/couponSchema");
-
+const Razorpay = require('razorpay');
+const crypto = require('crypto');
 function generateOrderID() {
   let randomLetters = "";
   for (let i = 0; i < 3; i++) {
@@ -18,6 +20,10 @@ function generateOrderID() {
   const randomPart = Math.floor(100000 + Math.random() * 900000);
   return `${randomLetters}-${datePart}-${randomPart}`;
 }
+const razorpayInstance = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET
+});
 
 async function calculatePricesWithOffers(cartItems, coupon = null) {
   const currentDate = new Date();
@@ -76,7 +82,77 @@ async function calculatePricesWithOffers(cartItems, coupon = null) {
   };
 }
 
+// Create Razorpay order
+const createRazorpayOrder = async (req, res, next) => {
+  try {
+    const { amount } = req.body;
+    
+    // Validate amount
+    if (!amount || isNaN(amount)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid amount provided"
+      });
+    }
 
+    const options = {
+      amount: Math.round(amount * 100), // Convert to paise
+      currency: "INR",
+      receipt: `order_${Date.now()}`,
+      payment_capture: 1 // Auto-capture payment
+    };
+
+    // Using promises instead of callbacks
+    const order = await razorpayInstance.orders.create(options);
+    
+    res.json({
+      success: true,
+      order
+    });
+
+  } catch (error) {
+    console.error('Razorpay order creation error:', error);
+    next(new AppError('Failed to create payment order', 500));
+  }
+};
+const verifyPayment = async (req, res, next) => {
+  try {
+    const {
+      razorpay_order_id,
+      razorpay_payment_id,
+      razorpay_signature
+    } = req.body;
+
+    const generatedSignature = crypto
+      .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+      .digest('hex');
+
+    if (generatedSignature === razorpay_signature) {
+      // Store payment details in session
+      req.session.paymentDetails = {
+        razorpay_order_id,
+        razorpay_payment_id,
+        razorpay_signature,
+        paymentMethod: 'Razorpay'
+      };
+      
+      return res.json({ 
+        success: true,
+        paymentId: razorpay_payment_id
+      });
+    }
+
+    return res.status(400).json({ 
+      success: false,
+      message: "Payment verification failed"
+    });
+
+  } catch (error) {
+    console.error('Payment verification error:', error);
+    next(new AppError('Payment verification failed', 500));
+  }
+};
 const checkoutPageOne = async (req, res, next) => {
   try {
     const userEmail = req.session.email;
@@ -111,7 +187,6 @@ const checkoutOnePost = async (req, res, next) => {
   }
 };
 
-
 const paymentPage = async (req, res, next) => {
   try {
     const userEmail = req.session.email;
@@ -126,7 +201,7 @@ const paymentPage = async (req, res, next) => {
       return res.redirect("/cart");
     }
 
-  
+    // Calculate total amount with offers and coupon
     const couponDetails = req.session.couponDetails || null;
     const { total } = await calculatePricesWithOffers(cartItems, couponDetails);
     req.session.cartTotal = total;
@@ -135,19 +210,18 @@ const paymentPage = async (req, res, next) => {
       user: userVer,
       address: selectedAddress,
       allowCOD: total <= 10000,
-      cartTotal: total, 
+      cartTotal: total,
+      razorpayKey: process.env.RAZORPAY_KEY_ID // Add your key to .env
     });
   } catch (error) {
     console.log(error);
     next(new AppError('Sorry...Something went wrong', 500));
   }
 };
-
-// Checkout Step 2 - POST (Process Payment Method)
 const paymentMethod = async (req, res, next) => {
   try {
     const { payment } = req.body;
-
+    
     if (payment === "Cash on delivery" && req.session.cartTotal > 10000) {
       return res.status(400).json({
         success: false,
@@ -155,6 +229,7 @@ const paymentMethod = async (req, res, next) => {
       });
     }
 
+    // Store the selected payment method in session
     req.session.paymentMethod = payment;
     return res.json({ success: true });
   } catch (error) {
@@ -292,6 +367,7 @@ const finalReview = async (req, res, next) => {
       cartItems,
       coupon: couponDetails,
       priceDetails,
+      razorpayKey: process.env.RAZORPAY_KEY_ID
     });
   } catch (error) {
     console.log(error);
@@ -299,7 +375,6 @@ const finalReview = async (req, res, next) => {
   }
 };
 
-// Checkout Step 3 - POST (Place Order)
 const placeOrder = async (req, res, next) => {
   try {
     const userEmail = req.session.email;
@@ -322,6 +397,10 @@ const placeOrder = async (req, res, next) => {
       quantity: item.productQuantity,
     }));
 
+    // Determine payment status
+    const paymentStatus = req.session.paymentMethod === 'Cash on delivery' ? 
+      'Pending' : 'Paid';
+
     // Create new order
     const newOrder = new order({
       userId: userVer._id,
@@ -337,6 +416,8 @@ const placeOrder = async (req, res, next) => {
         pinCode: selectedAddress.pinCode,
       },
       paymentMethod: req.session.paymentMethod,
+      paymentStatus,
+      paymentDetails: req.session.paymentDetails || null,
       products,
       couponApplied: couponDetails ? {
         code: couponDetails.code,
@@ -377,10 +458,11 @@ const placeOrder = async (req, res, next) => {
 
     // Clear session data
     req.session.orderId = newOrder.orderId;
-    req.session.addressId = null;
-    req.session.paymentMethod = null;
+    delete req.session.addressId;
+    delete req.session.paymentMethod;
     delete req.session.couponDetails;
     delete req.session.cartTotal;
+    delete req.session.paymentDetails;
 
     return res.json({ success: true, orderId: newOrder.orderId });
   } catch (error) {
@@ -423,4 +505,6 @@ module.exports = {
   finalReview,
   placeOrder,
   confirmPage,
+  createRazorpayOrder,
+  verifyPayment,
 };

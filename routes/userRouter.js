@@ -94,7 +94,8 @@ router.post('/place-order', userAuth, checkoutController.placeOrder);
 router.get('/order-confirmation', userAuth, checkoutController.confirmPage);
 router.post('/apply-coupon', userAuth, checkoutController.applyCoupon);
 router.post('/remove-coupon', userAuth, checkoutController.removeCoupon);
-
+router.post('/create-razorpay-order', userAuth, checkoutController.createRazorpayOrder);
+router.post('/verify-payment', userAuth, checkoutController.verifyPayment);
 // orders
 router.get('/orders', userAuth, orderController.orders)
 router.get('/orderview/:id', userAuth, orderController.userOrderView)

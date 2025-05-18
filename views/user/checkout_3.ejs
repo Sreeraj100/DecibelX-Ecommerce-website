@@ -163,19 +163,19 @@
             margin-bottom: 20px;
             border: 1px solid #e2e8f0;
         }
-        
+
         .coupon-section h5 {
             font-size: 18px;
             margin-bottom: 15px;
             color: #334155;
         }
-        
+
         .coupon-input-group {
             display: flex;
             gap: 10px;
             margin-bottom: 10px;
         }
-        
+
         .coupon-input {
             flex: 1;
             padding: 10px 15px;
@@ -183,7 +183,7 @@
             border-radius: 8px;
             font-size: 14px;
         }
-        
+
         .coupon-btn {
             padding: 10px 20px;
             background-color: #00f2ea;
@@ -194,24 +194,24 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        
+
         .coupon-btn:hover {
             background-color: #00dad3;
         }
-        
+
         .coupon-message {
             font-size: 14px;
             margin-top: 8px;
         }
-        
+
         .coupon-success {
             color: #10b981;
         }
-        
+
         .coupon-error {
             color: #ef4444;
         }
-        
+
         .coupon-applied {
             background-color: #f0fdf4;
             border: 1px solid #bbf7d0;
@@ -222,11 +222,11 @@
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .coupon-applied strong {
             color: #10b981;
         }
-        
+
         .remove-coupon {
             background-color: #fee2e2;
             color: #b91c1c;
@@ -237,7 +237,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        
+
         .remove-coupon:hover {
             background-color: #fecaca;
         }
@@ -441,16 +441,20 @@
             box-shadow: 0 8px 20px rgba(0, 242, 234, 0.25);
         }
 
-        /* Toast custom styles */
-        .custom-toast {
-            background-color: #28a745;
-            color: white;
-            padding: 15px 30px;
-            border-radius: 12px;
-            font-size: 16px;
-            text-align: center;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-            opacity: 0;
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
         /* Responsive styles */
@@ -500,7 +504,9 @@
                 <div class="progress-bar">
                     <div class="step completed">
                         <div class="step-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
                                 <polyline points="20 6 9 17 4 12"></polyline>
                             </svg>
                         </div>
@@ -508,7 +514,9 @@
                     </div>
                     <div class="step completed">
                         <div class="step-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
                                 <polyline points="20 6 9 17 4 12"></polyline>
                             </svg>
                         </div>
@@ -524,7 +532,8 @@
 
         <div class="checkout-content">
             <h1 class="section-title">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="8" cy="21" r="1"></circle>
                     <circle cx="19" cy="21" r="1"></circle>
                     <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path>
@@ -543,93 +552,121 @@
                             <button id="applyCouponBtn" class="coupon-btn">Apply</button>
                         </div>
                         <div id="couponMessage" class="coupon-message"></div>
-                    <% } else { %>
-                        <div class="coupon-applied">
-                            <div>
-                                <strong>Coupon Applied:</strong> <%= coupon.code %> (<%= coupon.percentage %>% off)
-                                <div>You saved: ₹<%= priceDetails.couponDiscount.toFixed(2) %></div>
+                        <% } else { %>
+                            <div class="coupon-applied">
+                                <div>
+                                    <strong>Coupon Applied:</strong>
+                                    <%= coupon.code %> (<%= coupon.percentage %>% off)
+                                            <div>You saved: ₹<%= priceDetails.couponDiscount.toFixed(2) %>
+                                            </div>
+                                </div>
+                                <button id="removeCouponBtn" class="remove-coupon">Remove</button>
                             </div>
-                            <button id="removeCouponBtn" class="remove-coupon">Remove</button>
-                        </div>
-                    <% } %>
+                            <% } %>
                 </div>
 
                 <!-- Delivery Information -->
                 <div class="order-section">
                     <h1 class="section-title">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="12" r="10"></circle>
                             <polyline points="12 6 12 12 16 14"></polyline>
                         </svg>
                         Delivery Information
                     </h1>
-                   
                 </div>
 
                 <!-- Shipping Address -->
                 <div class="order-section">
                     <h3 class="section-title">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                             <circle cx="12" cy="10" r="3"></circle>
                         </svg>
                         Shipping Address
                     </h3>
                     <div class="address-display">
-                        <p><strong>Name:</strong> <%= user.name %></p>
-                        <p><strong>Phone:</strong> <%= user.phone %></p>
-                        <p><%= address.doorNo %>, <%= address.street %></p>
-                        <p><%= address.city %>, <%= address.district %></p>
-                        <p><%= address.pinCode %></p>
+                        <p><strong>Name:</strong>
+                            <%= user.name %>
+                        </p>
+                        <p><strong>Phone:</strong>
+                            <%= user.phone %>
+                        </p>
+                        <p>
+                            <%= address.doorNo %>, <%= address.street %>
+                        </p>
+                        <p>
+                            <%= address.city %>, <%= address.district %>
+                        </p>
+                        <p>
+                            <%= address.pinCode %>
+                        </p>
                     </div>
                 </div>
 
                 <!-- Payment Method -->
                 <div class="order-section">
                     <h3 class="section-title">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
                             <line x1="1" y1="10" x2="23" y2="10"></line>
                         </svg>
                         Payment Method
                     </h3>
                     <div class="payment-display">
-                        <p class="payment-method"><%= paymentMethod %></p>
-                        <% if (paymentMethod === 'Cash on delivery') { %>
+                        <p class="payment-method">
+                            <%= paymentMethod %>
+                        </p>
+                        <% if (paymentMethod==='Cash on delivery' ) { %>
                             <p>Pay with cash when your order is delivered to your doorstep.</p>
-                        <% } %>
+                            <% } else { %>
+                                <p>Pay securely with Razorpay</p>
+                                <% } %>
                     </div>
                 </div>
 
                 <!-- Order Items -->
                 <div class="order-section">
                     <h3 class="section-title">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line>
-                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                            <path
+                                d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+                            </path>
                             <polyline points="3.29 7 12 12 20.71 7"></polyline>
                             <line x1="12" y1="22" x2="12" y2="12"></line>
                         </svg>
                         Order Items
                     </h3>
                     <div class="order-items">
-                        <% cartItems.forEach(item => { %>
+                        <% cartItems.forEach(item=> { %>
                             <div class="order-item">
-                                <img src="<%= item.productId.productImage1 %>" alt="<%= item.productId.productName %>" class="item-image">
+                                <img src="<%= item.productId.productImage1 %>" alt="<%= item.productId.productName %>"
+                                    class="item-image">
                                 <div class="item-details">
-                                    <div class="item-name"><%= item.productId.productName %></div>
-                                    <div class="item-price">₹<%= item.productId.productOfferPrice || item.productId.productPrice %></div>
-                                    <div class="item-quantity">Quantity: <%= item.productQuantity %></div>
+                                    <div class="item-name">
+                                        <%= item.productId.productName %>
+                                    </div>
+                                    <div class="item-price">₹<%= item.productId.productOfferPrice ||
+                                            item.productId.productPrice %>
+                                    </div>
+                                    <div class="item-quantity">Quantity: <%= item.productQuantity %>
+                                    </div>
                                 </div>
                             </div>
-                        <% }); %>
+                            <% }); %>
                     </div>
                 </div>
 
                 <!-- Order Total -->
                 <div class="order-section">
                     <h3 class="section-title">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="12" y1="1" x2="12" y2="23"></line>
                             <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                         </svg>
@@ -640,27 +677,28 @@
                             <span>Subtotal:</span>
                             <span>₹<%= priceDetails.subtotal.toFixed(2) %></span>
                         </div>
-                        <% if (priceDetails.couponDiscount > 0) { %>
+                        <% if (priceDetails.couponDiscount> 0) { %>
                             <div class="total-row discount-row">
                                 <span>Coupon Discount:</span>
                                 <span>-₹<%= priceDetails.couponDiscount.toFixed(2) %></span>
                             </div>
-                        <% } %>
-                        <div class="total-row">
-                            <span>Tax (18%):</span>
-                            <span>₹<%= priceDetails.tax.toFixed(2) %></span>
-                        </div>
-                        <div class="total-row">
-                            <span>Total:</span>
-                            <span>₹<%= priceDetails.total.toFixed(2) %></span>
-                        </div>
+                            <% } %>
+                                <div class="total-row">
+                                    <span>Tax (18%):</span>
+                                    <span>₹<%= priceDetails.tax.toFixed(2) %></span>
+                                </div>
+                                <div class="total-row">
+                                    <span>Total:</span>
+                                    <span>₹<%= priceDetails.total.toFixed(2) %></span>
+                                </div>
                     </div>
                 </div>
             </div>
 
             <div class="checkout-actions">
                 <button id="confirmOrderBtn" class="btn btn-primary">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
                     Confirm Order
@@ -669,172 +707,257 @@
         </div>
     </div>
     <%- include("../../views/partials/user/footers") %>
-    
-    <!-- Toast Notification JS -->
-    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const checkoutBtn = document.getElementById('confirmOrderBtn');
-            
-            // Parse cartItems from server-side data
-            const cartItems = JSON.parse('<%- JSON.stringify(cartItems) %>');
-        
-            if (cartItems.length === 0) {
-                checkoutBtn.disabled = true;
-                checkoutBtn.style.opacity = "0.5";
-                checkoutBtn.style.cursor = "not-allowed";
-            }
 
-            // Coupon Application
-            const applyCouponBtn = document.getElementById('applyCouponBtn');
-            if (applyCouponBtn) {
-                applyCouponBtn.addEventListener('click', async function() {
-                    const couponCode = document.getElementById('couponCode').value.trim();
-                    const couponMessage = document.getElementById('couponMessage');
-                    
-                    if (!couponCode) {
-                        couponMessage.textContent = "Please enter a coupon code";
-                        couponMessage.className = "coupon-message coupon-error";
-                        return;
-                    }
-                    
-                    try {
-                        const response = await fetch('/apply-coupon', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({ couponCode })
-                        });
-                        
-                        const data = await response.json();
-                        
-                        if (data.success) {
-                            // Show success message and reload to update prices
-                            Toastify({
-                                text: "Coupon applied successfully!",
-                                duration: 2000,
-                                className: "custom-toast",
-                                close: true,
-                                gravity: "top",
-                                position: "right",
-                                style: {
-                                    background: "#10b981",
-                                }
-                            }).showToast();
-                            
-                            setTimeout(() => {
-                                location.reload();
-                            }, 1500);
-                        } else {
-                            couponMessage.textContent = data.message;
+        <!-- Toast Notification JS -->
+        <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const checkoutBtn = document.getElementById('confirmOrderBtn');
+                const cartItems = JSON.parse('<%- JSON.stringify(cartItems) %>');
+
+                if (cartItems.length === 0) {
+                    checkoutBtn.disabled = true;
+                    checkoutBtn.style.opacity = "0.5";
+                    checkoutBtn.style.cursor = "not-allowed";
+                }
+
+                // Coupon Application
+                const applyCouponBtn = document.getElementById('applyCouponBtn');
+                if (applyCouponBtn) {
+                    applyCouponBtn.addEventListener('click', async function () {
+                        const couponCode = document.getElementById('couponCode').value.trim();
+                        const couponMessage = document.getElementById('couponMessage');
+
+                        if (!couponCode) {
+                            couponMessage.textContent = "Please enter a coupon code";
+                            couponMessage.className = "coupon-message coupon-error";
+                            return;
+                        }
+
+                        try {
+                            const response = await fetch('/apply-coupon', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ couponCode })
+                            });
+
+                            const data = await response.json();
+
+                            if (data.success) {
+                                Toastify({
+                                    text: "Coupon applied successfully!",
+                                    duration: 2000,
+                                    className: "custom-toast",
+                                    close: true,
+                                    gravity: "top",
+                                    position: "right",
+                                    style: {
+                                        background: "#10b981",
+                                    }
+                                }).showToast();
+
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 1500);
+                            } else {
+                                couponMessage.textContent = data.message;
+                                couponMessage.className = "coupon-message coupon-error";
+                            }
+                        } catch (error) {
+                            console.error('Error applying coupon:', error);
+                            couponMessage.textContent = "Failed to apply coupon";
                             couponMessage.className = "coupon-message coupon-error";
                         }
-                    } catch (error) {
-                        console.error('Error applying coupon:', error);
-                        couponMessage.textContent = "Failed to apply coupon";
-                        couponMessage.className = "coupon-message coupon-error";
-                    }
-                });
-            }
+                    });
+                }
 
-            // Coupon Removal
-            const removeCouponBtn = document.getElementById('removeCouponBtn');
-            if (removeCouponBtn) {
-                removeCouponBtn.addEventListener('click', async function() {
-                    try {
-                        const response = await fetch('/remove-coupon', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            }
-                        });
-                        
-                        const data = await response.json();
-                        
-                        if (data.success) {
-                            // Show message and reload to update prices
-                            Toastify({
-                                text: "Coupon removed successfully",
-                                duration: 2000,
-                                className: "custom-toast",
-                                close: true,
-                                gravity: "top",
-                                position: "right",
-                                style: {
-                                    background: "#3b82f6",
+                // Coupon Removal
+                const removeCouponBtn = document.getElementById('removeCouponBtn');
+                if (removeCouponBtn) {
+                    removeCouponBtn.addEventListener('click', async function () {
+                        try {
+                            const response = await fetch('/remove-coupon', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
                                 }
-                            }).showToast();
-                            
-                            setTimeout(() => {
-                                location.reload();
-                            }, 1500);
+                            });
+
+                            const data = await response.json();
+
+                            if (data.success) {
+                                Toastify({
+                                    text: "Coupon removed successfully",
+                                    duration: 2000,
+                                    className: "custom-toast",
+                                    close: true,
+                                    gravity: "top",
+                                    position: "right",
+                                    style: {
+                                        background: "#3b82f6",
+                                    }
+                                }).showToast();
+
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 1500);
+                            }
+                        } catch (error) {
+                            console.error('Error removing coupon:', error);
+                            showError("Failed to remove coupon");
                         }
-                    } catch (error) {
-                        console.error('Error removing coupon:', error);
-                        Toastify({
-                            text: "Failed to remove coupon",
-                            duration: 3000,
-                            className: "custom-toast",
-                            close: true,
-                            gravity: "top",
-                            position: "right",
-                            style: {
-                                background: "#ef4444",
-                            }
-                        }).showToast();
-                    }
-                });
-            }
+                    });
+                }
 
-            // Order Confirmation
-            const confirmOrderBtn = document.getElementById('confirmOrderBtn');
-            if (confirmOrderBtn) {
-                confirmOrderBtn.addEventListener('click', async function() {
+                // Order Confirmation
+                checkoutBtn.addEventListener('click', handlePayment);
+
+                async function handlePayment() {
                     try {
-                        const response = await fetch('/place-order', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            }
-                        });
+                        const paymentMethod = '<%= paymentMethod %>';
+                        const originalBtnText = checkoutBtn.innerHTML;
                         
-                        if (response.ok) {
-                            Toastify({
-                                text: "Order confirmed successfully!",
-                                duration: 3000,
-                                className: "custom-toast",
-                                close: true,
-                                gravity: "top",
-                                position: "right",
-                                style: {
-                                    background: "#10b981",
+                        // Show loading state
+                        checkoutBtn.disabled = true;
+                        checkoutBtn.innerHTML = `<span class="spinner"></span> Processing...`;
+                        
+                        if (paymentMethod === 'Cash on delivery') {
+                            // Directly place order for COD
+                            const response = await fetch('/place-order', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
                                 }
-                            }).showToast();
-                            
-                            setTimeout(() => {
-                                window.location.href = '/order-confirmation';
-                            }, 1500);
+                            });
+
+                            if (response.ok) {
+                                showSuccess("Order confirmed successfully!");
+                                setTimeout(() => {
+                                    window.location.href = '/order-confirmation';
+                                }, 1500);
+                            } else {
+                                const result = await response.json();
+                                throw new Error(result.message || 'Failed to confirm order');
+                            }
                         } else {
-                            const result = await response.json();
-                            throw new Error(result.message || 'Failed to confirm order');
+                            // For Razorpay payment
+                            const amount = <%= priceDetails.total %>;
+                            
+                            //  Create order on your server
+                            const orderResponse = await fetch('/create-razorpay-order', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ amount })
+                            });
+
+                            const { order: razorpayOrder } = await orderResponse.json();
+
+                            // Open Razorpay checkout
+                            const options = {
+                                key: '<%= razorpayKey %>',
+                                amount: razorpayOrder.amount,
+                                currency: 'INR',
+                                name: 'DecibelX',
+                                description: 'Order Payment',
+                                order_id: razorpayOrder.id,
+                                handler: async function (response) {
+                                    try {
+                                        // Verify payment on your server
+                                        const verification = await fetch('/verify-payment', {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type': 'application/json',
+                                            },
+                                            body: JSON.stringify(response)
+                                        });
+
+                                        const result = await verification.json();
+
+                                        if (result.success) {
+                                            // Submit the order
+                                            const orderResponse = await fetch('/place-order', {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json',
+                                                }
+                                            });
+
+                                            if (orderResponse.ok) {
+                                                window.location.href = '/order-confirmation';
+                                            } else {
+                                                throw new Error('Order placement failed');
+                                            }
+                                        } else {
+                                            throw new Error('Payment verification failed');
+                                        }
+                                    } catch (error) {
+                                        console.error('Payment processing error:', error);
+                                        showError(error.message);
+                                        checkoutBtn.disabled = false;
+                                        checkoutBtn.innerHTML = originalBtnText;
+                                    }
+                                },
+                                prefill: {
+                                    name: '<%= user.name %>',
+                                    email: '<%= user.email %>',
+                                    contact: '<%= user.phone %>'
+                                },
+                                theme: {
+                                    color: '#00f2ea'
+                                }
+                            };
+
+                            const rzp = new Razorpay(options);
+                            rzp.open();
+
+                            rzp.on('payment.failed', function (response) {
+                                showError('Payment failed. Please try again.');
+                                checkoutBtn.disabled = false;
+                                checkoutBtn.innerHTML = originalBtnText;
+                            });
                         }
                     } catch (error) {
-                        Toastify({
-                            text: error.message,
-                            duration: 3000,
-                            className: "custom-toast",
-                            close: true,
-                            gravity: "top",
-                            position: "right",
-                            style: {
-                                background: "#ff5252",
-                            }
-                        }).showToast();
+                        console.error('Checkout error:', error);
+                        showError(error.message || 'Payment processing failed');
+                        checkoutBtn.disabled = false;
+                        checkoutBtn.innerHTML = originalBtnText;
                     }
-                });
-            }
-        });
-    </script>
+                }
+
+                function showError(message) {
+                    Toastify({
+                        text: message,
+                        duration: 3000,
+                        className: "custom-toast",
+                        close: true,
+                        gravity: "top",
+                        position: "right",
+                        style: {
+                            background: "#ef4444",
+                        }
+                    }).showToast();
+                }
+
+                function showSuccess(message) {
+                    Toastify({
+                        text: message,
+                        duration: 3000,
+                        className: "custom-toast",
+                        close: true,
+                        gravity: "top",
+                        position: "right",
+                        style: {
+                            background: "#10b981",
+                        }
+                    }).showToast();
+                }
+            });
+        </script>
 </body>
+
 </html>
