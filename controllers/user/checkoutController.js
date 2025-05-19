@@ -10,6 +10,7 @@ const category = require("../../models/categorySchema");
 const offer = require("../../models/offerSchema");
 const Coupon = require("../../models/couponSchema");
 const wallet = require("../../models/walletSchema");
+const mongoose = require("mongoose");
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
 function generateOrderID() {
@@ -215,6 +216,7 @@ const paymentPage = async (req, res, next) => {
 
     return res.render("checkout_2", {
       user: userVer,
+      walBal,
       name,
       phone,
       address: selectedAddress,
@@ -389,17 +391,40 @@ const finalReview = async (req, res, next) => {
 };
 
 const placeOrder = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  
   try {
     const userEmail = req.session.email;
     const userVer = await usercollection.findOne({ email: userEmail });
     const selectedAddress = await address.findById(req.session.addressId);
-    const cartItems = await cart
-      .find({ userId: userVer._id })
-      .populate("productId");
+    const cartItems = await cart.find({ userId: userVer._id }).populate("productId");
 
     // Calculate totals with offers and coupon
     const couponDetails = req.session.couponDetails || null;
     const priceDetails = await calculatePricesWithOffers(cartItems, couponDetails);
+
+    // Handle wallet payment deduction
+    if (req.session.paymentMethod === 'Wallet') {
+      const userWallet = await wallet.findOne({ userId: userVer._id }).session(session);
+      
+      if (!userWallet || userWallet.walletBalance < priceDetails.total) {
+        await session.abortTransaction();
+        session.endSession();
+        return res.status(400).json({ 
+          success: false, 
+          message: "Insufficient wallet balance" 
+        });
+      }
+
+      // Deduct from wallet and record transaction
+      userWallet.walletBalance -= priceDetails.total;
+      userWallet.walletTransaction.push({
+        transactionAmount: priceDetails.total,
+        transactionType: 'Debit for Order'
+      });
+      await userWallet.save({ session });
+    }
 
     // Prepare order details
     const orderId = generateOrderID();
@@ -448,14 +473,19 @@ const placeOrder = async (req, res, next) => {
     });
 
     // Save order and clear cart
-    await newOrder.save();
-    await cart.deleteMany({ userId: userVer._id });
+    await newOrder.save({ session });
+    await cart.deleteMany({ userId: userVer._id }).session(session);
 
     // Update product stocks
-    for (const item of cartItems) {
-      await product.findByIdAndUpdate(item.productId._id, {
-        $inc: { productStock: -item.productQuantity },
-      });
+    const bulkOps = cartItems.map(item => ({
+      updateOne: {
+        filter: { _id: item.productId._id },
+        update: { $inc: { productStock: -item.productQuantity } }
+      }
+    }));
+    
+    if (bulkOps.length > 0) {
+      await product.bulkWrite(bulkOps, { session });
     }
 
     // Update coupon usage if applied
@@ -465,9 +495,13 @@ const placeOrder = async (req, res, next) => {
         {
           $inc: { usedCount: 1, totalDiscount: couponDetails.discountAmount },
           $addToSet: { usedBy: userVer._id }
-        }
+        },
+        { session }
       );
     }
+
+    await session.commitTransaction();
+    session.endSession();
 
     // Clear session data
     req.session.orderId = newOrder.orderId;
@@ -479,6 +513,8 @@ const placeOrder = async (req, res, next) => {
 
     return res.json({ success: true, orderId: newOrder.orderId });
   } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
     console.log(error);
     next(new AppError('Sorry...Something went wrong', 500));
   }

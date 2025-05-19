@@ -632,7 +632,9 @@
                                             </div>
                                             <div class="payment-title">Wallet</div>
                                         </div>
+                                     
                                         <div class="payment-details">
+                                               <div>  <span> Wallet Balance:<span style="color: green;">₹<%= walBal.toFixed(2) %></span></span></div>
                                             Pay using your wallet balance. Add funds to your wallet for faster checkout
                                             in
                                             future purchases.
@@ -660,6 +662,7 @@
                                                 <div class="payment-title">Wallet</div>
                                             </div>
                                             <div class="payment-details">
+                                                <div>  <span> Wallet Balance:<span style="color: red;">₹<%= walBal.toFixed(2) %></span></span></div>
                                                 Insufficient wallet balance. Please add funds or choose another payment method.
                                             </div>
                                         </div>

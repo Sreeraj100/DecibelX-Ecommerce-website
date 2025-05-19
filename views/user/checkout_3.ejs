@@ -826,8 +826,8 @@
                         checkoutBtn.disabled = true;
                         checkoutBtn.innerHTML = `<span class="spinner"></span> Processing...`;
 
-                        if (paymentMethod === 'Cash on delivery') {
-                            // Directly place order for COD
+                        if (paymentMethod === 'Cash on delivery' || paymentMethod === 'Wallet') {
+                            
                             const response = await fetch('/place-order', {
                                 method: 'POST',
                                 headers: {
