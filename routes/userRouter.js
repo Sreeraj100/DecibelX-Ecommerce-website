@@ -96,6 +96,9 @@ router.post('/apply-coupon', userAuth, checkoutController.applyCoupon);
 router.post('/remove-coupon', userAuth, checkoutController.removeCoupon);
 router.post('/create-razorpay-order', userAuth, checkoutController.createRazorpayOrder);
 router.post('/verify-payment', userAuth, checkoutController.verifyPayment);
+router.post('/place-failed-order',userAuth, checkoutController.placeFailedOrder);
+router.get('/payment-failed',userAuth, checkoutController.paymentFailedPage);
+
 // orders
 router.get('/orders', userAuth, orderController.orders)
 router.get('/orderview/:id', userAuth, orderController.userOrderView)

@@ -23,7 +23,19 @@ const userSchema=new Schema({
         type:Boolean,
         require:true,
         default:true
-    }
+    },
+     referralCode: {
+        type: String,
+        unique: true
+    },
+    referredBy: {
+        type: Schema.Types.ObjectId,
+        ref: 'users'
+    },
+    referralCount: {
+        type: Number,
+        default: 0
+    },
 },
 {
     timestamps:true

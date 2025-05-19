@@ -9,6 +9,7 @@ const env= require('dotenv').config();
 const category = require("../../models/categorySchema");
 const offer = require("../../models/offerSchema");
 const Coupon = require("../../models/couponSchema");
+const wallet = require("../../models/walletSchema");
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
 function generateOrderID() {
@@ -192,7 +193,8 @@ const paymentPage = async (req, res, next) => {
     const userEmail = req.session.email;
     const userVer = await usercollection.findOne({ email: userEmail });
     const selectedAddress = await address.findById(req.session.addressId);
-
+    const phone =  req.session.phone
+    const name = req.session.name
     const cartItems = await cart
       .find({ userId: userVer._id })
       .populate("productId");
@@ -201,15 +203,23 @@ const paymentPage = async (req, res, next) => {
       return res.redirect("/cart");
     }
 
-    // Calculate total amount with offers and coupon
+    const wal = await wallet.findOne({ userId: userVer._id})
+    let walBal=0
+    if(wal){
+      walBal= wal.walletBalance
+    }
+   
     const couponDetails = req.session.couponDetails || null;
     const { total } = await calculatePricesWithOffers(cartItems, couponDetails);
     req.session.cartTotal = total;
 
     return res.render("checkout_2", {
       user: userVer,
+      name,
+      phone,
       address: selectedAddress,
       allowCOD: total <= 10000,
+      allowWallet: walBal > total,
       cartTotal: total,
       razorpayKey: process.env.RAZORPAY_KEY_ID // Add your key to .env
     });
@@ -222,14 +232,13 @@ const paymentMethod = async (req, res, next) => {
   try {
     const { payment } = req.body;
     
-    if (payment === "Cash on delivery" && req.session.cartTotal > 10000) {
-      return res.status(400).json({
-        success: false,
-        message: "Cash on Delivery not available for orders above ₹10,000",
-      });
-    }
+    // if (payment === "Cash on delivery" && req.session.cartTotal > 10000) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "Cash on Delivery not available for orders above ₹10,000",
+    //   });
+    // }
 
-    // Store the selected payment method in session
     req.session.paymentMethod = payment;
     return res.json({ success: true });
   } catch (error) {
@@ -348,6 +357,8 @@ const finalReview = async (req, res, next) => {
     const userEmail = req.session.email;
     const userVer = await usercollection.findOne({ email: userEmail });
     const selectedAddress = await address.findById(req.session.addressId);
+    const phone =  req.session.phone
+    const name = req.session.name
     const cartItems = await cart
       .find({ userId: userVer._id })
       .populate("productId");
@@ -362,6 +373,8 @@ const finalReview = async (req, res, next) => {
 
     return res.render("checkout_3", {
       user: userVer,
+      phone,
+      name,
       address: selectedAddress,
       paymentMethod: req.session.paymentMethod,
       cartItems,
@@ -495,6 +508,135 @@ const confirmPage = async (req, res, next) => {
   }
 };
 
+// In your checkout controller file
+const placeFailedOrder = async (req, res, next) => {
+  try {
+    const userEmail = req.session.email;
+    const userVer = await usercollection.findOne({ email: userEmail });
+    const selectedAddress = await address.findById(req.session.addressId);
+    const cartItems = await cart
+      .find({ userId: userVer._id })
+      .populate("productId");
+
+    if (!cartItems || cartItems.length === 0) {
+      return res.status(400).json({ success: false, message: "Cart is empty" });
+    }
+
+    // Calculate totals with offers and coupon
+    const couponDetails = req.session.couponDetails || null;
+    const priceDetails = await calculatePricesWithOffers(cartItems, couponDetails);
+
+    // Prepare order details
+    const orderId = generateOrderID();
+    const products = cartItems.map((item) => ({
+      productId: item.productId._id,
+      productName: item.productId.productName,
+      productPrice: item.productId.productOfferPrice, 
+      quantity: item.productQuantity,
+    }));
+
+    // Create new order with failed payment status
+    const newOrder = new order({
+      userId: userVer._id,
+      fullName: req.session.name,
+      phone: req.session.phone,
+      email: req.session.email,
+      orderId,
+      address: {
+        doorNo: selectedAddress.doorNo,
+        street: selectedAddress.street,
+        city: selectedAddress.city,
+        district: selectedAddress.district,
+        pinCode: selectedAddress.pinCode,
+      },
+      paymentMethod: req.session.paymentMethod,
+      paymentStatus: 'Failed',
+      paymentDetails: req.body.paymentDetails || null, 
+      products,
+      couponApplied: couponDetails ? {
+        code: couponDetails.code,
+        percentage: couponDetails.percentage,
+        discountAmount: couponDetails.discountAmount,
+        couponId: couponDetails.couponId
+      } : null,
+      priceDetails: {
+        subtotal: priceDetails.subtotal,
+        tax: priceDetails.tax,
+        couponDiscount: priceDetails.couponDiscount,
+        total: priceDetails.total,
+      },
+      status: "Payment Pending",
+    });
+
+    await newOrder.save();
+
+    await cart.deleteMany({ userId: userVer._id });
+
+    // Update product stocks
+    for (const item of cartItems) {
+      await product.findByIdAndUpdate(item.productId._id, {
+        $inc: { productStock: -item.productQuantity },
+      });
+    }
+
+    // Update coupon usage if applied
+    if (couponDetails) {
+      await Coupon.findByIdAndUpdate(
+        couponDetails.couponId,
+        {
+          $inc: { usedCount: 1, totalDiscount: couponDetails.discountAmount },
+          $addToSet: { usedBy: userVer._id }
+        }
+      );
+    }
+
+    // Store order ID in session for the failure page
+    req.session.pendingOrderId = newOrder.orderId;
+
+    return res.json({ 
+      success: true, 
+      orderId: newOrder.orderId,
+      paymentStatus: 'Failed',
+      orderStatus: 'Payment Pending'
+    });
+  } catch (error) {
+    console.log(error);
+    next(new AppError('Failed to process your order with pending payment', 500));
+  }
+};
+const paymentFailedPage = async (req, res, next) => {
+  try {
+    if (!req.session.pendingOrderId) {
+      return res.redirect('/orders');
+    }
+
+    const userEmail = req.session.email;
+    const userVer = await usercollection.findOne({ email: userEmail });
+    const name = userVer.name
+    const orderDetails = await order.findOne({
+      orderId: req.session.pendingOrderId,
+      userId: userVer._id
+    });
+
+    if (!orderDetails) {
+      return res.redirect('/orders');
+    }
+
+    // Clear the pending order ID from session
+    delete req.session.pendingOrderId;
+
+    res.render('paymentFailed', {
+      name,
+      user: userVer,
+      order: orderDetails,
+      razorpayKey: process.env.RAZORPAY_KEY_ID
+    });
+  } catch (error) {
+    console.log(error);
+    next(new AppError('Sorry...Something went wrong', 500));
+  }
+};
+
 module.exports = {
   checkoutPageOne,
   checkoutOnePost,
@@ -507,4 +649,6 @@ module.exports = {
   confirmPage,
   createRazorpayOrder,
   verifyPayment,
+  placeFailedOrder, 
+  paymentFailedPage,
 };

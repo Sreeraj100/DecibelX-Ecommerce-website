@@ -222,6 +222,7 @@
             align-items: flex-start;
             position: relative;
             overflow: hidden;
+            width: 800px;
         }
 
         .payment-card:hover {
@@ -326,9 +327,11 @@
             0% {
                 box-shadow: 0 0 0 0 rgba(255, 82, 82, 0.4);
             }
+
             70% {
                 box-shadow: 0 0 0 10px rgba(255, 82, 82, 0);
             }
+
             100% {
                 box-shadow: 0 0 0 0 rgba(255, 82, 82, 0);
             }
@@ -505,10 +508,10 @@
                         Shipping Address
                     </h3>
                     <div class="address-display">
-                        <p><strong>Name: <%= user.name %></strong>
+                        <p><strong>Name: <%= name %></strong>
                             <%= address.phoneNumber %>
                         </p>
-                        <p><strong>Phone: <%= user.phone %></strong>
+                        <p><strong>Phone: <%= phone %></strong>
                             <%= address.phoneNumber %>
                         </p>
                         <p>
@@ -609,32 +612,60 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="payment-card">
-                                <div class="payment-selector">
-                                    <input type="radio" name="payment" value="Wallet">
-                                </div>
-                                <div class="payment-content">
-                                    <div class="payment-header">
-                                        <div class="payment-icon">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
-                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                                stroke-linecap="round" stroke-linejoin="round">
-                                                <path
-                                                    d="M19 5c1.1 0 2 .9 2 2v10c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2V7c0-1.1.9-2 2-2h14z">
-                                                </path>
-                                                <line x1="16" y1="12" x2="16" y2="12"></line>
-                                                <line x1="13" y1="12" x2="13" y2="12"></line>
-                                            </svg>
+                            <% if (allowWallet) { %>
+                                <div class="payment-card">
+                                    <div class="payment-selector">
+                                        <input type="radio" name="payment" value="Wallet">
+                                    </div>
+                                    <div class="payment-content">
+                                        <div class="payment-header">
+                                            <div class="payment-icon">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path
+                                                        d="M19 5c1.1 0 2 .9 2 2v10c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2V7c0-1.1.9-2 2-2h14z">
+                                                    </path>
+                                                    <line x1="16" y1="12" x2="16" y2="12"></line>
+                                                    <line x1="13" y1="12" x2="13" y2="12"></line>
+                                                </svg>
+                                            </div>
+                                            <div class="payment-title">Wallet</div>
                                         </div>
-                                        <div class="payment-title">Wallet</div>
-                                    </div>
-                                    <div class="payment-details">
-                                        Pay using your wallet balance. Add funds to your wallet for faster checkout in
-                                        future purchases.
+                                        <div class="payment-details">
+                                            Pay using your wallet balance. Add funds to your wallet for faster checkout
+                                            in
+                                            future purchases.
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                                <% } else { %>
+                                    <div class="payment-card disabled">
+                                        <div class="payment-selector">
+                                            <input type="radio" name="payment" value="Wallet" disabled>
+                                        </div>
+                                        <div class="payment-content">
+                                            <div class="payment-header">
+                                                <div class="payment-icon">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                        viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path
+                                                            d="M19 5c1.1 0 2 .9 2 2v10c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2V7c0-1.1.9-2 2-2h14z">
+                                                        </path>
+                                                        <line x1="16" y1="12" x2="16" y2="12"></line>
+                                                        <line x1="13" y1="12" x2="13" y2="12"></line>
+                                                    </svg>
+                                                </div>
+                                                <div class="payment-title">Wallet</div>
+                                            </div>
+                                            <div class="payment-details">
+                                                Insufficient wallet balance. Please add funds or choose another payment method.
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <%}%>
             </div>
 
             <div class="checkout-actions">
@@ -661,7 +692,7 @@
         <!-- Toast Notification JS -->
         <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('DOMContentLoaded', function () {
                 // Payment card selection - exclude disabled cards
                 const paymentCards = document.querySelectorAll('.payment-card:not(.disabled)');
                 const continueBtn = document.getElementById('continueToReview');
@@ -669,15 +700,15 @@
 
                 // Set up click handlers for payment cards
                 paymentCards.forEach(card => {
-                    card.addEventListener('click', function() {
+                    card.addEventListener('click', function () {
                         // Remove selected class from all cards
                         document.querySelectorAll('.payment-card').forEach(c => {
                             c.classList.remove('selected');
                         });
-                        
+
                         // Add selected class to clicked card
                         this.classList.add('selected');
-                        
+
                         // Check the radio button
                         const radio = this.querySelector('input[type="radio"]');
                         if (radio) {
@@ -692,24 +723,24 @@
                 }
 
                 // Change address functionality
-                document.querySelector('.change-address').addEventListener('click', function() {
+                document.querySelector('.change-address').addEventListener('click', function () {
                     window.location.href = '/checkout';
                 });
 
                 // Continue to review button handler
-                continueBtn.addEventListener('click', async function() {
+                continueBtn.addEventListener('click', async function () {
                     // Show loading state
                     const originalButtonText = continueBtn.innerHTML;
                     continueBtn.innerHTML = '<div class="loading"></div> Processing...';
                     continueBtn.disabled = true;
 
                     const selectedPayment = document.querySelector('input[name="payment"]:checked');
-                    
+
                     // Validate payment selection
                     if (!selectedPayment) {
                         // Highlight payment methods to show error
                         paymentMethods.classList.add('no-selection');
-                        
+
                         Toastify({
                             text: 'Please select a payment method',
                             duration: 3000,
@@ -718,12 +749,12 @@
                             gravity: "top",
                             position: "right",
                         }).showToast();
-                        
+
                         // Remove highlight after 3 seconds
                         setTimeout(() => {
                             paymentMethods.classList.remove('no-selection');
                         }, 3000);
-                        
+
                         // Reset button state
                         continueBtn.innerHTML = originalButtonText;
                         continueBtn.disabled = false;

@@ -461,14 +461,18 @@
                                         <%= orderData.paymentMethod %>
                                     </p>
                                     <p><strong>Payment Status:</strong>
-                                        <% if(orderData.status==='Delivered' || orderData.status==='Return processing' )
-                                            { %>
+                                      <% if(orderData.status==='Delivered' || orderData.status==='Return processing' || orderData.paymentMethod==='Wallet' ) { %>
+                                    <span style="color: var(--success-color);">Pai</span>
+                                    <% }  else if(orderData.status==='Ordered' && orderData.paymentMethod==='Razorpay' ) { %>
                                             <span style="color: var(--success-color);">Paid</span>
-                                            <% } else if(orderData.status==='Ordered' ) { %>
+                                    <% } else if(orderData.status==='Ordered' &&
+                                        orderData.paymentMethod==='Cash on delivery' ) { %>
+                                        <span style="color: var(--warning-dark);">Pending</span>
+                                        <% } else if(orderData.status==='Shipped' && orderData.paymentMethod==='Razorpay'  ) { %>
+                                                <span style="color: var(--warning-dark);">Paid</span>
+                                            <% } else if(orderData.status==='Shipped' && orderData.paymentMethod!=='Razorpay' ) { %>
                                                 <span style="color: var(--warning-dark);">Pending</span>
-                                                <% } else if(orderData.status==='Shipped' ) { %>
-                                                    <span style="color: var(--warning-dark);">Pending</span>
-                                                    <% } else if(orderData.status==='Returned' ) { %>
+                                                <% } else if(orderData.status==='Returned' ) { %>
                                                     <span style="color: var(--warning-dark);">Refunded</span>
                                                     <% } else { %>
                                                         <span style="color: var(--danger-color);">Failed</span>
@@ -520,28 +524,42 @@
                             </table>
                         </div>
 
-                        <div class="summary-section">
-                            <div class="order-summary">
-                                <div class="summary-row">
-                                    <span>Sub Total:</span>
-                                    <span>₹<%= orderData.priceDetails.subtotal.toFixed(2) %></span>
-                                </div>
-                                <div class="summary-row">
-                                    <span>Shipping Cost:</span>
-                                    <span>Free</span>
-                                </div>
-                                <% if(orderData.priceDetails.tax) { %>
-                                    <div class="summary-row">
-                                        <span>Tax:</span>
-                                        <span>₹<%= orderData.priceDetails.tax.toFixed(2) %></span>
-                                    </div>
-                                    <% } %>
-                                        <div class="summary-row">
-                                            <span>Grand Total:</span>
-                                            <span>₹<%= orderData.priceDetails.total.toFixed(2) %></span>
-                                        </div>
-                            </div>
+                        
+                <div class="summary-section">
+                    <div class="order-summary">
+                        <div class="summary-row">
+                            <span>Sub Total:</span>
+                            <span>₹<%= orderData.priceDetails.subtotal.toFixed(2) %></span>
                         </div>
+
+                        <% if(orderData.priceDetails.tax) { %>
+                            <div class="summary-row">
+                                <span>Tax:</span>
+                                <span>₹<%= orderData.priceDetails.tax.toFixed(2) %></span>
+                            </div>
+                            <% } %>
+                                <% if(orderData.priceDetails.couponDiscount) { %>
+                                    <div class="summary-row">
+                                        <span>Coupon:</span>
+                                        <span style="color: green;">-₹<%=
+                                                orderData.priceDetails.couponDiscount.toFixed(2) %></span>
+                                    </div>
+                                    <% }else{ %>
+                                        <div class="summary-row">
+                                            <span>Coupon:</span>
+                                            <span>-₹0</span>
+                                        </div>
+                                        <% } %>
+                                            <div class="summary-row">
+                                                <span>Shipping Cost:</span>
+                                                <span>Free</span>
+                                            </div>
+                                            <div class="summary-row">
+                                                <span>Grand Total:</span>
+                                                <span>₹<%= orderData.priceDetails.total.toFixed(2) %></span>
+                                            </div>
+                    </div>
+                </div>
             </div>
         </div>
 

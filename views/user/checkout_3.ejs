@@ -446,7 +446,7 @@
             display: inline-block;
             width: 20px;
             height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
+            border: 3px solid rgba(255, 255, 255, .3);
             border-radius: 50%;
             border-top-color: #fff;
             animation: spin 1s ease-in-out infinite;
@@ -454,7 +454,9 @@
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         /* Responsive styles */
@@ -589,10 +591,10 @@
                     </h3>
                     <div class="address-display">
                         <p><strong>Name:</strong>
-                            <%= user.name %>
+                            <%= name %>
                         </p>
                         <p><strong>Phone:</strong>
-                            <%= user.phone %>
+                            <%= phone %>
                         </p>
                         <p>
                             <%= address.doorNo %>, <%= address.street %>
@@ -819,11 +821,11 @@
                     try {
                         const paymentMethod = '<%= paymentMethod %>';
                         const originalBtnText = checkoutBtn.innerHTML;
-                        
+
                         // Show loading state
                         checkoutBtn.disabled = true;
                         checkoutBtn.innerHTML = `<span class="spinner"></span> Processing...`;
-                        
+
                         if (paymentMethod === 'Cash on delivery') {
                             // Directly place order for COD
                             const response = await fetch('/place-order', {
@@ -845,7 +847,7 @@
                         } else {
                             // For Razorpay payment
                             const amount = <%= priceDetails.total %>;
-                            
+
                             //  Create order on your server
                             const orderResponse = await fetch('/create-razorpay-order', {
                                 method: 'POST',
@@ -915,10 +917,38 @@
                             const rzp = new Razorpay(options);
                             rzp.open();
 
-                            rzp.on('payment.failed', function (response) {
-                                showError('Payment failed. Please try again.');
-                                checkoutBtn.disabled = false;
-                                checkoutBtn.innerHTML = originalBtnText;
+                            rzp.on('payment.failed', async function (response) {
+                                try {
+                                    // Show loading state
+                                    checkoutBtn.disabled = true;
+                                    checkoutBtn.innerHTML = `<span class="spinner"></span> Processing...`;
+
+                                    // Call the failed order endpoint
+                                    const orderResponse = await fetch('/place-failed-order', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                        },
+                                        body: JSON.stringify({
+                                            paymentDetails: response.error // Include Razorpay error details
+                                        })
+                                    });
+
+                                    const orderResult = await orderResponse.json();
+
+                                    if (orderResult.success) {
+                                        // Redirect to payment failed page
+                                        window.location.href = '/payment-failed';
+                                    } else {
+                                        throw new Error('Failed to save your order');
+                                    }
+                                } catch (error) {
+                                    console.error('Payment failure handling error:', error);
+                                    showError(error.message || 'Failed to process your payment');
+                                } finally {
+                                    checkoutBtn.disabled = false;
+                                    checkoutBtn.innerHTML = originalBtnText;
+                                }
                             });
                         }
                     } catch (error) {

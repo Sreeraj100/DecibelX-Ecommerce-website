@@ -5,6 +5,7 @@ const wishlist = require("../../models/wishlistSchema");
 const AppError = require("../../middlewares/errorHandling");
 const cart = require("../../models/cartSchema");
 const order = require("../../models/orderSchema");
+const wallet = require("../../models/walletSchema");
 const pdfService = require("../../services/invoice");
 
 const orders = async (req, res, next) => {
@@ -73,7 +74,6 @@ const userOrderView = async (req, res, next) => {
     next(new AppError("Sorry...Something went wrong", 500));
   }
 };
-
 const cancelOrder = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -81,13 +81,52 @@ const cancelOrder = async (req, res, next) => {
   try {
     const id = req.params.id;
     const orderData = await order.findById(id).session(session);
+    const userEmail = req.session.email;
+    const user = await usercollection.findOne({ email: userEmail }).session(session);
 
+    // Restore product stock
     for (const item of orderData.products) {
       await product.updateOne(
         { _id: item.productId },
         { $inc: { productStock: item.quantity } },
         { session }
       );
+    }
+
+    // Refund to wallet if payment was online or wallet
+    if (orderData.paymentMethod !== 'cash on delivery') {
+     const transactionData = {
+        transactionDate: new Date(),
+        transactionAmount: orderData.priceDetails.total,
+        transactionType: "Credit on Cancel",
+        orderId: orderData._id,
+      };
+
+      const existingWallet = await wallet
+        .findOne({ userId: orderData.userId })
+        .session(session);
+
+      if (existingWallet) {
+        await wallet.updateOne(
+          { userId: orderData.userId },
+          {
+            $inc: { walletBalance: orderData.priceDetails.total },
+            $push: { walletTransaction: transactionData },
+          },
+          { session }
+        );
+      } else {
+        await wallet.create(
+          [
+            {
+              userId: orderData.userId,
+              walletBalance: orderData.priceDetails.total,
+              walletTransaction: [transactionData],
+            },
+          ],
+          { session }
+        );
+      }
     }
 
     // Update order status

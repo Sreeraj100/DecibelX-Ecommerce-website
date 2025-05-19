@@ -276,7 +276,7 @@ const generateInvoice = async (orderData) => {
                       ],
                       [
                         { text: 'Coupon', style: 'summaryLabel', alignment: 'left' },
-                        { text: `₹${orderData.priceDetails?.couponuser ? orderData.priceDetails.couponuser : 0}`, style: 'summaryValue', alignment: 'right' }
+                        { text: `₹${orderData.priceDetails?.couponDiscount ? orderData.priceDetails.couponDiscount : 0}`, style: 'summaryValue', alignment: 'right' }
                       ],
                       [
                         { text: 'Total', style: 'totalLabel', alignment: 'left', fillColor: colors.primary, color: 'white' },

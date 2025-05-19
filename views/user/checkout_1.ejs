@@ -709,12 +709,8 @@
                                         <span class="address-type <%= address.type %>">
                                             <%= address.type %>
                                         </span>
-                                        <h4 class="address-name" id="addressName<%= address._id %>">
-                                            <%= userVer ? userVer.name : 'User' %>
-                                        </h4>
-                                        <p class="address-phone" id="addressPhone<%= address._id %>">
-                                            <%= userVer.phone || 'No phone provided' %>
-                                        </p>
+                                        
+                                        
                                         <p class="address-details">
                                             <%= address.doorNo %>, <%= address.street %><br>
                                                     <%= address.city %>, <%= address.district %><br>

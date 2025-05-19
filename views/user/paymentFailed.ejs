@@ -1,0 +1,277 @@
+
+<%- include("../../views/partials/user/headers") %>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        /* body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            flex-direction: column;
+        } */
+        
+        .pcontainer {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .confirmation-card {
+            background-color: #fff;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            padding: 40px 30px;
+            margin-bottom: 30px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .confirmation-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .confirmation-icon {
+            width: 90px;
+            height: 90px;
+            background-color: #FF3A5E;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            box-shadow: 0 10px 20px rgba(255, 58, 94, 0.2);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 58, 94, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 15px rgba(255, 58, 94, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 58, 94, 0);
+            }
+        }
+        
+        .confirmation-icon i {
+            color: #fff;
+            font-size: 40px;
+        }
+        
+        .confirmation-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #FF3A5E;
+        }
+        
+        .confirmation-message {
+            font-size: 18px;
+            margin-bottom: 30px;
+            color: #555;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .order-details {
+            background-color: #f9f9f9;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 30px 0;
+            text-align: left;
+            border: 1px solid #eee;
+        }
+        
+        .order-detail-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .order-detail-row:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .order-detail-label {
+            font-weight: 600;
+            width: 150px;
+            color: #555;
+            margin-right: 20px;
+            min-width: 140px;
+        }
+        
+        .order-detail-value {
+            flex: 1;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .btn {
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            outline: none;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            min-width: 160px;
+            margin: 10px;
+        }
+        
+        .btn-primary {
+            background-color: #FF3A5E;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(255, 58, 94, 0.2);
+        }
+        
+        .btn-primary:hover {
+            background-color: #e63054;
+            box-shadow: 0 6px 15px rgba(255, 58, 94, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid #ddd;
+            color: #666;
+        }
+        
+        .btn-outline:hover {
+            border-color: #FF3A5E;
+            color: #FF3A5E;
+            background-color: rgba(255, 58, 94, 0.05);
+            transform: translateY(-2px);
+        }
+        
+        .action-buttons {
+            margin-top: 35px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        /* Additional features */
+        .order-summary {
+            margin-top: 30px;
+            text-align: center;
+        }
+        
+        .summary-title {
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        /* Responsive styles */
+        @media screen and (max-width: 768px) {
+            .confirmation-card {
+                padding: 30px 20px;
+            }
+            
+            .confirmation-title {
+                font-size: 28px;
+            }
+            
+            .confirmation-message {
+                font-size: 16px;
+            }
+            
+            .order-detail-row {
+                flex-direction: column;
+            }
+            
+            .order-detail-label {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 250px;
+                margin: 8px 0;
+            }
+        }
+        
+        @media screen and (max-width: 480px) {
+            body {
+                padding: 15px;
+            }
+            
+            .confirmation-icon {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .confirmation-icon i {
+                font-size: 30px;
+            }
+            
+            .confirmation-title {
+                font-size: 24px;
+            }
+            
+            .order-details {
+                padding: 20px 15px;
+            }
+        }
+    </style>
+
+<body>
+    <div class="pcontainer">
+        <div class="confirmation-card">
+            <div class="confirmation-icon">
+                <i class="fas fa-times"></i>
+            </div>
+            <h1 class="confirmation-title">Payment Failed!</h1>
+            <p class="confirmation-message">We're sorry, but your payment could not be processed. Please review the error details below and try again.</p>
+            
+            <div class="order-details">
+                <div class="order-detail-row">
+                    <span class="order-detail-label">Transaction ID:</span>
+                    <span class="order-detail-value"><%= order.orderId %></span>
+                </div>
+                <div class="order-detail-row">
+                    <span class="order-detail-label">Date:</span>
+                    <span class="order-detail-value"><%= new Date().toLocaleDateString() %></span>
+                </div>
+                <div class="order-detail-row">
+                    <span class="order-detail-label">Error Message:</span>
+                    <span class="order-detail-value">Bank server down</span>
+                </div>
+                
+            </div>
+            
+            <div class="action-buttons">
+                <a href="/orderview/<%= order._id %>" class="btn btn-primary">Veiw order</a>
+                <a href="/shop" class="btn btn-outline">Return to shop</a>
+            </div>
+        </div>
+    </div>
+    <%- include("../../views/partials/user/footers") %>
