@@ -105,7 +105,7 @@ router.get('/orderview/:id', userAuth, orderController.userOrderView)
 router.get('/download-invoice/:id', userAuth, orderController.downloadInvoice)
 router.post('/cancelOrder/:id', userAuth, orderController.cancelOrder)
 router.post('/returnOrder/:id', userAuth, orderController.returnOrder)
-
+router.post('/update-payment-status/:orderId', checkoutController.updatePaymentStatus);
 
 // wallet
 router.get('/wallet', userAuth, walletController.walletPage)

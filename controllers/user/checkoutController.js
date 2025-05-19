@@ -673,6 +673,53 @@ const paymentFailedPage = async (req, res, next) => {
   }
 };
 
+const updatePaymentStatus = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  
+  try {
+    const { orderId } = req.params;
+    const { paymentId, orderId: razorpayOrderId, signature } = req.body;
+    
+    // Find the order
+    const existingOrder = await order.findById(orderId).session(session);
+    
+    if (!existingOrder) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(404).json({ 
+        success: false, 
+        message: "Order not found" 
+      });
+    }
+    
+    // Update order details
+    existingOrder.paymentStatus = 'Paid';
+    existingOrder.status = 'Ordered';
+    existingOrder.paymentDetails = {
+      razorpay_order_id: razorpayOrderId,
+      razorpay_payment_id: paymentId,
+      razorpay_signature: signature
+    };
+    
+    await existingOrder.save({ session });
+    
+    await session.commitTransaction();
+    session.endSession();
+    
+    return res.json({ 
+      success: true,
+      message: "Order payment status updated successfully"
+    });
+    
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    console.error('Update payment status error:', error);
+    next(new AppError('Failed to update payment status', 500));
+  }
+};
+
 module.exports = {
   checkoutPageOne,
   checkoutOnePost,
@@ -687,4 +734,5 @@ module.exports = {
   verifyPayment,
   placeFailedOrder, 
   paymentFailedPage,
+  updatePaymentStatus
 };
