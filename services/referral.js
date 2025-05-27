@@ -1,63 +1,68 @@
-const usercollection = require("../models/userSchema");
-const wallet = require("../models/walletSchema");
+const crypto = require('crypto');
+const usercollection = require('../models/userSchema');
+const wallet = require('../models/walletSchema');
+
 
 const generateReferralCode = async () => {
-  let code;
-  let isUnique = false;
-
-  while (!isUnique) {
-    code = Math.random().toString(36).substring(2, 8).toUpperCase();
-    const existingUser = await usercollection.findOne({ referralCode: code });
-    if (!existingUser) isUnique = true;
-  }
-  return code;
+    let referralCode;
+    let isUnique = false;
+    
+    while (!isUnique) {
+        // Generate 8-character alphanumeric code
+        referralCode = crypto.randomBytes(4).toString('hex').toUpperCase();
+        
+        // Check if code already exists
+        const existingUser = await usercollection.findOne({ referralCode });
+        if (!existingUser) {
+            isUnique = true;
+        }
+    }
+    
+    return referralCode;
 };
 
-const applyReferralBonus = async (referralCode, newUserEmail) => {
-  const referrer = await usercollection.findOne({ referralCode });
-  if (!referrer) return false;
 
-  const existingWallet = await wallet.findOne({ userId: referrer._id });
+const processReferral = async (userId, referralCode) => {
+    try {
+        if (!referralCode) return null;
 
-  const transactionData = {
-    transactionDate: new Date(),
-    transactionAmount: 50,
-    transactionType: "Credit on referral",
-   
-  };
+        // Find referring user
+        const referringUser = await usercollection.findOne({ referralCode });
+        if (!referringUser) return null;
 
-  if (existingWallet) {
-    await wallet.updateOne(
-      { userId: referrer._id},
-      {
-        $inc: { walletBalance: 50 },
-        $push: { walletTransaction: transactionData },
-      },
-      { session }
-    );
-  } else {
-    await wallet.create([
-      {
-        userId: referrer._id,
-        walletBalance: 50,
-        walletTransaction: [transactionData],
-      },
-    ]);
-  }
+        // Update referring user's referral count
+        await usercollection.findByIdAndUpdate(referringUser._id, {
+            $inc: { referralCount: 1 }
+        });
 
-  // Initialize wallet if doesn't exist
-  if (!referrer.wallet) {
-    referrer.wallet = {
-      balance: 0,
-      transactions: [],
-    };
-  }
+        // Add ₹50 to referring user's wallet
+        await wallet.findOneAndUpdate(
+            { userId: referringUser._id },
+            {
+                $inc: { walletBalance: 50 },
+                $push: {
+                    walletTransaction: {
+                        transactionAmount: 50,
+                        transactionType: 'Credit on Referral'
+                    }
+                }
+            },
+            { upsert: true, new: true }
+        );
 
+        // Update new user's referredBy field
+        await usercollection.findByIdAndUpdate(userId, {
+            referredBy: referringUser._id
+        });
 
-  referrer.referralCount += 1;
-  await referrer.save();
-
-  return true;
+        return referringUser._id;
+    } catch (error) {
+        console.error('Error processing referral:', error);
+        throw error;
+    }
 };
 
-module.exports = { generateReferralCode, applyReferralBonus };
+module.exports = {
+    generateReferralCode,
+    processReferral
+};

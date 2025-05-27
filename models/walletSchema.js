@@ -15,6 +15,7 @@ const walletSchema = new mongoose.Schema(
             'Credit on Return',
             'Debit for Order',
             'Money from Razorpay',
+            'Credit on Referral'
           ],
         },
       },

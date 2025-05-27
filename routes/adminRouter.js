@@ -14,10 +14,13 @@ const couponController=require("../controllers/admin/couponController");
 const upload = require('../helpers/multer')
 const router = express.Router();
 
-router.get("/", adminController.loadDashboard);
+router.get("/",adminAuth,adminController.loadDashboard); 
 router.get("/login", adminController.loadLogin);
 router.post("/login", adminController.login);
 router.get("/dashboard",adminAuth, adminController.loadDashboard);
+router.put('/filter', adminAuth, adminController.timePeriodFilter)
+router.put('/clearfilter',adminAuth,adminController.clearDashFilter)
+router.put('/filter-by-date',adminAuth,adminController.dashBoardDateWiseFilter)
 router.get("/logout", adminController.logout);
 
 

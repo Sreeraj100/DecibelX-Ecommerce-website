@@ -29,7 +29,6 @@ const loadShopping = async (req, res, next) => {
       expiryDate: { $gte: currentDate },
       categoryId: { $in: listedCategoryIds },
     });
-    // console.log(activeOffers);
 
     // Build product query
     let query = {
@@ -55,6 +54,38 @@ const loadShopping = async (req, res, next) => {
       };
     }
 
+    // Price range filter
+    if (req.query.minPrice || req.query.maxPrice) {
+      query.productOfferPrice = {};
+      if (req.query.minPrice) {
+        query.productOfferPrice.$gte = parseInt(req.query.minPrice);
+      }
+      if (req.query.maxPrice) {
+        query.productOfferPrice.$lte = parseInt(req.query.maxPrice);
+      }
+    }
+
+    // Sorting
+    let sortOption = { createdAt: -1 }; // default
+    if (req.query.sort) {
+      switch (req.query.sort) {
+        case "price-asc":
+          sortOption = { productOfferPrice: 1 };
+          break;
+        case "price-desc":
+          sortOption = { productOfferPrice: -1 };
+          break;
+        case "name-asc":
+          sortOption = { productName: 1 };
+          break;
+        case "name-desc":
+          sortOption = { productName: -1 };
+          break;
+        default:
+          sortOption = { createdAt: -1 };
+      }
+    }
+
     // Get products with populated categories
     let products = await product
       .find(query)
@@ -62,7 +93,7 @@ const loadShopping = async (req, res, next) => {
         path: "productCategoryId",
         match: { isListed: true },
       })
-      .sort({ createdAt: -1 })
+      .sort(sortOption)
       .skip(skip)
       .limit(limit);
 
@@ -85,15 +116,13 @@ const loadShopping = async (req, res, next) => {
             offer.categoryId.toString() ===
               product.productCategoryId._id.toString()
         );
-// console.log(product.productCategoryId._id);
+
         if (categoryOffer) {
-          // console.log("Applying discount:", categoryOffer.offerPercentage, "%");
           const discountedPrice =
             product.productPrice * (1 - categoryOffer.offerPercentage / 100);
           prices.push(Number(discountedPrice.toFixed(2)));
         }
 
-        
         product.productOfferPrice = Math.min(...prices);
         return product;
       });
@@ -112,7 +141,7 @@ const loadShopping = async (req, res, next) => {
       }
     }
 
-    // 8. Render page
+    // Render page
     res.render("shop", {
       name,
       userId,

@@ -29,7 +29,7 @@ const userSchema=new Schema({
         unique: true
     },
     referredBy: {
-        type: Schema.Types.ObjectId,
+        type: String,
         ref: 'users'
     },
     referralCount: {

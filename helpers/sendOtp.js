@@ -17,7 +17,7 @@ let sendOtp = async (otp, email, name) => {
             subject: 'Your OTP Code',
             html: personalizedHtml,
         });
-        console.log('OTP sent successfully!');
+        // console.log('OTP sent successfully!');
     } catch (err) {
         console.error('Failed to send OTP:', err.message);
         console.error('Error details:', err);

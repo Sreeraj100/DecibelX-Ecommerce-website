@@ -7,6 +7,8 @@ const AppError = require("../../middlewares/errorHandling");
 const cart = require("../../models/cartSchema");
 const otpCollection = require("../../models/otp");
 const sendotp = require("../../helpers/sendOtp");
+const wallet = require("../../models/walletSchema");
+const referralHelper = require('../../services/referral');
 const passport = require("passport");
 
 
@@ -134,26 +136,43 @@ const otpPage = async (req, res, next) => {
 };
 
 const otpPost = async (req, res, next) => {
-  const findOtp = await otpCollection.findOne({ email: req.session.email });
-  // console.log(req.body);
-  // console.log(findOtp);
-  if (await comparePassword(req.body.otp, findOtp.otp)) {
-    const newUser = new usercollection({
-      email: findOtp.email,
-      name: findOtp.name,
-      password: findOtp.password,
-      phone: findOtp.phone,
-    });
-    newUser.save();
-    req.session.signupSession = true;
-    res.redirect("/");
-  } else {
-    req.session.otpError = "Incorrect OTP";
-    res.redirect("/otp");
+  try {
+    const findOtp = await otpCollection.findOne({ email: req.session.email });
+    
+    if (await comparePassword(req.body.otp, findOtp.otp)) {
+      const newUser = new usercollection({
+        email: findOtp.email,
+        name: findOtp.name,
+        password: findOtp.password,
+        phone: findOtp.phone,
+        referralCode: findOtp.referralCode
+      });
+// console.log("otp schema ",findOtp.referralCode);
+      const savedUser = await newUser.save();
+      
+      // Process referral if exists
+      if (findOtp.referredBy) {
+        await referralHelper.processReferral(savedUser._id, findOtp.referredBy);
+      }
+
+      // Create wallet for new user
+      await wallet.create({
+        userId: savedUser._id,
+        walletBalance: 0
+      });
+
+      req.session.signupSession = true;
+      res.redirect("/");
+    } else {
+      req.session.otpError = "Incorrect OTP";
+      res.redirect("/otp");
+    }
+  } catch (error) {
+    console.error("OTP verification error:", error);
+    next(new AppError('Sorry...Something went wrong', 500));
   }
 };
-
-const signup = async (req, res,next) => {
+const signup = async (req, res, next) => {
   try {
     const userExists = await usercollection.findOne({
       email: req.body.emailval,
@@ -162,6 +181,8 @@ const signup = async (req, res,next) => {
       return res.status(409).send({ success: false });
     } else {
       const hashedPassword = await securePassword(req.body.passwordval);
+      const newReferralCode = await referralHelper.generateReferralCode();
+      // console.log("created",newReferralCode)
       const result = await otpCollection.updateOne(
         { email: req.body.emailval },
         {
@@ -170,18 +191,19 @@ const signup = async (req, res,next) => {
             email: req.body.emailval,
             phone: req.body.phone,
             password: hashedPassword,
+            referralCode: newReferralCode,
+            referredBy: req.body.referralCode || null
           },
         },
         { upsert: true }
       );
-      // console.log(result);
+      // console.log(req.body.referralCode)
       req.session.email = req.body.emailval;
       return res.status(200).send({ success: true });
     }
   } catch (error) {
     console.error("Signup error:", error);
     next(new AppError('Sorry...Something went wrong', 500));
-
   }
 };
 
@@ -208,23 +230,30 @@ const login = async (req, res,next) => {
     next(new AppError('Sorry...Something went wrong', 500));
   }
 };
+
 const googleCallback = async (req, res, next) => {
   try {
+    const referralCode = await referralHelper.generateReferralCode();
+    
     const user = await usercollection.findOneAndUpdate(
       { email: req.user._json.email },
-      { $set: { name: req.user.displayName } },
+      {
+        $setOnInsert: {
+          name: req.user.displayName,
+          email: req.user._json.email,
+          referralCode: referralCode,
+          isActive: true
+        }
+      },
       { upsert: true, new: true }
     );
-    // const userId = await usercollection.findOne({
-    //   email: req.user._json.email,
-    // });
-    req.session.email = req.user._json.email,
-    
+
+    req.session.email = req.user._json.email;
     req.session.loginSession = true;
-    return res.redirect("http://localhost:3000/");
+    res.redirect("http://localhost:3000/");
   } catch (err) {
     console.error("Error in googleCallback:", err);
-  next(new AppError('Sorry...Something went wrong', 500));
+    next(new AppError('Sorry...Something went wrong', 500));
   }
 };
 

@@ -20,6 +20,14 @@ const otpSchema=new mongoose.Schema({
         required:true,
         type:Number,
     },
+     referralCode: {
+        type: String,
+        unique: true
+    },
+    referredBy: {
+        type: String,
+        ref: 'users'
+    },
     createdAt:{
         required:true,
         type:Date,

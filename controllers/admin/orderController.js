@@ -59,22 +59,50 @@ const editOrderView = async (req, res, next) => {
 };
 
 const editOrder = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
     if (req.body.status == "Delivered") {
+      // Get the order data first
+      const orderData = await order.findById(req.params.id).session(session);
+      
+      // Update product salesCount for each item in the order
+      for (const item of orderData.products) {
+        await product.updateOne(
+          { _id: item.productId },
+          { $inc: { salesCount: item.quantity } },
+          { session }
+        );
+      }
+
+      // Update order status and delivery date
       await order.updateOne(
         { _id: req.params.id },
-        { $set: { status: req.body.status, deliveryDate: new Date() } }
+        { $set: { status: req.body.status, deliveryDate: new Date() } },
+        { session }
       );
+      
+      await session.commitTransaction();
+      session.endSession();
     } else {
+      
       await order.updateOne(
         { _id: req.params.id },
-        { $set: { status: req.body.status } }
+        { $set: { status: req.body.status } },
+        { session }
       );
+      
+      await session.commitTransaction();
+      session.endSession();
     }
+    
     return res.json({
       success: true,
     });
   } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
     console.log(error);
     next(new AppError("Sorry...Something went wrong", 500));
   }

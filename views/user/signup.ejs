@@ -113,7 +113,7 @@
             letter-spacing: 0.5px;
             margin: 20px 0 30px;
         }
-        
+
         .social-container {
             margin: 15px 0;
             display: flex;
@@ -381,6 +381,7 @@
                 font-size: 12px;
                 /* Reduce label size */
             }
+
             .divider span {
                 font-size: 10px;
                 /* Reduce divider text size */
@@ -435,6 +436,7 @@
                 padding: 8px;
                 /* Further adjust input padding */
             }
+
             .divider span {
                 font-size: 9px;
                 /* Further reduce divider text size */
@@ -529,61 +531,60 @@
             <div class="mobile-logo">
                 <img src="img/footer-logo.png" alt="DecibelX">
             </div>
-            <form id="signup-form" >
+            <form id="signup-form">
 
                 <!-- Social Login Button -->
-                <div class="social-container">
+                <!-- <div class="social-container">
                     <a href="/auth/google" class="social-btn">
                         <img src="https://i.ibb.co/smTXFvv/google.png" alt="google">
                         <span>SignUp in with Google</span>
                     </a>
-                </div>
+                </div> -->
 
-                 <!-- Divider -->
-                 <div class="divider">
+                <!-- Divider -->
+                <!-- <div class="divider">
                     <span>or</span>
-                </div>
+                </div> -->
 
                 <h1 style="margin-top: 5px;">Sign up</h1>
-            
-                        <!-- Form Fields -->
-                        <div class="form-group">
-                            <label for="fullname">Full Name</label>
-                            <input type="text" id="fullname" placeholder="Enter your full name" name="name" />
-                            <p class="error-message" id="fullname-error"></p>
-                        </div>
-                        <div class="form-group">
-                            <label for="signup-email">Email</label>
-                            <input type="email" id="signup-email" placeholder="Enter your email" name="email" />
-                            <p class="error-message" id="signup-email-error"></p>
-                        </div>
-                        <div class="form-group">
-                            <label for="phone">Phone</label>
-                            <input type="tel" maxlength="10" id="phone" placeholder="Enter your phone number"
-                                name="phone" />
-                            <p class="error-message" id="phone-error"></p>
-                        </div>
-                        <div class="form-group">
-                            <label for="signup-password">Password</label>
-                            <input type="password" id="signup-password" placeholder="Enter your password"
-                                name="password" />
-                            <p class="error-message" id="signup-password-error"></p>
-                        </div>
-                        <div class="form-group">
-                            <label for="confirm-password">Confirm Password</label>
-                            <input type="password" id="confirm-password" placeholder="Confirm your password"
-                                name="cpassword" />
-                            <p class="error-message" id="confirm-password-error"></p>
-                        </div>
 
+                <!-- Form Fields -->
+                <div class="form-group">
+                    <label for="fullname">Full Name</label>
+                    <input type="text" id="fullname" placeholder="Enter your full name" name="name" />
+                    <p class="error-message" id="fullname-error"></p>
+                </div>
+                <div class="form-group">
+                    <label for="signup-email">Email</label>
+                    <input type="email" id="signup-email" placeholder="Enter your email" name="email" />
+                    <p class="error-message" id="signup-email-error"></p>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone</label>
+                    <input type="tel" maxlength="10" id="phone" placeholder="Enter your phone number" name="phone" />
+                    <p class="error-message" id="phone-error"></p>
+                </div>
+                <div class="form-group">
+                    <label for="signup-password">Password</label>
+                    <input type="password" id="signup-password" placeholder="Enter your password" name="password" />
+                    <p class="error-message" id="signup-password-error"></p>
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">Confirm Password</label>
+                    <input type="password" id="confirm-password" placeholder="Confirm your password" name="cpassword" />
+                    <p class="error-message" id="confirm-password-error"></p>
+                </div>
+                <div class="form-group">
+                    <label for="referralCode">Referral Code (Optional)</label>
+                    <input type="text" id="referralCode" placeholder="Enter referral code if any" name="referralCode" />
+                    <p class="error-message" id="referralCode-error"></p>
+                </div>
 
+                <!-- Submit Button -->
+                <button type="submit">Sign Up</button>
 
-
-                        <!-- Submit Button -->
-                        <button type="submit">Sign Up</button>
-
-                        <!-- Sign In Link -->
-                        <p class="signup-link">Already have an account? <a href="/login">Sign In</a></p>
+                <!-- Sign In Link -->
+                <p class="signup-link">Already have an account? <a href="/login">Sign In</a></p>
             </form>
         </div>
     </div>
@@ -704,18 +705,19 @@
             } else if (confirmPassword.value !== password.value) {
                 isValid = showError(confirmPassword, 'Passwords do not match');
             }
-            if(!isValid){
+            if (!isValid) {
                 return
             }
-            else{
+            else {
                 let emailval = document.getElementById("signup-email").value
                 let passwordval = document.getElementById("signup-password").value
                 try {
                     let formData = {
-                        fullname : fullname.value,
+                        fullname: fullname.value,
                         emailval: emailval,
-                        phone : phone.value,
-                        passwordval : passwordval               
+                        phone: phone.value,
+                        passwordval: passwordval,
+                        referralCode: document.getElementById('referralCode').value.trim() || null
                     }
                     let response = await fetch('/signup', {
                         method: 'POST',
