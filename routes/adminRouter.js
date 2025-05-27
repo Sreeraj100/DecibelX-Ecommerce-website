@@ -21,6 +21,8 @@ router.get("/dashboard",adminAuth, adminController.loadDashboard);
 router.put('/filter', adminAuth, adminController.timePeriodFilter)
 router.put('/clearfilter',adminAuth,adminController.clearDashFilter)
 router.put('/filter-by-date',adminAuth,adminController.dashBoardDateWiseFilter)
+router.get('/top-products', adminAuth, adminController.topProduct)
+router.get('/top-category', adminAuth, adminController.topCategory)
 router.get("/logout", adminController.logout);
 
 

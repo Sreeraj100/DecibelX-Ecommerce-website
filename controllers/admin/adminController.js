@@ -1,5 +1,7 @@
 const AppError = require('../../middlewares/errorHandling')
 const dashboardHelper = require('../../helpers/dashboardHelper')
+const product = require('../../models/productSchema')
+const category = require('../../models/categorySchema')
 const bcrypt = require("bcrypt");
 require("dotenv").config(); 
 
@@ -95,6 +97,61 @@ const loadDashboard = async (req, res, next) => {
   }
 }
 
+const topProduct = async (req, res, next) => {
+  try {
+    const products = await product.find({}).sort({ salesCount: -1 }).limit(10)
+    res.render('topProducts', { products })
+  } catch (error) {
+    console.log(error)
+    next(new AppError('Sorry...Something went wrong', 500))
+  }
+}
+
+const topCategory = async (rreq, res, next) => {
+  try {
+    const categoryRevenueData = await product.aggregate([
+      {
+        $match: { salesCount: { $gt: 0 } },
+      },
+      {
+        $group: {
+          _id: '$productCategoryId',
+          totalProducts: { $sum: '$salesCount' },
+        },
+      },
+      {
+        $lookup: {
+          from: 'category',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'categoryRevenueData',
+        },
+      },
+      {
+        $project: {
+          categoryName: {
+            $arrayElemAt: ['$categoryRevenueData.categoryName', 0],
+          },
+          totalProducts: 1,
+        },
+      },
+    ])
+    for (let i of categoryRevenueData) {
+      const categories = await category.findOne({ _id: i._id })
+      i.categoryName = categories.categoryName
+    }
+    let result = []
+    for (let i of categoryRevenueData) {
+      const tem = { name: i.categoryName, value: i.totalProducts }
+      result.push(tem)
+    }
+    categoryRevenueData.sort((a, b) => b.totalProducts - a.totalProducts)
+    return res.render('topCategory', { categoryRevenueData })
+  } catch (error) {
+    console.log('categoryRevenue Error:', error)
+    next(new AppError('Sorry...Something went wrong', 500))
+  }
+}
 const dashBoardDateWiseFilter = async (req, res, next) => {
   try {
     
@@ -165,4 +222,6 @@ module.exports = {
   dashBoardDateWiseFilter,
   timePeriodFilter,
   clearDashFilter,
+  topCategory,
+  topProduct,
 };
