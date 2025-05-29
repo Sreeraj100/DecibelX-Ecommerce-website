@@ -28,7 +28,7 @@ const profile = async (req, res, next) => {
     } else {
       const wishlistCount = await wishlist.countDocuments({ userId: userVer._id })
       const  cartCount = await cart.countDocuments({ userId: userVer._id })
-      return res.render("profile", { userVer, name ,wishlistCount,cartCount});
+      return res.render("Profile", { userVer, name ,wishlistCount,cartCount});
     }
   } catch (error) {
     console.log("profilePage error:", error);

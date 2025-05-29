@@ -38,7 +38,7 @@ router.get("/auth/google", passport.authenticate("google", {
   prompt: "select_account" 
 }));
 router.get("/auth/google/callback", 
-  passport.authenticate("google", { failureRedirect: "http://localhost:3000/login" }),
+  passport.authenticate("google", { failureRedirect: "http://decibelx.shop/login" }),
   userController.googleCallback
 );
 
