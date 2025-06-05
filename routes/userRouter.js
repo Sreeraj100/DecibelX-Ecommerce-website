@@ -109,6 +109,6 @@ router.post('/update-payment-status/:orderId', checkoutController.updatePaymentS
 
 // wallet
 router.get('/wallet', userAuth, walletController.walletPage)
-
-
+router.post('/add-money', userAuth, walletController.addMoneyToWallet);
+router.post('/wallet/verify-payment', userAuth, walletController.verifyWalletPayment);
 module.exports = router;

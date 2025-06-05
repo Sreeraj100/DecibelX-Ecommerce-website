@@ -220,7 +220,7 @@ const paymentPage = async (req, res, next) => {
       name,
       phone,
       address: selectedAddress,
-      allowCOD: total <= 5000,
+      allowCOD: total <= 10000,
       allowWallet: walBal > total,
       cartTotal: total,
       razorpayKey: process.env.RAZORPAY_KEY_ID // Add your key to .env
