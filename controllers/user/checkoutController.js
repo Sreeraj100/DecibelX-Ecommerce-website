@@ -389,7 +389,6 @@ const finalReview = async (req, res, next) => {
     next(new AppError('Sorry...Something went wrong', 500));
   }
 };
-
 const placeOrder = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -426,20 +425,23 @@ const placeOrder = async (req, res, next) => {
       await userWallet.save({ session });
     }
 
-    // Prepare order details
+    // Prepare order details with both original and offer prices
     const orderId = generateOrderID();
     const products = cartItems.map((item) => ({
       productId: item.productId._id,
       productName: item.productId.productName,
-      productPrice: item.productId.productOfferPrice, 
+      productPrice: item.productId.productOfferPrice, // Discounted price
+      originalPrice: item.productId.productPrice,    // Original price before discounts
       quantity: item.productQuantity,
+      tax: calculateTax(item.productId.productOfferPrice * item.productQuantity),
+      offerApplied: item.productId.offerApplied || null // Store offer details if available
     }));
 
     // Determine payment status
     const paymentStatus = req.session.paymentMethod === 'Cash on delivery' ? 
       'Pending' : 'Paid';
 
-    // Create new order
+    // Create new order with detailed price breakdown
     const newOrder = new order({
       userId: userVer._id,
       fullName: req.session.name,
@@ -465,12 +467,17 @@ const placeOrder = async (req, res, next) => {
       } : null,
       priceDetails: {
         subtotal: priceDetails.subtotal,
+        originalSubtotal: products.reduce((sum, product) => 
+          sum + (product.originalPrice * product.quantity), 0),
+        productDiscount: products.reduce((sum, product) => 
+          sum + ((product.originalPrice - product.productPrice) * product.quantity), 0),
         tax: priceDetails.tax,
         couponDiscount: priceDetails.couponDiscount,
         total: priceDetails.total,
       },
       status: "Ordered",
     });
+// console.log(newOrder);
 
     // Save order and clear cart
     await newOrder.save({ session });
@@ -515,11 +522,16 @@ const placeOrder = async (req, res, next) => {
   } catch (error) {
     await session.abortTransaction();
     session.endSession();
-    console.log(error);
-    next(new AppError('Sorry...Something went wrong', 500));
+    console.error('Order placement error:', error);
+    next(new AppError('Order placement failed. Please try again.', 500));
   }
 };
 
+// Helper function to calculate tax
+const calculateTax = (amount) => {
+  const taxRate = 0.18; // 18% GST
+  return parseFloat((amount * taxRate).toFixed(2));
+};
 // Order Confirmation Page
 const confirmPage = async (req, res, next) => {
   try {

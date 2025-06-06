@@ -7,10 +7,9 @@ const productController=require("../controllers/admin/productController");
 const orderController=require("../controllers/admin/orderController");
 const offerController=require("../controllers/admin/offerController");
 const couponController=require("../controllers/admin/couponController");
+const salesController = require('../controllers/admin/salesController')
 
-
-
-// const multer = require('multer')
+const multer = require('multer')
 const upload = require('../helpers/multer')
 const router = express.Router();
 
@@ -69,8 +68,13 @@ router.put('/editCoupon', adminAuth, couponController.editCoupon)
 router.delete('/deleteCoupon', adminAuth, couponController.deleteCoupon)
 
 
-
-
+//sales controller
+router.get('/sales',adminAuth, salesController.getSalesReport);
+router.post('/sales/filter/date',adminAuth, salesController.applyDateFilter);
+router.post('/sales/filter/period',adminAuth, salesController.applyPeriodFilter);
+router.post('/sales/filter/clear',adminAuth, salesController.clearSalesFilters);
+router.get('/sales/report/pdf',adminAuth, salesController.generatePDF);
+router.get('/sales/report/excel',adminAuth, salesController.generateExcel);
 
 
 module.exports = router;
