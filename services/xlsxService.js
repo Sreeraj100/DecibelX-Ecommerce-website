@@ -40,14 +40,14 @@ const generateExcel = async ({ orders, salesData, startDate, endDate }) => {
     name: 'SalesSummary',
     ref: 'A4',
     headerRow: true,
-    totalsRow: true,
+    totalsRow: false, // Disable totals row
     style: {
       theme: 'TableStyleMedium2',
       showFirstColumn: true
     },
     columns: [
       { name: 'Metric', filterButton: true },
-      { name: 'Amount (₹)', filterButton: true }
+      { name: 'Amount', filterButton: true }
     ],
     rows: [
       ['Total Orders', salesData.orderCount],
@@ -56,14 +56,16 @@ const generateExcel = async ({ orders, salesData, startDate, endDate }) => {
       ['Coupon Discounts', -salesData.couponDiscounts],
       ['Total Discounts', -salesData.totalDiscount],
       ['Tax Collected', salesData.taxTotal],
-      ['Net Revenue', salesData.netRevenue]
+      
     ]
   });
 
-  // Format currency cells
-  for (let i = 5; i <= 10; i++) {
+  // Format cells - only format currency cells (skip the first row for orders count)
+  for (let i = 6; i <= 10; i++) {
     worksheet.getCell(`B${i}`).numFmt = '₹#,##0.00';
   }
+  // Set the orders count as plain number
+  worksheet.getCell('B5').numFmt = '0';
 
   // Order Details Section
   worksheet.addRow([]);
